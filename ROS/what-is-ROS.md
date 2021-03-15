@@ -21,6 +21,8 @@ ROS는 대규모 런타임 시스템과 개발 프로세스에 적합하고자�
     글로벌 커뮤니티 형태로, DIY 로봇 관련 자료가 공유되어있다.
 
 # Reference
+### ROS Introduction
+http://wiki.ros.org/ROS/Introduction
 ### 1장 ROS 개론
 https://robertchoi.gitbook.io/ros/1
 ### [ROS] 1-1. ROS(Robot Operating System) 소개
