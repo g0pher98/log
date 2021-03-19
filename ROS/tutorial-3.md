@@ -69,7 +69,7 @@ catkin_make
 ## 패키지 의존성
 의존성은 생각보다 어려운 개념이 아니다. 대부분의 프로그램이 컴퓨터의 아주 LOW한 작업부터 개발하진 않는다. WINDOW라는 OS가 ROW한 컴퓨터 자원을 관리하고, 이러한 관리 위에 각종 모듈들이 존재한다. 이러한 것들이 겹치고 겹쳐 코드 한 줄 만으로도 많은 기능을 할 수 있게 만들 수 있게 된다.
 
-예를 들어 게임을 개발하는 것도 3D 공간상의 Object의 위치, 총알에 대한 중력계산 등과 같이 게임에 있어서 중요하긴 하지만, 하나하나 구현할 필요가 없다. 이미 어느정도 중력을 계산해주는 모듈이 존재하고, 그냥 이미지와 메인 로직을 구성해놓고 해당 모듈을 사용하기만 하면 어느정도는 잘 돌아간다. 그러나, 이러한 모듈과 같이 구축된 환경(e.g. window)이 바뀌거나 없다면 게임은 실행에 문제가 발생할 수 있다. 실제로 linux에서도 게임을 돌아가게 하려면 게임회사에서 리눅스 환경에 맞게 다시 개발해야한다. 그렇기 때문에 대부분 어떠한 모듈이나 환경에 의존적일 수 밖에 없고, 이 의존성을 지켜주어야 프로그램이 잘 돌아간다.
+예를 들어 게임을 개발하는 것도 3D 공간상의 Object의 위치, 총알에 대한 중력계산 등과 같이 게임에 있어서 중요하긴 하지만, 하나하나 구현할 필요가 없다. 이미 어느정도 중력을 계산해주는 모듈이 존재하고, 그냥 이미지와 메인 로직을 구성해놓고 해당 모듈을 사용하기만 하면 어느정도는 잘 돌아간다. 그러나, 이러한 모듈과 같이 구축된 환경(*e.g. window*)이 바뀌거나 없다면 게임은 실행에 문제가 발생할 수 있다. 실제로 linux에서도 게임을 돌아가게 하려면 게임회사에서 리눅스 환경에 맞게 다시 개발해야한다. 그렇기 때문에 대부분 어떠한 모듈이나 환경에 의존적일 수 밖에 없고, 이 의존성을 지켜주어야 프로그램이 잘 돌아간다.
 
 일전에 생성했던 `my_test_pkg` 패키지의 의존성을 `rospack의 depends1`명령을 통해 확인해보자.
 ``` bash
@@ -131,4 +131,56 @@ roscpp_serialization
 roslib
 rospy
 ```
+
+## 패키지 customizing
+패키지를 커스터마이징 하기 위해 구성요소였던 몇몇 파일을 직접 접근해서 수정할 수 있다. `package.xml`을 열어보면 다음과 같은 내용을 확인할 수 있다.
+``` xml
+<?xml version="1.0"?>
+<package format="2">
+  <name>my_test_pkg</name>
+  <version>0.0.0</version>
+  <description>The my_test_pkg package</description>
+
+  <maintainer email="g0pher@todo.todo">g0pher</maintainer>
+
+  <license>TODO</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>roscpp</build_depend>
+  <build_depend>rospy</build_depend>
+  <build_depend>std_msgs</build_depend>
+
+  <build_export_depend>roscpp</build_export_depend>
+  <build_export_depend>rospy</build_export_depend>
+  <build_export_depend>std_msgs</build_export_depend>
+
+  <exec_depend>roscpp</exec_depend>
+  <exec_depend>rospy</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+
+  <export>
+  </export>
+</package>
+```
+하나씩 차근차근 알아보자. 우선 가장 상단에 있는 프로젝트 기본 설명과 관련된 태그를 살펴보자
+``` xml
+<name>my_test_pkg</name>
+<version>0.0.0</version>
+<description>The my_test_pkg package</description>
+
+<maintainer email="g0pher@todo.todo">g0pher</maintainer>
+
+<license>TODO</license>
+```
+각 태그는 다음과 같은 역할을 한다.
+- `name` : 패키지 이름.
+- `version` : 현재 패키지 버전.
+- `description` : 패키지에 대한 설명.  
+  가능하면 한줄로 짧게 작성하는것을 권고하고있다.
+- `maintainer` : 프로젝트 관리자에 대한 정보.
+- `license` : 프로젝트 라이센스 명시.  
+  *e.g. BSD, MIT, GPL, ...*
+
+그 아래에 있는 의존성 태그들은 종속성에 관련된 패키지로, `build_depend`와 `exec_depend`로 나누어서 **빌드 시 필요한 패키지**와 **실행 시 필요한 패키지**를 따로 구분해서 명시할 수 있다.
 
