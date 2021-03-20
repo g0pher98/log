@@ -1,5 +1,6 @@
 # Tutorial 1
-ROS를 설치하고 나서, 기본적인 환경 구성에 대해 알아본다.
+ROS를 설치하고 나서, 기본적인 환경 구성에 대해 알아본다.  
+[원문](http://wiki.ros.org/ROS/Tutorials/InstallingandConfiguringROSEnvironment)
 
 ## 환경관리
 ``` bash

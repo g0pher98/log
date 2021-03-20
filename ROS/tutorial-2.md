@@ -1,5 +1,6 @@
 # Tutorial 2
-ROS도 어떻게 보면 Operating System이다. OS라는 무거운 타이틀을 달고있는 만큼 filesystem이 있고, linux의 기본 명령어로 이러한 파일시스템을 이용하기에는 상당한 불편함이 따른다. ROS는 편의를 위해 파일시스템을 이용할 수 있는 다양한 편리한 명령어들을 제공한다.
+ROS도 어떻게 보면 Operating System이다. OS라는 무거운 타이틀을 달고있는 만큼 filesystem이 있고, linux의 기본 명령어로 이러한 파일시스템을 이용하기에는 상당한 불편함이 따른다. ROS는 편의를 위해 파일시스템을 이용할 수 있는 다양한 편리한 명령어들을 제공한다.  
+[원문](http://wiki.ros.org/ROS/Tutorials/NavigatingTheFilesystem)
 
 ## package
 ROS에서 package란 소프트웨어를 구성하는 단위이다. ROS가 여러 프로그램을 병렬적으로 처리한다는 점을 고려하면 package는 이러한 프로그램의 구성요소로 볼 수 있을 것 같다.
