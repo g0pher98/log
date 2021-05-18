@@ -455,4 +455,86 @@ A17.
             - online policy learning (온라인 정책 학습)
                 - 실제로 경험을 통해 학습
                 - 학습 시간이 오래걸림. 하나하나 경험해야하기 때문.
-                
+
+(10주차)
+- Feedbacks to Learn From(피드백)
+    - Learning types (depending on feedbacks)
+        - supervised learning (교사학습, 감독학습)
+            - 라벨링된 데이터를 준다
+            - classification(분류) : 개념을 학습
+                - 좌표상에서 class를 구분하는 선(경계선)을 찾음.
+            - regression(회귀) : 연속된 수치값을 통해 예측값을 출력
+                - 이산적인 데이터들의 규칙성을 나타내는 선을 찾음.
+        - unsupervised learning(비-교사학습, 무-감독학습)
+            - 입력에 대한 정답이 없다. 즉, 입력값만 존재
+            - 그저 입력값들의 유사성(similarity)과 차별성(difference)을 분석
+            - 일반적으로 이런 군집 개수를 주면 특징에 따라 군집화.
+        - reinforcement learning(강화학습)
+            - 기존(supervised/unsupervised)은 offline에서 데이터를 학습하여 online에 들어간다.
+            - 강화학습인 기본적으로 online 학습이다.
+            - agent가 environment에 놓인 상태에서 경험을 통해 배운다.
+            - 선 행동 후 학습.
+            - state에 따른 reward를 받음. 이 reward를 통해 선택에 대해 학습한다.
+            - 이러한 reward를 책정하는 함수. 즉, policy가 생성됨.
+                - policy p : State -> Action (상태-행동 대응 함수)
+                - 가능하면 optimal(최적)한 평가면 좋음.
+                - 같은 state를 마주했을 때, 좋은 평가의 action을 할지, 새로운 action을 할지.
+                    - 즉, exploration(과거) / exploitation(도전) issue가 존재.
+
+- Supervised Learning (감독/교사 학습) 맛보기
+    - learning problem
+        - 학습자에게는 알려져 있지 않은 함수가 있음. target function(목적함수)
+        - example(input과 output의 쌍으로 구성)로 이루어진 training set(훈련집합)를 제공함.
+        - 목적함수에 유사한 hypothesis(가설함수)를 찾는다.
+    - test set != training set
+        - 학습데이터와 테스트 데이터는 달라야 제대로된 모델 평가가 가능함.
+    - generalization(일반화)
+        - hypothesis가 새로운 example에 대해 잘 예측해야 한다. = 일반화.
+    - classification(분류)
+        - class를 잘 분류해서 출력해야한다.
+    - regression(회귀)
+        - 연속된 숫자를 예측한다.
+
+- Suplervised Learning
+    - h는 consistent해야한다. 즉, f에 같은 결과를 내야함.
+    - 초기의 h의 모양은 제공한다. 여기서 모양이란 함수 h의 차수를 말한다.
+        - 1차 함수를 예로 들면, h(x) = ax+b 인 h를 가정하고, a와 b 값을 train하여 f에 가까운 h를 찾는다.
+    - Ockham's razor: h는 simplest해야한다. f가 3차함수라면 4차, 5차로도 충분히 학습이 가능하지만 학습 시간도 늘어나고, 학습데이터는 한정되어있기 때문에 의미없는 과정이 발생한다. 3차로도 충분.
+        - 1차함수부터 차례대로 테스트해보는것도 좋다.
+
+- Learning Decision Trees(DT)
+    - 행동 선택 매커니즘
+    - 각 속성들을 tree 형태로 표현.
+    - 확보된 값을 가지고 머신러닝을 돌리는 것도 중요하지만 그 전에 데이터를 포멧에 맞게 가공하는것이 중요.
+
+- Attribute-Based Representations
+    - example들을 attributes(속성)에 대해 나열하여 표현한다.
+    - 도메인을 잘 분석해서 영향을 주지않는. 즉, 필요없는 attribute는 제거해야 학습 속도에 영향을 미친다.
+
+- Decision Tree Learning
+    - tree에서 root node를 누구로 설정하고, 어떻게 tree구조를 뻗어나갈지 탐색.
+    - 가장 주요한 attribute는 무엇인가?
+        - psudo code를 보면 choose-attribute(attributes, example) 메소드로 example 하나에 대해 어떤 attribute가 잘 설명할 수 있는지 선택하는 것을 알 수 있음
+    - 이런식으로 학습시켜 노드를 구성한 인공지능은 explainable한 인공지능이다.
+        - 각 노드의 의미를 파악할 수 있기 때문에 인간이 추가적으로 작업할 수 있다.
+    - 오류나, noize가 있는 training set이 제공되면 크게 문제가 생길 수 있다.
+
+    - choosing an attribute
+        - tree의 자식노드가 terminal인 방향으로 가는 attribute를 설정하는 것이 좋음.
+        - 즉, 빨리 정리되는 방향이 좋음.
+        - teminal node가 아닌 경우는 class의 엔트로피가 낮아질수록(한쪽에 쏠릴수록) 좋음.
+
+    - Using Information Theory
+        - Information Content(Entropy: 혼합도, 불순도)
+        - 얼마나 서로 다른 class의 인스턴트가 섞어있는지에 대한 척도. 0~1 사이의 값.
+            - P = ( p/(p+n) )
+            - N = ( n/(p+n) )
+            - L(P,N) = ( -P * log2(P) ) + ( -N * log2(N) )
+
+    - Information Gain (IG : 정보획득량)
+        - 결론 : IG를 계산해서 가장 높은 값을 root node를 설정하겠다.
+        - IG(A) = Entropy - remainder(A)
+            - A : attribute
+            - remainder : A로 분리한 후에 발생한 부분집합의 평균 entropy
+            - 즉, IG는 Attribute로 분리했을 때, entropy의 변화량을 뜻함.
+
