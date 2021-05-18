@@ -6,7 +6,7 @@
 # Repository TREE
 - Hacking
     - Browser Exploit
-        - [DownUnderCTF 2020 - Is this pwn or web?](/browser-exploit/downunderctf-2020-is-this-pwn-or-web.md) 분석
+        - [DownUnderCTF 2020 - Is this pwn or web?](/Hacking/browser-exploit/downunderctf-2020-is-this-pwn-or-web.md) 분석
     - Linux Kernel Exploit
     - Crypto
 
@@ -18,5 +18,11 @@
         - [ROS Tutorial 2](/ROS/tutorial-2.md) - 기본 명령어
         - [ROS Tutorial 3](/ROS/tutorial-3.md) - 패키지 생성 및 빌드
         - [ROS Tutorial 4](/ROS/tutorial-4.md) - ROS 노드의 이해
+
 - OpenCV
+
 - Artificial Intelligence
+    - [수업정리](/AI/kgu_lecture.md)
+
+- Operating System
+    - [수업정리](/OS/kgu_lecture.md)
