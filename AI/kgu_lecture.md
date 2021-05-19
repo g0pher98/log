@@ -678,5 +678,5 @@ A17.
     - hard threshold를 사용할 때 보다 loss function의 진동이 훨씬 줄게됨.
     - learning rate가 동적일 때는 효과 극대화
 
-- 
+- test
 
