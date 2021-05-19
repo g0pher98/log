@@ -502,7 +502,7 @@ A17.
     - Ockham's razor: h는 simplest해야한다. f가 3차함수라면 4차, 5차로도 충분히 학습이 가능하지만 학습 시간도 늘어나고, 학습데이터는 한정되어있기 때문에 의미없는 과정이 발생한다. 3차로도 충분.
         - 1차함수부터 차례대로 테스트해보는것도 좋다.
 
-- Learning Decision Trees(DT)
+- Learning Decision Trees(DT : 결정트리)
     - 행동 선택 매커니즘
     - 각 속성들을 tree 형태로 표현.
     - 확보된 값을 가지고 머신러닝을 돌리는 것도 중요하지만 그 전에 데이터를 포멧에 맞게 가공하는것이 중요.
@@ -538,3 +538,101 @@ A17.
             - remainder : A로 분리한 후에 발생한 부분집합의 평균 entropy
             - 즉, IG는 Attribute로 분리했을 때, entropy의 변화량을 뜻함.
 
+(11주차)
+- Evaluating Hypothesis (가설 평가)
+    - 가설의 오류율
+        - 어떠한 가설이 더 좋은지를 평가.
+        - 최적의 파라미터를 결정하는 것.
+        - 오류율이란? 예측값과 실제 결과를 비교하여 몇개를 틀렸는지에 대한 정보만 가지고 비교하는 것.
+    - 검증 집합(validation set)
+        - training set(훈련집합)
+        - validation set(검증 집합)
+            - 성능 검증만을 위한 데이터셋임.
+            - 사실상 테스트 집합. 굳이 나눈 것.
+        - test set(테스트 집합)
+    - cross-validation (교차 검증)
+        - 학습에 쓰인 데이터를 사용하지 않겠다! 라는 의미
+        1. holdout cross-validation
+            - 전체에서 test용 데이터를 별도로 확보해놓고 학습시킨다.
+            - 그렇다고 한쪽 특성에 치우친 testset를 확보하는건 좋지 않다.
+            - 예를 들면 각 마을을 대표하는 1명씩 뽑은것이 좋다는것과 같은 맥락.
+            - 전체 데이터셋이 크다면 어느정도 랜덤하게 편향되지 않을 가능성을 기대해볼 수 있지만, 전체 셋이 작다면 편향될 확률이 매우 높다.
+        2. k-fold cross-validation
+            - 전체를 균등한 크기인 k개로 나눈다.
+            - 1/k는 test set, (k-1)/k는 train set.
+            - holdout과 같지만 여기서부터 다르다.
+            - 각 조각의 역할을 바꾸어보면서 테스트해본다.
+            - 데이터의 편향성을 감소시킬 순 있겠지만 검증에 시간이 오래걸린다. 
+        3. leave-one-out cross-validation
+            - 1개만 test용도로 남긴다.
+            - 데이터가 매우 적은 경우에 사용.
+            - k-fold와 같은 방식으로 검증. 다만 데이터셋을 나눌 때 크기가 1이 되도록 나누는 것.
+- model selection (모델 선택)
+    - 최적의 h를 찾기위한 작업
+        - model selection
+            - 인공지능이 모든걸 하기엔 아직 무리가 있다.
+            - 그러므로 사람이 어느정도 개입을 해줘야 좋은 성능이 나올 수 있다.
+            - 사람이 hypothesis의 기본적인 정의를 한다. (=인간이 기본 모델을 제공)
+            - ex) h의 차수를 설정하는 것.
+        - Parameter optimization
+            - 지정된 정보(i.g. 차수) 안에서 best hypothesis를 찾는 것.
+    - Model complexity (모델 복잡도)
+        - parameter size 증가. (=변수가 많아짐)
+        - 훈련 데이터의 양, 학습 시간도 비례해서 증가함.
+- overfitting (과적합)
+    - supervised learning은 사실상 데이터를 주고 데이터에 함수를 맞추는 과정이다.
+    - 그러나 이러한 과정에서 과적합 문제가 발생할 수 있다. (=Overfitting)
+    - 대부분 훈련데이터에 맞추는게 좋지만, 애초에 train data가 편향된 성격이 존재할 수 있다는 점을 간과하면 안됨.
+    - 편향된 데이터에 편향될 경우, 다른 케이스의 test set이 등장할 경우 예측이 어려워질 수 있음.
+    - 데이터로부터 어느정도는 학습하는게 맞지만 필요 이상으로 데이터에 맞출 경우 오히려 모델의 품질이 떨어짐.
+- Loss Function(손실 함수)
+    - 가설함수의 성능을 평가하는 함수.
+    - 용도에 맞게 손실 함수를 수정하면 그에 맞게 모델이 학습됨.
+    - 그러나 일반적으로 사용되는 형태가 있음.
+    1. 0/1 loss
+        - 0(정답) 또는 1(오답)으로만 평가
+        - 잘 안쓰임
+    2. absolute value loss
+        - (예측값 - 정답값) 의 절대값. L1 loss
+    3. squared error loss
+        - (예측값 - 정답값) 의 제곱값. L2 loss
+- Choosing the Best Hypothesis(최적의 가설 선택)
+    - Empirical loss (실험적 손실)
+    - Empirical loss를 최소화하는 hypothesis
+
+- Regression with Linear Models
+    - Linear Models (선형 모델)
+        - 1차 함수 형태의 가설.
+            - `h = (w1 * x1) + (w2 * x2) + ... + (wn * xn)`
+        1. Linear Regression(선형 회귀)
+            - 데이터들의 근사 함수를 찾음.
+            - h의 값이 예측값으로 작용.
+        2. Linear Classification(선형 분류)
+            - h의 값이 범위 조건에 따라 class로 변환.
+            - `if (h >= 60)` -> A class
+            - `if (h < 60)` -> B class
+
+- Univariate Linear Regression(일변수 선형 회귀)
+    - 파라미터를 어떻게 학습시키는가?
+    - loss function의 각 attribute에 대해 편미분하여 기울기를 구한다.
+        - 여러 attribute 기울기가 0가 되는 점이 cost의 최저점.
+        - 사실상 이러한 값을 찾는것이 어려움.
+    - local search를 이용.
+        - loss function의 기울기의 부호와 값에 따라 weight를 변경하면서 loss의 최저점을 찾는다.
+
+- gradient descent(기울기 하강)
+    1. batch(일괄적) gradient descent
+        - 훈련데이터를 다 사용하고 가설 변경
+        - `w0 <- w0 + a( sigma(y-h(x)) )`
+        - sigma를 통해 각 loss를 한번에 계산
+        - 전체에 맞춘 학습. 데이터가 클수록 속도가 너무 느림.
+        - mini batch 방법으로 해소.
+            - 일부에 대해서만 학습.
+            - mini batch size를 작게 잡으면 stochastic이 되고, 크면 batch의 문제점이 발생.
+    2. stochastic(확률적) gradient descent
+        - 훈련데이터 한개마다 가설 변경
+        - `w0 <- w0 + a( y-h(x) )`
+        - 하나하나에 맞추려다보니 전체데이터를 맞추기 어려움.
+        - 그러나 학습의 변화가 빠름. 좋은방향인지는 모르나(수렴성 미보장) 즉각적인 변화를 볼 수 있음.
+    - 전체 데이터를 1번 돌 때를 epoch(에포크)라고 한다.
+    - 현실적으로
