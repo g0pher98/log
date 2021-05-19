@@ -635,4 +635,48 @@ A17.
         - 하나하나에 맞추려다보니 전체데이터를 맞추기 어려움.
         - 그러나 학습의 변화가 빠름. 좋은방향인지는 모르나(수렴성 미보장) 즉각적인 변화를 볼 수 있음.
     - 전체 데이터를 1번 돌 때를 epoch(에포크)라고 한다.
-    - 현실적으로
+    - 현실적으로 batch방법을 사용하긴 하지만 두 방법 모두 사용하지 않음.
+        - mini batch 사용
+
+(12주차)  
+- Linear Classification (선형 분류) with a hard threshold
+    - Decision boundary(결정 경계)
+        - class를 구분하는 구분선을 찾음.
+    - Linear decision boundary (선형 결정 경계)
+        - 직선 하나로(선형적으로) 분리 가능한 경우.
+        - 쉬운 문제에 해당함.
+        - 세상 문제에 선형적인 것은 많지 않음.
+    - threshold : 임계값. h의 결과값을 이용하여 class를 분류.
+        - hard threshold
+            - 값의 차이에 관계 없이 임계 초과/미만에 따라 분류.
+            - 미분이 불가능하다.
+        - perceptron learning rule (퍼셉트론 학습 규칙)
+            - `wi <- wi + a( y-h(x) ) * xi`
+
+- Training Error Curve (in case of using a hard threshold)
+    - 고정된 learning rate를 사용했을 때, loss가 들쭉날쭉함.
+    - learning rate(alpha 변수)
+        - weight(가중치) 변화 폭을 결정.
+    - 가변 learning rate를 사용할 경우 loss 그래프가 비교적 안정적임을 알 수 있다.
+
+- Logistic Function (=Sigmoid Function)
+    - threshold의 단점
+        - 임계점과 값의 차이는 고려되지 않고, 임계 초과/미만에 따라 분류.
+        - 미분이 불가능하다.
+        - 결과가 임계에 따라 확 바뀌다보니 loss도 계속 크게 변함.
+    - logistic function
+        - 임계에 대해 보다 유연한 함수를 사용하고자 함.
+        - 0과 1로 구분하는건 당연한거고, threshold가 문제가 있다는건 아니지만 계산에 용이하게 하기 위해 부드러운 손실함수를 사용하고자 함.
+        - 미분 가능함.
+        - 단순히 0과 1만 있는게 아니라 중간값도 있다. 하지만 결과는 0과 1로 분류됨.
+        - `Logistic(z) = 1/( 1+e^(-z) )`
+        - logistic function을 사용하게 되면 미분 방식이 달라지기 때문에 가중치 변경 식도 달라진다.
+            - chain learning rule(체인 학습 규칙)
+                - `wi <- wi + a( y-h(x) ) * h(x)(1-h(x))*xi`
+                
+- Training Error Curve (in case of using a logistic function)
+    - hard threshold를 사용할 때 보다 loss function의 진동이 훨씬 줄게됨.
+    - learning rate가 동적일 때는 효과 극대화
+
+- 
+
