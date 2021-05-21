@@ -678,5 +678,50 @@ A17.
     - hard threshold를 사용할 때 보다 loss function의 진동이 훨씬 줄게됨.
     - learning rate가 동적일 때는 효과 극대화
 
-- test
+- Artificial Neural Networks (인공 신경망)
+    - Neural network structures
+    - Single-layer feed-forward networks
+    - Multilayer feed-forward networks
+
+- Neural network structures (신경망 구조)
+    - neural networks
+        - 뉴런이라고 하는 units들이 links에 의해 연결되어있는 구조.
+    - unit
+        - input function(입력함수)
+        - activation function(활성함수)
+            - threshold unit (perceptron: 퍼셉트론)
+            - sigmoid unit
+    - link
+        - input link, output link로 구성.
+        - activation. 즉, 활성값이 input으로 들어오며, weight(가중치)에 따라 신호의 세기가 변화한다.
+    - network structure (네트워크 구조)
+        - FFN(Feed Forward Network: 순방향 신경망)
+            - 구조가 층별로 이루어져있으며, 신호가 전방향으로 단계별로 나아감.
+            - 구조
+                - input layer
+                - hidden layer
+                    - 중간에 껴있는 layer. 겉으로 보이지 않으므로 hidden layer라고 불린다.
+                - output layer
+        - RNN(Recurrent Neural Network: 순환 신경망)
+            - 신호가 전방향으로만 가는게 아니라, 옆이나 뒤로 가기도 하고 반복되기도 함.
+            - FFN처럼 입력에 대해서만 진행하는것이 아니라, 모델 내에 기억하고 있는 정보와 함께 처리한다.
+
+- single-layer feed-forward NNs
+    - perceptron network (퍼셉트론 망, 단일 계층 신경망)
+        - xor 문제 해결이 어려움
+    - learning rules(학습 규칙, 가중치 갱신 규칙)
+        - perceptron learning rule (for threshold units)
+        - gradient descent rule (for sigmoid units)
+
+- multilayer feed-forward NNs
+    - single-layer(단층) 모델 단점
+        - 데이터가 직선으로 나타낼 수 `없는 경우 single-layer(단층) 모델로 해결하기 어려움.
+        - 선형 분리가 가능한 샘플이라고 하더라도 3차원에서의 구분은 더이상 선이 아닌 평면임.
+        - 2차원에서도 샘플이 선형 분리`가 불가능하다면 직선이 아닌 곡선으로 표현해야함.
+    - 뉴런의 개수가 증가하고, multi-layer로 구조가 변경되면서 역전파라는 방법을 통해 뉴런을 학습시킨다.
+        - 결국엔 lost value를 줄이는 방향으로 변화한다는 기반은 같음.
+
+- backpropagation algorithm(역-전파 알고리즘)
+    - multi-layer 모델에서 layer를 학습시키기 위한 알고리즘.
+    - 최종적으로 발생한 loss 값에 대해서 이전 layer에게 가중치에 맞게 계산하여 분배.
 
