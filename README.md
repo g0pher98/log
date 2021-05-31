@@ -4,11 +4,13 @@
 공부한 것들을 정리하는 공간.
 
 # Repository TREE
-- Hacking
+- Hacking & Security
     - Browser Exploit
-        - [DownUnderCTF 2020 - Is this pwn or web?](/Hacking/browser-exploit/downunderctf-2020-is-this-pwn-or-web.md) 분석
+        - [DownUnderCTF 2020 - Is this pwn or web?](/Hacking_Security/browser-exploit/downunderctf-2020-is-this-pwn-or-web.md) 분석
     - Linux Kernel Exploit
-    - Crypto
+        - [Linux Kernel Exploit Step-by-step Part1](/Hacking_Security/linux-kernel-exploit/linux-kernel-exploit-step-by-step-part1.md)
+    - Cryptography
+        - [수업정리](/Hacking_Security/cryptography/kgu_lecture.md)
 
 - Autonomous Vehicle
     - ROS
