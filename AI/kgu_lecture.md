@@ -725,3 +725,57 @@ A17.
     - multi-layer 모델에서 layer를 학습시키기 위한 알고리즘.
     - 최종적으로 발생한 loss 값에 대해서 이전 layer에게 가중치에 맞게 계산하여 분배.
 
+(13주차)
+- Nonparametric Models (비-모수 모델)
+    - parametric 이란, 학습 과정동안 파라미터값을 알아내는 과정임. 학습시간이 정말 오래걸리지만, 실제 처리는 비교적 빠름.
+    - nonparametric는 가설함수가 존재하지 않음. 학습이라는 것이 거의 없기 때문에, 실제 실행 시 바빠진다. 
+    - instance-based learning (개체-기반 학습)
+    - k-nearest neighbors (k-NN) models
+        - 가장 가까운 이웃 k개 인스턴스(입력 데이터)의 유사도.
+        - 과거의 examples들과 유사한지 비교.
+    - k-NN classification
+        - 주변 k개의 데이터들의 class를 살펴보고 다수의 class로 결정
+        - k가 커질수록 하나를 결정할 때 여러개를 검사해야하므로 시간이 오래걸린다.
+        - 이를 보완하기 위해 하이브리드형 구조도 나옴.
+        - 신경망으로는 복잡한 경계선을 얻기 어려움.
+        - 작은 수의 데이터가 복잡한 관계로 이루어져있으면 k-NN이 유용할 수 있음.
+    - k-NN regression
+        - average 방식 : k개 평균. 주변 노드가 동일한 기여도(weight)를 가짐
+        - linear regression 방식 : k개 노드와의 오차를 최소화.
+    - Locally weighted regression(지역 가중 회귀)
+        - 가까울수록 가중치를 높이고, 멀수록 가중치를 낮춤.
+        - 가중치를 어떻게 구하는가? -> Kernel function (커널함수)
+            - K(Distance(x_example, x_test))
+            - weight를 거리에 반비례하도록 만들어주는 함수.
+            - 직접 구현할수도 있음.
+
+- Reinforcement Learning
+    - agent와 environmetn와의 상호작용. state -> action -> reward.
+    - state에 대해 어떻게 action을 할지는 policy를 따른다.
+        - 상태마다 적절한 행동이 구조적으로 확립시킨 시퀀스와는 다르다.
+        - policy는 비결정성이 높은 환경. 어떤 환경이 올지는 모르겠지만 policy에 따라 행동.
+
+- Markov Decision Process (MDP)
+    - 학습과정이 따로 있는게 아니라 처음부터 최선을 다해서 action한다.
+    - 한번에 끝나는게 아니라, 과거가 현재에 영향을 미치고 현재가 미래에 영향을 미치는 환경에서의 결정을 [순차 의사 결정]이라고 한다.
+    - 순차 의사 결정 단계를 줄이는 것.
+    - MDP는 튜플이다. <S, A, P, R, y>
+        - State
+        - Actions
+        - 동일한 행동에도 다른 state로 전이되는 경우 확률(Probability matrix)적인 판단을 하게됨.
+        - Reward Function
+
+- Value Functions
+    - 가치함수
+    - 종류
+        - state-Value function
+        - optimal state-Value function
+        - action-value function, Q function
+        - optimal Q function
+
+    - V는 state에 대한 가치평가
+    - Q는 action에 대한 가치평가
+
+- Bellman Equation
+    - Q Learning을 하기위한 핵심. 신경망의 뉴런 급.
+    - V와 Q의 관계를 통해 Q'에 의해 Q를 구하고, V'에 의해 V를 구할 수 있게됨.
