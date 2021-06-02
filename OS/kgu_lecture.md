@@ -908,7 +908,7 @@ do {
                             - work = available
                             - need[i] < work
                             - work = work + allocation[i]
-        (9주차)
+:9주차
         (3) deadlock detection
             - 리소스별 인스턴스 한개인 경우
                 - wait-for graph 사용
@@ -994,6 +994,7 @@ do {
                 - 연속되지 않은 공간에 프로세스를 할당. 
             - paging
                 - external fragmentation문제는 해결되지만 여전히 internal fragmentation 문제가 남아있음.
+:10주차
     - paging
         - 물리 메모리(physical memory)는 frame으로 구성되어있고, 이들의 집합이다.
         - 논리 메모리(logical memory)는 page로 구성되어있고, 이들의 집합이다. 
@@ -1031,6 +1032,7 @@ do {
             - inverted page tables
                 - 앞서 설명한 테이블들은 프로세스마다 테이블이 존재한다.
                 - inverted는 공유 테이블이다. 그러므로 어떤 프로세스의 페이지인지도 명시되어있다.
+        - 모든 page를 frame에 할당하고 시작하는 방식. 즉, 앞서 공부한 방식을 pure paging이라고 한다.
     - segmentation
         - pageing과 기본개념은 같음.
         - pageing은 고정된 크기의 메모리를 할당해주지만, segmentation은 segment라는 단위로 variable한 공간을 할당한다.
@@ -1039,13 +1041,232 @@ do {
             - 2개의 요소 필요.
                 1) STBR(Segment-table base register) : 세그먼트의 시작주소
                 2) STLR(Segment-table length register) : 세그먼트의 크기
-            
+:12주차-1
+- Vitual Memory Management Strategy
+    - Demand paging
+        - pure paging과는 다르게 모든 메모리를 다 할당해놓고 시작하는게 아니라 일부만 할당해놓고 시작
+    - page replacement schemes
+        - 페이지가 필요한 부분을 할당하려고 했을 때, 메모리에 공간이 없을 때, 사용중인 메모리 일부를 걷어내서 그곳을 사용하는 방식
 
-
-
-                        
-
-
-
-
+    - background
+        - 프로그램을 실행하기 위해서는 메모리에 적재해야함.
+        - 프로그램 전체를 굳이 올리지 않아도 필요한 부분 일부만 메모리에 올린다는 아이이어. -> 가상메모리의 기본 개념
+            - 프로세스 일부만 메모리 할당받는 방식의 장점
+                - 필요한 부분만 올리기 때문에 물리메모리 양에 구애받지 않을 수 있다.
+                - 위 장점에 의해 동시 실행가능한 프로세스 수가 늘어난다.
+                - 첫번째 장점에 의해 IO 양도 줄어든다(= 속도가 빨라진다) 
     
+    - virtual address space
+        - 사실상 space가 무한대라고 볼 수 있다
+            - 전체를 다 할당받을 필요없고, 상황에 따라 필요한 부분만 할당하기 때문에 virtual space에서 제한은 없다.
+        - 당연히 MMU에서는 address translation이 일어나야한다.
+    
+- Demand Paging
+    - 프로세스가 100개의 page를 필요로 한다면, pure paging은 모두 할당하지만 demand paging에서는 필요한 부분. 예를 들면 30개정도만 할당받는다.
+        - IO가 줄어들고
+        - 메모리 필요 공간도 줄어들고
+        - IO가 줄었으니 당연히 response time도 빨라짐
+        - 필요 메모리 공간이 줄어드니 더 많은 사용자 프로세스를 올릴 수 있음.
+    - Lazy swapper (or pager) 라고 불림.
+    - 어떤 page가 올라가있고, 어떤 page가 디스크에 있는지 파악해야함.
+        - valid-invalid bit를 이용.
+        - valid : 메모리에 올라가있고, access해도 됨.
+        - invalid : access 하면 안됨. 또는 access는 해도 되지만 메모리에 올라가있지 않으니 메모리 할당을 먼저 하라는 것을 뜻함.
+:12주차-2
+    - Page Fault
+        - invalid page에 접근하는 것을 page fault가 발생.
+        - page fault가 발생하면 판단을 해야하는데, access가 아예 안되는 page인지, access는 되는데 할당이 안된건지 파악해야한다.
+        - 후자인 경우에는 empty(free) frame를 받아온다. 그리고 그곳에 page를 로드하고, valid로 변경한다.
+        - free frame이 없는 경우, 기존에 올라가있는 page를 swap하여 공간을 만들어냄.
+        - 이후 page fault가 발생한 코드를 재실행.
+    
+    - Aspect of demand paging
+        - Extreme case (최악의 경우)
+            - 프로세스가 처음 시작할 때 부터 아무 page도 적재하지 않은 상태로 실행하는 경우.
+            - 이것을 pure demand paging 이라고 함.
+        - 여러개 page를 동시에 접근하면 page fault가 동시에 발생할 수 있다. 이런 경우에는 page를 메모리에 올릴 때 하나만 올리는게 아니라 유사한 주소의 page를 동시에 올려서 locality를 형성해서 page fault를 줄일 수 있다.
+        - 하드웨어 지원
+            - page table에 valid/invalid bit가 있어야 함
+            - swap sapce가 존재해야하고
+            - instruction restart를 지원해야함.
+
+    - instruction restart
+        - 명령을 재실행 할 때 overhead가 발생.
+        - 상황에 따라 이전 수행 내용을 다시 복원해야하는 경우가 생길 수 있음. 이 부분에서 오버헤드 발생.
+        - 이러한 문제는 사전에 page fault가 발생하는지에 대한 검사를 하는것과 같은 방식으로 해결할 수 있다. 
+
+- Performance of Demand Paging
+    - Worse case인 Demand paging 과정
+        1. memory access
+        2. 메모리에 안올라가있으면 page fault 발생
+        3. os가 trap 발생
+        4. 현재 프로세스 상태(레지스터 등)를 저장해야함
+        5. trap이 page fault에 의한 trap인지 체크
+        6. access 해도 되는 page인지 체크
+        7. access가 가능하나 메모리에 적재되지 않아서 발생한 것이라면 메모리에 적재할 page 주소를 가져옴.
+        8. 사용하지 않는 frame에 page를 저장하기 위해 Disk I/O 시작
+        9. Disk I/O가 수행되는 동안 CPU를 다른 프로세스에게 넘김.
+        10. I/O 인터럽트를 받으면 disk로부터 발생한 것인지 확인.
+        11. page table 업데이트
+        12. CPU를 받을 때 까지 Wait
+        13. 프로세스 상태를 복원
+    - Tree major activities
+        - interrupt를 처리하는데 소요되는 시간
+        - page를 read하는 시간
+        - process를 restart하는 시간
+    - Effective Access Tiem(EAT)
+        - p : page fault rate. 0~1 범위의 값.
+            - p=0 : page fault가 없음.
+            - p=1 : 모든 주소에서 fault 발생.
+        - Memory Access Time : page fault가 발생하지 않을 때 소요되는 메모리 access 시간.
+        - Page Fault Time : page fault가 발생할 때 소요되는 메모리 access 시간.
+        - 식
+            ```
+            EAT = (1-p) * Memory Access Time
+                    + p * Page Fault Time
+            ```
+
+        - page fault overhead :  page fault에 사용되는 오버헤드. 앞서 설명한 interrupt 처리시간, page 읽는 시간, process를 restart하는 시간이 모두 포함됨.
+        - swap page out : page replacement가 발생했을 때, swap out 하는 시간. 발생하지 않을 수 있음. 즉, 옵션.
+        - swap page in : page를 frame에 저장하는 시간
+        - restart overhead : 명령어를 restart하는 오버헤드
+        - 식
+            ```
+            Page Fault Time = 
+                    page fault overhead
+                    + swap page out
+                    + swap page in
+                    + restart overhead
+            ```
+    
+    - EAT 예시
+        - 상식
+            - 1 milliseconds = 10^3 microseconds = 10^6 nanoseconds
+            - 즉, 1 milliseconds = 1,000,000 nanoseconds
+        - 문제
+            - Memory Access Time = 200 nanoseconds
+            - 평균 page fault service time = 8 milliseconds
+        
+        - 풀이
+            ```
+            EAT = (1-p) * 200 + p * 8,000,000
+                = 200 + p * 7,999,800
+            ```
+            - if one access out of 1,000 causes a page fault
+                - p = 1/1000 = 0.001 이므로
+                - EAT = 8199.8 nanoseconds
+                      = 8.1998 microseconds
+                      = 약 8.2 microseconds
+                - 평소 메모리 접근에 200 nanoseconds 가 소요됨.
+                - page fault가 발생하면 8199.8 nanoseconds 가 소요됨.
+                - page fault가 발생하면 메모리 접근이 약 41배 느려짐
+        
+        - 속도를 10% 감소시키기 위한 방법,,,?????????
+            - 220 > 200 + 7,999,800 * p
+            - 20 > 7,999,800 * p
+            - p < .0000025
+            - < 400,000번의 메모리 접근에 한번의 page fault 발생
+
+    - copy-on-write
+        - paging이나 segmentation을 사용하게 될 경우 공용 코드인경우 프로세스간 공유가 쉽게 일어난다. 한번만 적재되고, 해당 페이지를 각 프로세스의 page table에 기록하여 공유가 가능해진다.
+        - 공유중인 page에 어떠한 프로세스가 변경을 가할 때, 그때 copy가 된다.
+
+- page replacement
+    - free frame이 없을 때, 적재되어있는 page를 disk에 저장하고 그 공간을 사용하는 것을 말함.
+    - 그러나 page replace를 하려고 할 때, 어떤 page를 swap하느냐에 따라서 추가 page fault가 더 발생할 수 있다.
+    - 이런 문제를 해결하기 위해서 page replacement algorithms가 존재.
+    - 당연한 이야기지만, 이러한 알고리즘들은 replace 이후 발생할 page fault를 최소화 하는 것을 목적으로 한다.
+    - modify (dirty) bit
+        - 이 비트가 1이라면 한번이라도 수정된 적이 있음을 뜻하고, 0이면 한번도 수정되지 않은 page라는 뜻.
+        - dirty bit이 0이라면 disk에 있는 것과 같으므로 swap out을 해줄 필요가 없기때문에 disk I/O가 줄어서 처리가 더 빨라짐.
+    - 기본 동작
+        1. 어떤 page를 메모리에 적재해야하는지 탐색.
+        2. free frame 탐색
+        3. 없으면 page replace algorithm을 돌려서 바꿀 victim frame을 찾음.
+        4. victime frame을 디스크에 write함.
+            (dirty bit가 1일 때만. == 수정된 page인 경우에만)
+        5. page를 free frame에 저장하고, page table을 업데이트함.
+        6. instruction restart
+
+:12주차-3
+- Page and Frame Replacement Algorithm
+    - Frame-allocation algorithm
+        - 각 프로세스에게 얼만큼 많은 FRAME을 할당해 줄 것인가?
+    - Page-replacement algorithm
+        - victim frame을 어떤 것으로 설정할 것인가?
+        - page-fault rate를 최소화하는 것이 목적.
+        - 평가 방법
+            - page에 접근하는 순서를 page에 해당하는 숫자들의 나열로 이루어진 예시(reference string)가 주어지고, 몇번 page fault가 발생하는지를 살펴봄.
+        
+        - "page fault 횟수"와 "프로세스당 할당하는 Frames 개수"와의 상관관계
+            - 프로세스당 할당하는 Frames 개수가 많으면 많을 수록 page fault 횟수는 줄어든다.
+
+- Page replacement algorithms
+    - FIFO Algorithm
+        - 가장 오래 access된 frame을 victim frame으로 설정
+        - Belady's abnomaly 문제가 발생.
+            - frame이 더 많음에도 불구하고, 더 많은 page fault를 야기할 수 있음.
+    - Optimal Algorithm
+        - 가장 오래동안 사용되지 않은 page를 replace
+        - 현재를 기준으로 미래의 reference string을 찾아서 오래동안 사용되지 않을 page를 찾아서 변경.
+        - 최상의 알고리즘이지만, 미래의 내용을 확인해야하기 때문에, 미래를 파악할 수 없어서 이론상으로만 가능한 알고리즘.
+    - Least Recently Used (LRU) Algorithm
+        - optimal과는 다르게 과거를 보고 가장 예전에 사용되었던 page를 선택. 즉, 오래동안 접근이 없었던 page를 변경.
+        - FIFO보다 좋지만 당연히 OPT보다는 좋지 않음.
+        - 자주 사용되는 알고리즘. 다른 분야에서도! 알아두면 좋음
+        - 구현방법
+            - counter를 사용한 구현방법
+                - page마다 counter를 둔다.
+                - page가 언제 access되었는지 counter에 저장.
+                - counter 값을 이용하여 가장 오래된 page를 탐색.
+            - stack을 사용한 구현방법
+                - 가장 최근에 사용한 page가 위쪽에 있게 되고, 가장 과거의 page는 아래쪽에 존재하게 됨.
+                - 가장 아래쪽 page를 replace.
+                - 중간에 access되면 해당 page를 스택 맨 위로 올림
+    - LRU Approximation Algorithm
+        - LRU 알고리즘은 특별한 하드웨어가 필요하고 여전히 느리다는 단점이 있다.
+        - page table에 reference bit을 사용하는 것으로 LRU 알고리즘을 흉내낼 수 있다.
+            - access가 안되면 0, 되는 순간 1
+            - 1이 여러개면 순서를 알 수 없다는 단점이 있다.
+        - 이를 활용한 알고리즘
+            - Additional-Reference-bit algorithm
+                - 위 단점해결을 위한 방안.
+                - 8bit 사용.
+                - 주기적(일정한 time interval)으로 비트값을 오른쪽으로 1bit씩 shift한다.
+                - access가 발생하면 가장 좌측 bit를 설정.
+                - bit의 값이 크면 클수록 가장 최근에 접근했다고 판단.
+                - 어느정도의 오류는 허용.
+                - bit수가 많아질수록 더욱 정교한 판단이 가능.
+            - Second-Chance algorithm
+                - 기본적으로 FIFO와 똑같이 동작. 그러나 reference bit가 1인 page에는 기회를 한번 더 줌.
+                - 탐색 시 reference bit가 1이면 0으로 바꾸기만 하고 넘어감.
+                - 탐색 시 reference bit가 0이면 replace.
+                - 그러나, 모든 page의 bit가 1로 설정되어있으면 FIFO와 완전 동일하게 동작함. Belady's abnomaly 문제 발생
+            - Enhanced Second-Chance Algorithm
+                - reference bit + modify bit 두 개의 비트를 활용
+
+                - reference bit(0) + modify bit(0)
+                    - 최근에 access 되거나 modify된적 없음.
+                    - replace를 위한 최적조건.
+                - reference bit(0) + modify bit(1)
+                    - 최근에 access 되진 않았지만, 과거에 access가 되어서 modify 된적 있다.
+                    - 무조건 swap out이 발생
+                - reference bit(1) + modify bit(0)
+                    - 최근에 access 하긴 했지만, modify되진 않음.
+                - reference bit(1) + modify bit(1)
+                    - 최근에 access 했고, modify됨.
+                
+                - [0,1], [1,0] 두 상황에 대해서는 우열을 가릴 수 없다. 정답이 없다.
+                - [0,0]인 page를 찾는것이 목표.
+                - 두 비트가 모두 0인 page를 찾기 위해 page table을 모두 탐색해야한다.
+
+    - counting-based algorithm
+        - 각 page가 가지고있는 counter 값에 의해 결정되는 알고리즘.
+
+        - LFU(Least Frequently Used)
+            - count가 가장 작은 page를 선택
+        - MFU(Most Frequently Used)
+            - count가 가장 큰 page를 선택
+        
+        - 어떤 방식이 더 좋다고 말할 수 없음. 프로세스의 성격에 따라 case by case임.
+
