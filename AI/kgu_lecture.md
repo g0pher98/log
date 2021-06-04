@@ -638,7 +638,7 @@ A17.
     - 현실적으로 batch방법을 사용하긴 하지만 두 방법 모두 사용하지 않음.
         - mini batch 사용
 
-(12주차)  
+:12주차  
 - Linear Classification (선형 분류) with a hard threshold
     - Decision boundary(결정 경계)
         - class를 구분하는 구분선을 찾음.
@@ -725,7 +725,7 @@ A17.
     - multi-layer 모델에서 layer를 학습시키기 위한 알고리즘.
     - 최종적으로 발생한 loss 값에 대해서 이전 layer에게 가중치에 맞게 계산하여 분배.
 
-(13주차)
+:13주차
 - Nonparametric Models (비-모수 모델)
     - parametric 이란, 학습 과정동안 파라미터값을 알아내는 과정임. 학습시간이 정말 오래걸리지만, 실제 처리는 비교적 빠름.
     - nonparametric는 가설함수가 존재하지 않음. 학습이라는 것이 거의 없기 때문에, 실제 실행 시 바빠진다. 
@@ -773,9 +773,186 @@ A17.
         - action-value function, Q function
         - optimal Q function
 
-    - V는 state에 대한 가치평가
-    - Q는 action에 대한 가치평가
+    - V는 state에 대한 가치평가(state value function)
+    - Q는 action에 대한 가치평가(action value function)
 
 - Bellman Equation
     - Q Learning을 하기위한 핵심. 신경망의 뉴런 급.
     - V와 Q의 관계를 통해 Q'에 의해 Q를 구하고, V'에 의해 V를 구할 수 있게됨.
+    - 벨만공식 : Q(s,a) <- Reward(s,a) + gamma * maxQ(s', a')
+        - 중요한 것은 action 이후, 각 행동의 Q값 중 가장 큰 값을 연산하여 이전 state에 대한 Q 갱신에 사용한다는 점이다.
+        - action 이후의 max Q값이 작으면 해당 행동의 Q값은 낮아진다.
+    - 3가지 상태, 2가지 가능한 행동. 그러면 총 6개. 이 6개에 대해 Q값들이 모두 있어야 하며, 이 값들이 제대로 평가되어야 한다. 이를 잘 판단하는 가치함수(Q)가 필요함. Q를 계속 개선시켜나가면서 더이상 개선되지 않고 수렴한다면 적절하게 얻었다고 생각할 수 있다.
+    - 잘 학습된 Q값들을 가지고 있다면 그것을 policy로 하여 진행할 수 있다.
+    - 강화학습의 궁극적인 목표는 이러한 optimal(최적)한 policy를 구하는 것이다.
+    - 그래서 Q learning은 Value-based RL (가치 기반 강화학습)의 대표적인 예라고 할 수 있다.
+    
+:14주차
+- Q Tables
+    - 각 state, action에 대한 Q값을 저장해야하는데 그 때 사용하는 방법이 table형태. 2차원 배열이라고 생각하면 될듯.
+    - q table의 크기 = state 개수 * action 개수
+
+- Q learning algorithm
+    - 방법
+        - q table 기억공간을 잡아놓고, 0으로 초기화한다.
+        - 최초 state를 설정.
+        - 아래 반복
+            - 행동을 하나 선택해서 수행(행동 선택 전략에 의해 결정)
+            - 행동에 대한 reward를 받음
+            - 다음 상태로 넘어감. (s')
+            - 벨만공식에 의해 s 상태에 대한 Q 업데이트
+            - 다음 상태를 현재상태로 둠.
+    - 초기가 0이기 때문에 처음에는 reward에 의해 q가 정해짐.
+    
+    - 행동 선택 전략
+        - exploitation
+            - 모험을 하지 않음.
+            - 큰 값의 Q만 탐색.
+            - 탐색이 끝났다면, 이미 q값이 계산된 상태로 어느 길이 좋은지 알고 있으면 굳이 모험하지 않고 exploitation 방식의 행동 선택을 하게 됨.
+        - exploration
+            - 확률 기반 선택 방법
+            - 확률만큼 랜덤하게 선택
+            - 학습 초기에는 보상이 낮을 수도 있는 exploration 많이하게됨.
+
+- Convergence of Q Learning
+    - 수렴조건
+        - MDP(Markov Decision Process)을 만족해야함. 상태전이나 보상이 직전상태에서 무슨 행동을 했는가에 따라 변함.
+        - 보상을 줄 때, 아주 크거나 작으면 안된다. 작은 특정 범위 내에서 주어야한다.
+        - q learning을 하게되면 q table의 모든 것이 수렴되어야 하는데, 그러기 위해서는 같은 경험을 여러번 반복하면서 q가 수렴될때까지 진행해야하는데, 그 반복 과정이 무한할 수 있음.
+            - 일반적인 경우 status는 200개는 거뜬히 넘는 경우가 많다.
+            - action도 일반적으로 단순하진 않다.
+            - 결국 실제 문제에 적용하게되면 q table이 엄청 커진다.
+            - 수많은 table상의 cell을 수없이 돌아다니면서 모든 cell이 수렴될때까지 시간이 오래걸린다.
+
+- Value Function Approximation
+    - Table 형태의 Q learning(Tabulur Q Learning)의 한계.
+        - 상태공간(state space) 혹은 행동공간(action space)이 큰 경우.
+        - 큰 메모리공간, 수많은 경험을 위한 탐색, 긴 학습시간.
+        - Convergence 문제 발생.
+        
+        - 특히 현실문제에 적용할 때, infinite state space / infinite action space 의 경우 문제가 더욱 심각해짐.
+
+    - 그에 대한 대안으로 NEURAL NETWORK를 사용
+        - value function을 Q table 대신 신경망으로 대체한다. -> 무슨 의미?
+            - 신경망을 supervised learning 형태로 사용하는게 아님.
+            - status와 action이 들어가면 q값이 얼마가 나올지 예측하게 됨.
+            - 이렇게되면 경험하지 못한 부분에 대해서도 q를 예측할 수 있음.
+            - 즉, 일반화(generalization) 능력이 뛰어남.
+            - 게다가 메모리를 얼마 차지하지도 않음.
+            - NN(state, action) = Q
+        - 구글에서 q learning에 신경망을 성공적으로 접목함.
+            - DQN : Q-Neural Network Learning
+            - Deep Neural Network + Reinforcement Learning = Deep RL
+            - DQN 구조
+                - NN(s) = 각 행동에 대한 q값.
+
+- Deep Q-Networks, DQN
+    - 기본적으로 가치 기반으로 동작하는 심층 강화학습. (value-based Deep RL)
+    - google deepmind에서 개발.
+    - Q-Network 학습.
+    - 여기서 의문점이 들 수 있음.
+        - DQN은 input으로 state만 줌.
+        - 그러나 NN을 학습시키기 위해서는 state를 줌과 동시에 결과가 맞는지 판단하려면 action에 대한 값을 제공해야함.
+        - 그런데 action은 제공하지 않음.
+        - 그러면 어떻게 학습시키지?
+    - 위 의문점에 대한 답.
+        - DQN에서는 여전히 학습을 위한 목적함수로 손실함수(loss function)를 사용한다.
+        - loss는 [실제값 - 예측값]의 형태다.
+        - 실제 값 부분이 문제인데, 이것은 벨만 공식을 이용한다.
+    - 구글이 DQN을 성공으로 이끈 요소는 따로있음.
+        - 이 요소가 없었다면 성공하지 못했을 것.
+            - loss를 구현할 때, 실제값이 계속 바뀌다보니 실제로 잘 수렴이 되지 않음. => 제대로 학습이 되지 않음.
+        - 다음 두 개가 그것에 해당
+            - Experience Replay Buffer/Memory (경험 재현 메모리)
+            - Fixed Q-targets
+
+    - Experience Replay Buffer/Memory (경험 재현 메모리)
+        - 학습이 잘 되지 않은 문제점이 경험의 순차성이라고 판단.
+            - 즉, 연속된 경험 데이터 간의 과도한 상호 관계성(의존성)이 문제.
+            - 수렴을 방해하는 요인이 됨.
+            - 즉, 내가 경험하지 못한 것에 대한 예측을 잘 못함.
+        - q learning 특성상 경험은 순차적으로밖에 할 수 없음. 이건 건들수 없음. 그러나 학습을 할 때 순서를 바꿀 수 있지 않을까? 라는 아이디어.
+        - 경험 데이터를 바로 학습에 쓰지 않고 버퍼에 저장. 버퍼가 찰때까지 그냥 저장
+        - 버퍼가 차고 나서부터는 번갈아가면서 버퍼에 넣고 빼고를 진행함.
+            - 경험을 하면 그 데이터는 버퍼에 넣고
+            - 버퍼가 차면 랜덤하게 하나 선택해서 그걸로 학습함.
+        - 더 나아가서는 버퍼에서 한개를 넣고, 뺄때는 한개만 뽑는게 아니라 하나보다 많은 mini batch 개수 만큼 랜덤하게 뽑아서 학습.
+        
+        - 장점
+            - 학습에 쓰이는 데이터가 경험한 순서대로 학습하는게 아니라 그것과는 무관하게 학습. 즉, 상호 관계성을 배제
+            - 동일 경험을 q 갱신에 여러번 재사용.
+        
+    - Fixed Q-target
+        - loss 함수를 구성할 때, 실제 값을 계산하는 함수도 결국엔 예측 NN을 이용하게 된다. 갱신이 동시에 되는 격. 이 부분이 문제라고 판단.
+            - 안정적인 손실 축소와 Q 네트워크의 학습이 어려움
+        - Q 네트워크를 2개로 분리해서 해결.
+            - target network (예측 Q NN)
+                - 예측값 산출
+            - local network (타켓 Q NN)
+                - 실제값 산출
+
+            - target 갱신 주기를 predict 보다 느리게 설정.
+                - DQN의 경우 predict : 4회 업데이트, target : 1회 업데이트
+
+- policy gradient
+    - policy-based RL
+        - 그동안 공부한 value-based RL과 관점을 달리함.
+        - state를 주면 action을 반환하는 policy network를 구성.
+        - 큰 상태/행동 공간 문제에 적용 가능
+        - 상대적으로 데이터 효율성은 낮음
+            - 학습데이터가 진짜 많이 필요함.
+            - 학습 시간도 오래걸림.
+        - 학습에 사용되는 object function이 loss가 아님.
+            - 초기상태부터 지금까지의 행동을 했을 때의 reward 합.
+            - 최대화하는 방향 == object function의 기울기(미분값)가 증가하는 방향 !!!!!!!
+    - 알고리즘
+        - REINFORCE (기본형. 성능이 좋지는 않음.)
+        - Actor-Critic(AC),
+          Advantage Actor-Critic(A2C),
+          Asynchronous Advantage Actor-Critic(A3C)
+        - TRPO, PPO (현재로써 성능이 좋음.)
+
+
+- Unsupervised Clustering
+    - supervised는 classification, regression같은 경우에 많이 쓰인다.
+    - unsupervised는 군집화(clustering)에 많이 쓰임
+    - 크게 두가지로 분류
+        - partitioning algorithms(분할 알고리즘)
+            - 주어진 데이터를 특정 성격에 맞게 분할하는 알고리즘.
+            - 처음에 랜덤하게 파티션을 나누었다가, 조금씩 맞춰가는 방식.
+            - 알고리즘
+                - k-means (k 평균)
+        - Hierarchical algorithms(계층적 알고리즘)
+            - tree 모양으로 군집화를 점차 변형
+            - 알고리즘
+                - top-down
+                    - 전체를 하나의 클러스터로 보고, 점점 쪼개는 방식
+                - bottom-up
+                    - 여러`개의 클러스터로 보고, 점점 합쳐나가는 방식
+
+- K-Means Clustering
+    - "k-평균 군집화"
+    - 몇개의 클러스터로 분리할지 k를 처음에 사람이 제공.
+    - k개의 군집을 임의로 만들기 위해 군집의 중심점 k개를 랜덤하게 설정
+    - 훈련데이터 각각은 k개의 중심점과의 거리를 계산하여 어떠한 군집에 속할지 선택. (= 군집의 멤버가 확보가 되는 과정)
+    - 아까 임의로 잡았던 중심점을 변경. 군집 내 데이터(data point cloud)들을 기반(평균)으로 이동. 이를 반복함.
+    - 중심점이 수렴되어 변하지 않으면 안정화 되었다고 볼 수 있다. 클러스터가 확립된 상태.
+
+    - 그러나 출발점에 따라 군집화가 적절하게 나뉘지 않을 수도 있다.
+
+    - 문제점
+        - 군집 개수 결정 문제
+            - 처음에 사람이 k개의 군집 개수를 지정해 주어야 하는데, 이게 어려움.
+        - 초기 군집 중심 선택 문제 (seed choice)
+            - 출발점에 따라 군집화가 적절하게 나뉘지 않을 수도 있다.
+            - 할때마다 틀려서 optimal하다고 말하기도 애매
+        - 이상치 문제(outliers)
+            - 소수의 데이터가 일반적인 데이터와는 달리 어떠한 속성값이 매우 크거나 작은 경우. 일반적으로 튀는 데이터는 대부분 에러다. 이렇듯 데이터가 튀는 성향을 가질 경우, 군집에 영향을 줄 수도 있기 때문에 애초에 그런 데이터를 제외하고 진행하는게 나을 수도 있다. 그러나 사람이 직접 해야하는 부분이라서 어려움이 있다.
+    
+- Hierarchical algorithms(계층적 알고리즘)
+    - Top-down
+        - 큰 군집을 점차 나누는 형태
+        - 군집 내에 유사성이 크게 떨어지는 군집으로 분할
+    - Bottom-up
+        - 작은 여러 군집을 합치는 형태
+        - 유사도가 높은 군집을 병합
