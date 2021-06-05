@@ -9,8 +9,12 @@
         - [DownUnderCTF 2020 - Is this pwn or web?](/Security/browser-exploit/downunderctf-2020-is-this-pwn-or-web.md) 분석
     - Linux Kernel Exploit
         - [Linux Kernel Exploit Step-by-step Part1](/Security/linux-kernel-exploit/linux-kernel-exploit-step-by-step-part1.md)
+        - [Linux Kernel Exploit Step-by-step Part2](/Security/linux-kernel-exploit/linux-kernel-exploit-step-by-step-part2.md)
     - Cryptography
         - [수업정리](/Security/cryptography/kgu_lecture.md)
+    - Malware Analysis
+        - [미켈란젤로 바이러스 분석](/Security/malware-analysis/michelangelo/michelangelo.md)
+        - [mini-100 바이러스 분석](/Security/malware-analysis/mini-100/analysis.asm.asm)
 
 - Robotics
     - ROS
