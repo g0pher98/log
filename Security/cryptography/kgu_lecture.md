@@ -601,33 +601,207 @@
                     - 응답에서 key 데이터를 빼서 보완할 수 있음.(이미 최초에 k를 보내기 때문에 공유된 상태로 볼 수 있기 때문)
             - 다시한번 알 수 있는건 보안 프로토콜이 예민하다는 것!
 
-- Perfect Forward Secrecy (PFS)
-    - 과거에는 key를 구하지 못해 해독이 불가능하지만 데이터를 모두 수집해놓았다고 하자.
-    - 나중에 보안사고가 발생하거나 어떠한 이유로 복호화가 가능해진다면 결국에는 알 수 있다.
-    - 이런 상황을 방지하기 위한것이 PFS.
-    - key로 직접 암호화하지 않는다. 휘발성 Key를 사용하는데, 이를 session key를 사용한다.
-    - 그러나 문제가 있음. 결국에 session key를 생성하는것도 결국에는 key를 이용해서 교환해야하는데, 그렇다면 나중에 session key 또한 알게되는 것 아닌가?
-    - 이 문제를 어떻게 해결해야하는가?
-        - Diffie-Hellman 키 교환을 이용해서 session key 교환을 할 수 있다.
-            - g^a mod p, g^b mod p
-        - diffie-hellman 특성상 인증 과정이 없어서 MITM에 취약하다. 그렇기 때문에 이 부분을 고려하면서 프로토콜을 짜야한다.
-            - E(g^a mod p, Key_AB), E(g^b mod p, Key_AB), session key = g^(ab) mod p
-    - 이렇게 diffie-hellman 방식을 이용하여 휘발성 키를 만드는 것을 ephemeral diffie-hellman 키 교환이라고 함.
+    - Perfect Forward Secrecy (PFS)
+        - 과거에는 key를 구하지 못해 해독이 불가능하지만 데이터를 모두 수집해놓았다고 하자.
+        - 나중에 보안사고가 발생하거나 어떠한 이유로 복호화가 가능해진다면 결국에는 알 수 있다.
+        - 이런 상황을 방지하기 위한것이 PFS.
+        - key로 직접 암호화하지 않는다. 휘발성 Key를 사용하는데, 이를 session key를 사용한다.
+        - 그러나 문제가 있음. 결국에 session key를 생성하는것도 결국에는 key를 이용해서 교환해야하는데, 그렇다면 나중에 session key 또한 알게되는 것 아닌가?
+        - 이 문제를 어떻게 해결해야하는가?
+            - Diffie-Hellman 키 교환을 이용해서 session key 교환을 할 수 있다.
+                - g^a mod p, g^b mod p
+            - diffie-hellman 특성상 인증 과정이 없어서 MITM에 취약하다. 그렇기 때문에 이 부분을 고려하면서 프로토콜을 짜야한다.
+                - E(g^a mod p, Key_AB), E(g^b mod p, Key_AB), session key = g^(ab) mod p
+        - 이렇게 diffie-hellman 방식을 이용하여 휘발성 키를 만드는 것을 ephemeral diffie-hellman 키 교환이라고 함.
 
-- 앞서 설명한 프로토콜을 다 합쳐보자
-    - 기능
-        - 상호인증(Mutual authentication) 가능하며
-        - 인증 이후 통신을 위한 session key를 사용하며
-        - PFS로 미래 키 유출에도 대비 가능한 프로토콜!
-    - 로직
-        - Alice  ->  ("I'm Alice", R_A)  ->   Bob
-        - Alice  <-  R_B, [{R_A, g^b mod p}Alice]Bob   ->   Bob
-        - Alice  ->  [{R_B, g^a mod p}Bob]Alice  ->  Bob
-    - 실제로 이런 형태를 기본적으로 이용하는 프로토콜이 많음.
+    - 앞서 설명한 프로토콜을 다 합쳐보자
+        - 기능
+            - 상호인증(Mutual authentication) 가능하며
+            - 인증 이후 통신을 위한 session key를 사용하며
+            - PFS로 미래 키 유출에도 대비 가능한 프로토콜!
+        - 로직
+            - Alice  ->  ("I'm Alice", R_A)  ->   Bob
+            - Alice  <-  R_B, [{R_A, g^b mod p}Alice]Bob   ->   Bob
+            - Alice  ->  [{R_B, g^a mod p}Bob]Alice  ->  Bob
+        - 실제로 이런 형태를 기본적으로 이용하는 프로토콜이 많음.
 
-- 인증 프로토콜로 TCP를 쓰자! 라는 주장.
-    - TCP로 서로의 IP를 알 수 있고, 3 Way handshake로 신뢰성 있는 연결하기 때문! 이라는 주장.
-    - 그러나 IP는 쉽게 변조가 가능해서 말이 안되는 소리.
-    - 근데 실제로 IP로 인증하는 프로토콜이 옛날에 있긴 했다고 함.
-        - 문제가 되어서 수정됨.
-    - 즉, 상대방에 대한 인증을 수행할 때 IP로 하면 안되고, 앞에서 배웠던 대칭키, 공개키 패스워드 이런걸 기반으로하는 인증 프로토콜을 개발해야한다.
+    - 인증 프로토콜로 TCP를 쓰자! 라는 주장.
+        - TCP로 서로의 IP를 알 수 있고, 3 Way handshake로 신뢰성 있는 연결하기 때문! 이라는 주장.
+        - 그러나 IP는 쉽게 변조가 가능해서 말이 안되는 소리.
+        - 근데 실제로 IP로 인증하는 프로토콜이 옛날에 있긴 했다고 함.
+            - 문제가 되어서 수정됨.
+        - 즉, 상대방에 대한 인증을 수행할 때 IP로 하면 안되고, 앞에서 배웠던 대칭키, 공개키 패스워드 이런걸 기반으로하는 인증 프로토콜을 개발해야한다.
+
+(14주차)
+
+18. Zero Knowledge Proof (ZKP)
+    - 본인이 기밀을 알고 있다는 것을 증명하려고 하는 상황. 그러나 기밀에 대한 정보는 드러내지 않고 싶은 상황.
+    - Alice가 주장하는 것을 Bob이 내용을 모르는 상태에서 이를 확인하려면 어떻게 해야하는가?
+    - 어려운 문제임
+    - 확률적 접근으로 증명함. N%의 확률로 알고있다!
+    - 두 노드간 대화를 통해 이를 증명함.
+        - Interactive 한 증명 시스템.
+        - 보안 프로토콜의 형태를 따른다.
+        - 그래서 기술 증명으로 분류되기도 하고, 프로토콜로 분류되기도 함.
+    -  Bob's Cave
+        - alice가 주문을 알고있다면 bob이 왼쪽, 오른쪽으로 나와라! 라고하면 그냥 나오거나 주문으로 문을 열고 반대쪽으로 나오거나를 할 수 있을 것이다.
+        - bob의 명령에 잘 따른다면 가지고 있을 확률이 높고, 잘 못따른다면 확률이 낮다는 의미이다.
+
+    - ZKP에 관한 프로토콜
+        - Fiat-Shamir Protocol
+            - 제곱근을 활용. modulo N 상에서의 제곱근을 구하는 문제는 무척 어렵다.
+            - N = p * q
+            - Alice는 secret한 S를 가지고 있음
+            - v = S^2 mod N
+            - v는 public, S는 secret
+            - 과정
+                1. Alice는 random한 r 생성.
+                2. x = r^2 mod N
+                3. (commits) x를 bob에게 보냄
+                4. (challenge) bob은 random한 e(0 또는 1)를 보냄. 이는 엘리스에게 명령한것과 같음.
+                5. alice는 y 계산. y = r*S^e mod N
+                6. (responds) y를 bob에게 전송.
+                7. bob는 y를 통해 alice가 S를 알고있는게 맞는지 확인.
+                    - e가 1인 경우
+                        - y^2 = r^2 * S^(2e) = r^2 * (S^2)^e mod N
+                        - v가 S^2 mod N 이고, x가  r^2 mod N 이므로 y^2 = x * v^e mod N
+                        - bob은 처음에 alice로부터 x값을 받았기 때문에 알고있고, v는 공개키라서 알고있고, e는 bob이 직접 생성한 값이므로 알고있다. 따라서 x * v^e를 계산할 수 있음.
+                    - e가 0인 경우
+                        - y^2 = r^2 mod N = x mod N
+            - 이러한 과정을 매번 새로운 r과 함께 여러번 반복.
+            - 영지식 명지식 명제식,,,?
+            - Trudy가 공격할 수 있는가?
+                - e=0이라면 r값만 보내주면 되니까 공격할 수 있음!
+                - e=1이라면 y값을 보내야함. 그러나 y^2은 알 수 있어도 S를 알지 못하는 한 y는 알 수 없음.
+                    - 그러나 교묘하게 이를 통과할 수 있음.
+                        - trudy가 애초에 bob에게 x를 보낼 때 x = r^2 * v^(-1) mod N 으로 계산함.
+                        - bob은 검증할 때 x * v^e 식으로 검증하는데, 이 때 e는 1이기 때문에 v는 x에 있던 modular inverse에 의해 사라짐. 즉, y^2 = r^2 이 되는 것.
+                        - trudy는 조작한 x를 보내고 y^2 값으로 r^2를 보내면 됨.
+                - 그렇다면 e=0도 가능하고 e=1도 가능하기 때문에 bob이 어떤 e를 보내는지만 알면 통과할 수 있음!
+                - 그러나 문제는 선후관계인데, x를 조작해서 보냈는데 e=0이 오거나, x를 그대로 보냈는데 e=1이 오면 맞추지 못하는 것이다.
+                - 결국 trudy가 문제를 맞출 확률은 1/2 이며, 이를 반복하면 1/(2^n)이 된다.
+                - 당연하게도 e가 생성되는 로직은 간파당하면 안된다. 즉, trudy는 e 값을 예측할 수 없다.
+                - 또한 alice는 매번 새로운 random한 r 값을 생성해야한다.
+                    - e=0 일때의 r mod N이나, e=1 일때의 r * S mon N 값이 노출이 된다면 r * S 에서 r을 나눠서 S를 얻을 수 있기 때문.
+    - ZKP를 왜 쓰는가?
+        - 예를 들면 인증서 기반으로 인증을 하게되면 내가 ALICE라는걸 잘 인증받을 수 있음
+        - 그러나 인증을 하면 "내가 ALICE야!" 라는것을 알려주는 것임.
+        - 여기서 익명성을 보장하고 싶다면 ZKP를 사용하는 것임.
+
+19. SSH
+    - secure tunnel 생성
+    - 인증을 하는 부분이 꼭 필요함. 인증 방식은 여러가지가 있음
+    - certificate(인증서)를 이용하는 SSH 방식에 대해서 알아보자.
+        1. [Alice -> Bob] Alice, CP, R_A
+            - CP : Alice가 사용할 수 있는 암호 알고리즘 리스트
+        2. [Bob -> Alice] CS, R_B
+            - CS : CP 중에서 Bob도 사용 가능한 암호 중 선택한 암호 알고리즘
+        3. [Alice -> Bob] g^a mod p
+            - 디피헬만 키교환
+        4. [Bob -> Alice] g^b mod p, certificate_B, S_B
+            - S_B : H에 전자서명을 한 [H]Bob 값.
+            - H : Hash(Alice, Bob, CP, CS, R_A, R_B, g^a mod p, g^b mod p, g^(ab) mod p)
+        5. [Alice -> Bob] E(Alice, certificate_A, S_A, K)
+            - S_A : [H, Alice, certificate_A]Alice
+            - K : g^ab mod p : key 생성
+    
+    - MITM에도 안전! H_A, H_B가 다른 값을 Hashing 하기 때문.
+
+20. SSL & TLS
+    - Socket layer
+        - application layer와 transport layer 사이에 삽입해서 동작하는 layer.
+        - 이러한 layer을 동작시키는 프로토콜은 SSL/TLS 라고 한다.
+    
+    - What is SSL?
+        - 인터넷에서 많은 행위가 일어나니 도청만 해도 많은 정보를 알 수가 있었음.
+        - 사용자들은 지금 접속한 홈페이지가 피싱사이트인지 알 필요가 있었음. 
+        - 즉, 서버에 대한 인증에 초점이 맞추어져 있었음.
+    
+    - 간단한 SSL 비슷한 프로토콜
+        1. [Alice -> Bob] Hi~
+        2. [Bob -> Alice] certificate_B
+        3. [Alice -> Bob] {K_AB}Bob
+        - 위와 같은 형태라고 볼 수 있다. 다만 지금같은 경우는 bob이 최종적으로 잘 풀었는지에 대한 내용이 없기 때문에 bob을 인증할 수 없다. 실제로는 더 복잡한 형태로 동작.
+    
+    - Simplified SSL Protocol
+        - S는 pre-master secret 데이터
+        - K = h(S, R_A, R_B)
+
+        1. [Alice -> Bob] Hi~, cipher list, R_A
+        2. [Bob -> Alice] certificate, cipher, R_B
+        3. [Alice -> Bob] {S}Bob, E(h(msgs, CLNT, K), K)
+        4. [Bob -> Alice] h(msgs, CLNT, K)
+        5. K에 의해 안전한 데이터 송수신.
+            - 실제로는 K를 바로 쓰는게 아니라 6가지로 나누어서 사용한다.
+                - 2 암호화 KEY
+                - 2 무결설 KEY. ex, MAC
+                - 2 send and receive KEY
+        
+        - 기존 방식은 서버의 인증서를 받아서 인증함. 반대로 클라이언트를 인증하기 위해서 인증서를 요구하는 방법을 사용하기도 하는데, 일반적으로 사용자가 이런인증서를 가지고있지 않아서 잘 쓰이지는 않음.
+        - 그러나 서버가 클라이언트를 인증할 필요가 있긴 함. 이럴때는 웹상에서 로그인같은 기능을 사용하면 됨.
+
+    - SSL은 MITM에 취약한가?
+        - 안전함. 인증서가 활용되기 때문.
+        - 단, 인증서가 올바른 경우에만 안전.
+
+    - SSL session과 connection
+        - 안전하게 K를 주고받으면 안전한 session이 생겼다고 볼 수 있다.
+        - 문제가 있는데, HTTP의 경우 요청이 여러번 발생하는데, 매 요청(connection)마다 SSL session을 맺는것은 너무 리소스가 크다. (공개키 연산)
+        - 이를 해결하기 위해 session과 connection이라는 개념을 확립함.
+        - 하나의 session을 만들면 그 다음부터 connection이 이루어지면 기존 session을 이용.
+
+    - TLS 기능 특징
+        - 서버인증(때에 따라 상호인증), 데이터에 대한 기밀성, MAC을 이용한 무결성.
+        - application layer와 transport layer 사이에서 동작한다. 이 말인 즉슨 transport까지는 os에서 동작시키지만 tls부터는 application단에서 사용할지 안할지 애플리케이션마다 다르게 설정할 수 있다.
+            - 이 부분이 IPSec과의 큰 차이점임.
+
+21. Kerberos
+    - 어원은 그리스 신화에서 지옥문을 지키는 머리 세개 달린 개의 이름.
+    - 실제 커베로스 프로토콜도 동작할 때 3가지의 entity가 유기적으로 동작함.
+    - 대칭키를 이용해서 인증하는 시스템.
+    - TTP(Trusted third party)가 존재한다고 가정하고 동작함. 남들이 다 신뢰할 수 있는 기관을 말함.
+    - 왜 만들어졌는가? 대칭키를 이용해서 인증을 해보려고 했는데, 키 고유의 문제가 있어서 이를 해결하기 위해 만들어짐 
+        - N명의 사용자를 서로 인증하는 상황에서는 N^2. 정확히는 (N(N-1))/2 수준의 키가 필요함. 확장성에 문제가 있음. 이를 N 수준으로 성능을 향상시키고자 함.
+    - KDC (Key Distribution Center)
+        - TTP의 역할을 함.
+        - 전체 사용자가 신뢰할 수 있는 중앙서버
+    - client는 서버 가기 전에 KDC에 가서 client가 alice임을 인증함. 그러면 KDC는 인증 TGT를 발급해주고 CLIENT는 이걸 들고 서버에 접근 가능.
+    - Kerberos Tickets
+        - KDC가 발급해주는 인증 결과. 티켓.
+        - Ticket-granting ticket (TGT)도 발급.
+        - ticket은 단일 접근 용도, TGT는 자유이용권.
+        - TGT가 가지고 있는 정보
+            - session key
+            - user id
+            - 만료시간
+        - TGT는 K_KDC로 암호화 되어있음.
+            - E("Alice" || Session_A, K_KDC)
+            - TGT를 발급받아도 내용은 알 수 없음.
+    - 과정
+        - KDC 인증 과정
+            - [Alice -> KDC] Request TGT
+                - TGT를 요청.
+            - [KDC -> Alice] E(S_A || TGT, K_A)
+                - A의 KEY로 세션과 TGT데이터 암호화.
+                - A는 세션과 TGT를 얻을 수 있음 
+                - TGT = E("Alice" || S_A, K_KDC)
+                - TGT 내부 정보는 알 수 없음.
+        - 목표 NODE 접근과정
+            - [Alice -> KDC] I want to talk to Bob!, REQUEST
+                - bob에 대한 접근 필요함을 알림
+                - REQUEST = (TGT, authenticator)
+                - authenticator = E(timestamp, S_A)
+            - [KDC -> Alice] Reply
+                - E("Bob" || K_AB || ticket to Bob, S_A)
+                - ticket to Bob = E("Alice" || K_AB, K_B)
+            - [Alice -> Bob] ticket to Bob, authenticator
+                - authenticator = E(timestamp, K_AB)
+    - 특징
+        - S_A라고 하는 Session key는 인증이 된 alice가 돌아다니면서 새로운 티켓을 발급받을 때 사용.
+        - K_AB는 Alice와 Bob간에 실질적인 데이터 전송시에 사용.
+        - Nonce가 아니라 timestamp 방식을 사용함. 그래서 인증에 소요되는 메세지 수를 줄일 수 있다는 장점이 있음. 또한 replay 공격을 어느정도 방어할 수 있음. 그러나 time 기반이기 때문에 오차 허용범위 내에서 문제가 발생할 수 있음. 
+    
+        - Alice가 Bob에 접근할 때, Bob의 입장에서 Alice임을 인증하는건 됨. 그러나 trudy가 지켜볼 때, 접근자가 alice인지 알 수 없음. 즉, alice의 익명성이 보장이 됨.
+
+    - KDC에서 모든 SESSION KEY나 TGT를 가지고 있지 않는 이유.
+        - stateless한 성격을 띄도록 하고싶기 때문. 즉, 서버가 잠시 다운되거나 그래도 모든 client로 다시 발급받는게 아니라, 기 발급된 것으로 계속 사용할 수 있도록 하는것!
