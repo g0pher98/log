@@ -464,7 +464,7 @@
             - 단점 : 상위 레이어 데이터를 분석하지 않으므로 깊이있는 분석 어려움.
             - 기본적으로 모두 deny로 막고, 필요한것만 허용하는 whitelist 방식을 선호함. 예상치 못한 공격을 막을 수 있기 때문.
         - stateful packet filter : transport layer에서 돌아감
-            - 장점 : packer filter에 비해 tcp 기반 깊은 분석이 가능하다
+            - 장점 : packet filter에 비해 tcp 기반 깊은 분석이 가능하다
             - 단점 : packet filter에 비해 속도가 느림. 여전히 상위레이어 분석 불가
         - application proxy : application layer에서 돌아감.
             - 모든 layer 정보를 볼 수 있음.
