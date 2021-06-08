@@ -1,6 +1,7 @@
 Q1.
     어떻게 하면 인공지능 시스템을 구현할 수 있는지. 접근방법(approach, =구현방법)에 대해서 설명하시오.
-A1. 
+A1.
+ 
     인공지능 시스템을 구현하는 방법에는 크게 신호처리와 기호처리 두 가지로 나누어 볼 수 있다.
     <비-기호처리(신호처리)>
     신호처리는 환경과 상호작용하는 과정에서 많이 사용된다. 환경에 대한 raw한 데이터를 sensor를 통해 신호(signal)로 입력을 받고, action을 위해 대상 동력기에 signal을 출력한다. 자율주행 자동차와 같이 환경을 받아들이는 속도가 중시되는 실시간 처리에 적합하다.
@@ -10,13 +11,17 @@ A1.
     기호/비-기호 처리방식을 혼합한 방식이다. 실시간성이 필요한 저수준 인식과 행동제어에는 비-기호처리 방법을 적용하고, 고수준의 문제와 의사를 결정하는 부분에는 기호처리 방법을 적용한다.
 
 Q2.
+
     Agent란? 
 A2.
+
     환경과 상호작용하는 자율존재. 환경의 변화에 영향을 받으며, 환경을 통해 행동을 결정하고, 행동이 환경에 영향을 미치는 존재. 껍데기만 있는 로봇(ex 축구로봇)들은 agent라고 볼 수 없음. 여기서 행동의 결과가 가장 좋은 결과를 가져다줄 것 같은 행동을 선택할 줄 아는 agent를 rational agent라고 한다.
 
 Q3.
+
     Rational한 agent를 판단하는 기준 PEAS란?
 A3.
+
     작업환경(Task Environment)를 명세하여 Rational한 agent를 설계해야한다.
     - Sensors
     - Actuators(=effector) : 행동하는 신체부위
@@ -25,8 +30,10 @@ A3.
     sensor와 actuators는 agent의 신체 일부로 볼 수 있음.
     
 Q4.
+
     작업을 해야하는 환경의 특성에는 어떤것들이 있는가?
 A4.
+
     세상일은 사실 이분법으로 나누기 어렵다. 그렇지만 현재 작업하는 환경에 대해 어느정도의 이해와 구별해야 접근법을 달리할 수 있기 때문에 분류할 줄 알아야 한다.
     - fully observable / partially observable
         (완전 관측가능 / 부분 관측 가능)
@@ -60,8 +67,10 @@ A4.
 		- 멀티 예 : 축구, 농구, 포트리스 등
 
 Q5.
+
     Agent 유형(types)에는 어떤 것들이 있는가?
 A5.
+
     Agent 유형은 무척 많을 수 있겠으나, 의사결정구조 또는 행동결정 방식에 대해서 크게 4가지로 분류해볼 수 있다. 신호/비신호 처리는 인공지능을 만드는 기초적인 방식이라고 생각하면 된다. 아래 4가지 방법은 신호/비신호로 구현할 수 있다. 또한, 이 4가지 방식 모두 학습 에이전트(learning agent)로 변경할 수 있다. 실 세계에 적용할 때는 유연성(flexibility), 효율성(efficiency) 등 다양한 사항들을 고려해야한다.
     - 단순 반응형 에이전트(simple reflex agent)
         가장 기초적인 형태의 에이전트. 에이전트의 내부는 크게 "상태추정"단계와 "행동결정"단계로 나누어볼 수 있다. 상태추정단계에서는 sensors로 입력받은 데이터를 기반으로 상태를 추정한다. 행동결정단계에서는 추정된 상태를 기반으로 행동을 결정하는데, 결정은 조건에 맞게 정해진 rule에 따른다.
@@ -108,8 +117,10 @@ A5.
             - 양질의 행위(high-quality behavior)를 생성
     
 Q6.
+
     "상태 공간 탐색 문제(state space search problem)"를 해결하기 위한 필수요소
 A6.
+
     - states : 가능한 상태들
     - actions (=state transitions) : 가능한 행동들
     - initial state : 초기상태
@@ -120,8 +131,10 @@ A6.
 
 
 Q7.
+
     search strategies (탐색 전략/방법)에 대해 기술
 A7.
+
     - search directions(탐색 방향)
         - forward search(전향탐색)
         - backward search(후향탐색)
@@ -139,8 +152,10 @@ A7.
 
 
 Q8.
+
     탐색 전략을 평가하는 기준
 A8.
+
     - completeness, 완전성 : 해가 있다면 언젠가는 반드시 하나 이상의 해를 찾는다.
     - time complexity, 시간 복잡도
     - space complexity, 공간 복잡도
@@ -148,8 +163,10 @@ A8.
 
 
 Q9.
+
     uninformed search(무정보 탐색) 알고리즘
 A9.
+
     - breadth-first search (너비 우선 탐색)
         - FIFO Queue와 유사
         - complete : yes
@@ -181,18 +198,24 @@ A9.
         - space : O(bd)
 
 Q10.
+
     Repeated states(반복상태)란?
 A10.
+
     다른 위치에 있지만, 동일한 특성의 노드는 자식노드도 동일함. 즉, 두개 모두 확장하는 행위는 불필요함. 한번 확장한 노드와 같은 특성의 노드는 확장하지 않는 방식이 graph search(그래프 탐색) 알고리즘이다. tree search는 중복 생각않고 계속 확장하기 때문에 비효율적이다.
 
 Q11.
+
     Graph search(그래프 탐색)란?
 A11.
+
     tree search 방식은 중복되는 노드에 대해서 고려하지 않는다. 동일한 특성의 노드는 자식노드도 동일하기 때문에 두 노드 모두 확장하는 것은 불필요한 리소스가 발생하는 일이다. 이를 고려하는 방식이 graph search다. 이미 확장한 노드는 다시 확장하지 않음으로써 효율성을 높인다.
 
 Q12.
+
     informed or heuristic search(정보/휴리스틱 탐색) 알고리즘
 A12.
+
     - Best-First search
         - 비용을 계산하는 평가함수(evaluation function) f(n)이 존재함.
         - 이 평가값(비용, cost)이 작은 노드부터 확장
@@ -219,18 +242,24 @@ A12.
         - space : O(b^d)
 
 Q13.
+
     Admissible한 Heuristics 함수란?
 A13.
+
     휴리스틱 함수가 admissible 하기 위해서는 모든 노드에 대해서 실제비용 h(n)보다 같거나 작아야한다. 크게 예측되면 과대평가 또는 over-estimates 되었다고 한다. 휴리스틱 함수가 위 조건을 만족한다면 a* 알고리즘의 경우 complete 하게 optimal한 해를 찾는다. 다만 휴리스틱 함수에 따라 속도차이가 발생한다. 그럼에도 휴리스틱이 아무리 작은 값을 예측한다고 해도 a* 알고리즘은 어느정도 커버를 해서 해를 찾을 수 있다. admissible하도록 제작하기 위해서 h(n)에 가깝게 설정하면 자칫 값을 넘어버릴 수 있기에 안전하게 무척 낮은 값으로 설정하는 경우가 있다. 이것은 틀린 방법이 아니다.
 
 Q14.
+
     dominance란?
 A14.
+
     h1과 h2 두 개의 휴리스틱 함수가 모두 admissible할 때, h2 >= h1인 경우, h2가 h1보다 더욱 효율적인 search를 가능케 한다. 즉, h2가 h1보다 좋으며, 이를 h2가 h1을 dominates(지배?)한다고 말한다.
 
 Q15.
+
     Local search algorithms(지역 탐색 알고리즘) 이란?
 A15.
+
     - initial state와 goal이 제공되지 않음. 평가함수만 주어짐. 즉, 최적의 상태를 찾아가는 탐색방법.
     - 지역 탐색이란 현재 기준으로 주변을 탐색하여 목표에 도달하는 것을 말한다. 기존에 공부하던 방식과 연계되는게 아니라 새로운 개념임.
     - 많은 경우에 "최적화 문제"에 사용된다.
@@ -243,8 +272,10 @@ A15.
 
 
 Q16.
+
     Local search algorithms(지역 탐색 알고리즘) 종류
 A16.
+
     - Hill-Climbing Search(언덕 오르기 탐색)
         - 평가치가 계속 높아지는 방향으로 가는 알고리즘
         - greedy local search -> 후퇴는 절대 하지 않음.
@@ -297,9 +328,11 @@ A16.
         - 확률적인 상태 전이
 
 Q17.
+
     Advaersarial search problems
     상대가 존재하는 상황(multiagent)에서의 탐색 알고리즘
 A17.
+
     크게 competitive(경쟁)
     - 2-player game search tree
         - 가능한 state들을 tree 형태로 표현
@@ -956,3 +989,147 @@ A17.
     - Bottom-up
         - 작은 여러 군집을 합치는 형태
         - 유사도가 높은 군집을 병합
+
+:15주차
+
+- Deep Learning / Deep Neural Network 개념
+    - Shallow Learning VS Deep Learning
+        - Shallow Learning
+            - 대부분 raw 데이터를 그대로 가지고 신경망에 넣는 경우는 거의 없음.
+            -  대부분 신경망을 돌리기 전에 RAW한 데이터를 feature 데이터로 변환하는 전처리가 있음.
+                - 유명한 feature 추출법
+                    - SIFT
+                    - HOG
+            - 원래 사이즈보다는 작고, 정보량은 많은 그런 전처리가 좋음.
+            - 사실상 전처리가 끝나고 맨 끝 분류기(classifier)에서만 ML이 사용됨. 층도 많을 필요 없음. 아주 얕아서 Shallow 이름이 붙어진듯.
+        - Deep Learning
+            - 그동안은 feature를 추출하는 부분은 인간의 지식에 의해 규정되었었다. (shallow)
+            - 그러나 오늘날에 와서는 feature 추출부분까지 신경망이 사용됨.
+            - NN Block들이 계속 연결되어있음. 최종적으로 classifier의 input으로 작용.
+            - feature : CNN -> Classifier : FC(Fully connected)/MLP 형태
+            - End to End Training. 이제 전처리 없이 raw 데이터를 주면 알아서 feature 추출부터 classifier까지 진행됨.
+            - 하지만 구조가 엄청 복잡해졌기 때문에 데이터셋은 훨씬 더 많이 필요하다.
+
+    - Deep Neural Networks / Deep Learning
+        - 최근에 들어서 성공한 이유
+            - 큰 학습데이터 생성이 가능. 수많은 서비스를 운영하면서 생긴 데이터들. (포털사이트, Wiki, 스트리밍 사이트 등)
+            - 병렬처리해야하는 연산이 많아졌는데, 병렬 연산 전용인 GPU가 성능이 많이 좋아졌음.
+            - 간단해진 활성함수(뉴런의 끝에 있는 함수) 알고리즘(ReLU)
+            - 일부 노드만 갱신하는 dropout 기술의 등장
+            - 데이터의 편차가 심해지면 학습에 도움이 안되기 때문에 이를 중간중간 데이터를 정규화해주는 normalization 기술의 등장
+
+            - 결국 위와 같은 것들 덕분에 깊은 layer의 학습도 잘 됨. 정리하면 다음 3가지 요인이라고 볼 수 있음
+                - 충분한 학습 데이터
+                - 인프라와 컴퓨팅파워
+                - ML 알고리즘
+
+
+- DNN의 구성 요소와 종류
+    - Convolution, Pooling, Normalization, FC
+    - Convolutional Neural Netowrks(CNN)
+    - Long Short-Term Memory(LSTM)
+    - Gated Recurrent Unit(GRU)
+
+- Convolutional Networks(CNN)
+    - feature를 자동으로 뽑을 수 있게 됨.
+    - 위 이유로 raw데이터만 넣어도 사용할 수 있는 end to end 학습이 가능.
+    - feed-forward network
+        - 한방향으로만 데이터가 전달되는 방식.
+        - raw 이미지가 들어가서 feature을 추출하기까지의 과정은 다음과 같다.
+            1. input image
+            2. convolution layer
+            3. Non-linearity
+                - 활성함수 층. 비 선형성으로 변환.
+            4. Pooling
+            5. Normalization
+            6. feature maps
+    - Convolution
+        - Line filtering
+            - 가중치 격자(kernel)가 하나 있고, image pixel에 대해서 연산을 진행함. 격자(kernel) 크기만큼의 pixel들을 한개의 대표값으로 계산하는 원리. 있어보이는 말로 지역의 특성값 이라고 함.
+            - 결과 image는 대표값으로 이루어져있음.(크기가 작아짐)
+            - 만약 결과 크기가 같도록 하고싶다면 겉 matrix를 0으로 padding하면 같은 크기를 얻을 수 있음.
+    - ReLU Nonlinearity
+        - sigmoid는 학습을 위해 미분할 때, 계산이 복잡함.
+        - 0보다 작으면 0, 0보다 크면 점차 증가하는 그래프
+        - 미분하면 0보다 큰 영역은 1로 보면 됨. 간단해서 학습이 잘됨.
+    - Pooling
+        - 쓸때도 있고, 안쓸때도 있음.
+        - 원래 데이터로부터 뽑아낸(convolution) 지역적 특성 데이터가 최종 판단할 때, 지역적 특성이 너무 예민하게 작용하면 문제가 발생.
+        - 예를 들면 사람얼굴을 인식할 때, 사람인지 아닌지 탐지하는것도 중요하지만 고개를 약간 기울였을 때도 사람을 인식해야 함. 이렇게 일반적인 데이터와 다르지만 동일하게 인식해야 하는 경우 지역적 특성에 너무 의존하게되면 인식을 못하게 된다고 생각하면 됨.
+        - 그럼 어떻게 지역적 특성을 없애지? -> 지역을 두루뭉실하게 pixel 범위를 잡아서 하나의 값으로 평가하면 됨.
+            - max pooling : kernel 내 point 최대값
+            - average pooling : kernel 내 point 평균값
+
+- Recurrent Neural Networks(RNN : 순환신경망)
+    - 데이터가 순서가 있는. 즉, 시계열/순차적 데이터를 처리할 때 좋음.
+    - CNN에서 사용했던 feed forward 방식은 앞으로만 진행됨. 순환신경망은 이런 방식이 아님. 정보가 다시 이전 layer로 돌아갈 수도 있음.
+    - 노드가 데이터를 처리할 때, 이전 데이터를 인자로 받음. (점화식같은건가)
+    - 이전 데이터가 계속 다음 연산에 사용되기 때문에 데이터를 "기억"하는 성격이 있다고 볼 수 있다.
+    - RNN state의 update와 output
+        - input : x_t
+        - update hidden state
+            - h_t = tanh(Weights_hh * 직전h_t + Weights_xh * x_t)
+            - Weights는 training을 통해 변경
+        - output vector
+            - y_hat = Weight_hy * h_t
+
+    - 사용가능 분야 (feat 노드 연결 구조)
+        - one to one
+            - feed forward 방식. 앞으로만 전진.
+            - CNN이 이 구조를 사용.
+        - one to many
+            - 입력은 하나가 들어오는데, 이것으로 여러개의 출력을 냄. 
+            - 예 : image captioning(이미지의 상황을 문장으로 설명)
+        - many to one
+            - 여러개가 들어오면, 최종적으로 한개를 출력.
+            - 예 : Document/Video Classification
+        - many to many
+            - 여러개 들어오고, 여러개 나감.
+            - 구조에 따라서 시간차를 어떻게 줄 것인지 변경할 수 있음.
+            - 예 : Language Translation, Autonomos Driving
+        - Natural Language processing(NLP:자연어처리)
+        - Speech Recognition
+        - Video processing
+    - 학습은 역전파(backpropagation) 방식을 이용해 진행.
+        - 모든 반복을 거쳐서 결과를 도출해야지만 학습이 가능하다.
+        - Loss가 도출되면 backward로 loss를 전파한다.
+        - 여기서도 앞선 노드의 loss가 뒤쪽의 loss로 작용한다. RNN 성격상 학습에도 시간적으로 학습이 됨.
+    - Long-term dependency problem
+        - 지금까지 공부한 것이 순수한(단순한) RNN이다. (vanilla RNN)
+        - 이렇게 단순한 RNN은 데이터간 시간차이가 큰 경우(long-term)에 고려하기가 어렵다는 단점이 있다. 즉, 시간적으로 멀리 떨어져있는 데이터의 연관성을 고려하지 못하기 때문에 이런 데이터 시간격차를 고려해야하는 문제에서는 사용하기에 적합하지 않음.
+        - 이러한 문제를 해결하기 위해 나타난게 LSTM모델이다.
+
+- Long Short-Term Memory (LSTM)
+    - 시간적으로 멀리 떨어져있는 신호도 갈수록 죽지 않고 잘 전달될 수 있도록 개선된 RNN모델.
+    - 가장 많이 사용되는 모델.
+    - 비유하자면 스위치 같은 역할들이 있는데 이러한 파라미터들이 복잡하게 구성되어있어서 오래된 신호도 잘 살려서 진행이 됨. 결국 예측이 잘됨.
+    - 그러나 구조가 너무 복잡해서(파라미터 수가 너무 많아서) 학습의 문제가 있음.
+
+- Gated Recurrent Unit (GRU)
+    - LSTM 구조의 복잡성으로인해 학습이 잘 되지 않는다는 단점을 보완하기 위해 구조상 존재했던 스위치(파라미터) 개수를 2개로 확 줄임.
+    - 물론 예측 능력에 있어서는 LSTM에 훨씬 좋음.
+    - 대신 학습이 비교적 잘됨. 빠름.
+    - 순전히 정확도만을 따진다면 LSTM을 사용하는게 맞음.
+
+- ImageNet ILSVRC : image clasification
+    - ImageNet이라는 표준화된 데이터를 가지고 모델 성능 대결.
+    - 꽤 오래된 대회.
+    - 인간은 5퍼센트의 에러율을 보임.
+    - 2011년까지는 25.8%의 에러율. 
+    - 2012년부터 DNN을 사용했고, 그때부터 error율이 확 줄어들었음.
+        - 시작은 AlexNet 16.4% 에러율
+        - 가장 마지막인 구글에서 만든 GoogleNet(22 layers) 6.7% 에러율
+    - 2015년 Resnet이 3.5% 에러율로, 사람을 뛰어넘음.
+    
+    - AlexNet(2012)
+        - Convolution layer를 5개나 주고, FC layer 3개 해서 총합 8 layer사용.
+        - 각 layer가 어떤 결과를 내주는지 궁금해서 visualization 기술들이 개발됨.
+        - 실제로 보니까 feature가 점점 고수준으로 발전해 나가는 것을 확인할 수 있음
+            - pixel -> 재질 -> 형체 -> ...
+    
+    - ResNet(2015)
+        - 152 layer 사용. ㄷㄷ
+            - 대부분 layer가 feature 추출에 사용됨.
+
+    - 잘 동작하는 모델을 구성하기 위해서는 CNN이 좋다!, RNN이 좋다! 이런건 없음. 인공지능이 해결해야하는 환경에 맞춰서 적절한 모델을 결합해서 어떤 부분은 CNN을 쓰고, 시간적 요소가 고려해야하는 부분에서는 RNN을, classification이 중요한 부분은 FC를 이용한다든지 이런식으로 분할하여 결합하고, 더욱 복잡하게 할수록 더 재밌고 좋은 모델이 나올 수 있음.
+        - 예를 들면 강아지가 뛰는 영상이 있다고 치면, 이미지로부터 feature를 추출하기 위해 아주 깊은 CNN 구조를 사용. 이미지가 어떤 상황인지 문장으로 추출하기 위해서 추출된 feature를 input으로 하는 여러 LSTM layer로 구성하여 "강아지가 뛰고있다"라는 문장을 도출해낼 수 있음. (Google15)
