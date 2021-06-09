@@ -407,7 +407,7 @@ A17.
                 - 행동할 수 있는 고정적인 것들
             - task/problem.pddl
                 - initial state
-                - goadl states
+                - goal states
             - 예
                 - blocks world
                     - domain
