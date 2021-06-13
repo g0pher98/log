@@ -1616,3 +1616,290 @@ do {
 - network file system
     - 원격지에 있는 file system을 마지 local처럼 사용할 수 있도록 하는 것.
     - NFS Mounting
+
+------------------------------------------
+# Review
+
+1. 운영체제의 정의, 역할
+    - 운영체제의 역할
+        - resource allocator : 시스템 자원 할당 및 관리
+        - control program : 전체 프로그램이 잘 동작하도록 제어
+    - software interrupt (trap)
+    - os structure
+        - multiprogramming (batch system)
+            - cpu 효율을 높이고자 나온 시스템.
+            - 기본적인 아이디어는 여러개의 job을 한번에 메모리에 올리는 것.
+            - job이 io를 사용하기 위해 cpu를 내려놓는 순간이 있음. 이 때, 메모리에 올라와있는 다른 job에게 cpu를 할당
+        - timesharing (multitasking)
+            - 제한된 기간동안 job을 수행하지 못하면 cpu를 뺏어서 제어하는 형태
+            - 덕분에 시스템을 독점하는 느낌을 받을 수 있음.
+            - 어떤 job을 메모리에 올릴지에 대한 job scheduling 등장.
+            - cpu를 누구에게 할당할지에 대한 cpu scheduling 등장.
+            - swapping, virtual memory 등장
+        - 두 개의 공통점 : 여러개의 프로세스를 동시에 메모리에 적재해서 cpu를 사용하다가 반납하면, 다른 프로세스에게 할당해서 쉬지 않게 함.
+        - 차이점 : timeshareing은 cpu 사용 구간을 정해서 완료 못하면 뺏음.
+    - os operations
+        - 운영체제는 인터럽트 기반으로 동작한다.
+        - job 요청을 인터럽트로 한다
+        - os는 시스템을 안정적으로 구동해야한다고 했다. 이를 가능케 하는 대표적인 방법이 dual-mode execution과 timer다.
+            - dual-mode operation
+                - 기계어 코드를 수행할 수 있는 mode를 두 개로 나눔.
+                    - user mode / kernel mode
+                - H/W적으로 현재 mode를 알려주는 mode bit이 있어야함.
+                - privileged instruction
+                    - kernel에서만 실행되어야 하는 명령
+                        - interrupt disable
+                        - timer set
+                        - ...
+                    - 단! trap은 user mode에서 실행해야한다.
+
+2. 운영체제를 구성하는 components
+    - system에 크리티컬한 작업은 OS에게 작업을 부탁해야한다(I/O 작업 등).
+    - 여기에 사용되는 것이 system call.
+    - 보통 system call 라이브러리가 제공이 됨.
+    - 운영체제 구조
+        - simple structure
+            - 보호장치 없이 마구잡이고 로우하게 접근 가능
+        - layered approach
+            - layer로 구분됨. 상위 layer는 반드시 하위 layer에서 제공하는 api만 사용할 수 있음.
+            - 디버깅이 쉽다는 장점.
+            - 운영체제처럼 규모가 큰 sw는 기능을 딱 맞아 떨어지게 나누기가 쉽지 않다
+            - layer를 계속 거치므로 delay가 상대적으로 길다.
+        - microkernel system
+            - 커널을 micro하게 만든다. 핵심 기능만 유지. 나머지 기능은 user space로 빼냄.
+            - user space로 빠진 기능들은 message passing 방법을 이용해서 사용.
+            - kernel 자체가 compact 해진다는 장점이 있지만, 성능이 좋지 않음.
+        - modules
+            - 커널을 리컴파일 할 필요 없이 모듈을 동적으로 적재할 수 있음.
+            - 모듈 단위로 관리하기 때문에 디버깅이 쉬워진다.
+            - 모듈끼리 직접 호출이 가능하기 때문에 message passing보다 좋음.
+
+3. 프로세스
+    - process. 프로그램을 실행하기 위한 메모리, 정보들.
+    - 프로세스의 상태전이
+        - new, running, waiting, ready, terminated
+        - os마다 세부적인 부분은 다르긴 함.
+    - scheduler
+        - cpu scheduler
+            - ready queue에 있는 프로세스 중 cpu를 누구에게 할당할 것인가?
+            - 빠르게 동작해야하기 때문에 short-term scheduler
+        - job scheduler
+            - 어떤 job을 ready queue에 올릴 것인가?
+            - 덜 빈번하게 호출됨. long-term scheduler.
+            - degree of multiprogramming
+                - io 작업과 cpu 작업을 골고루 넣어주어야 함.
+    - context switch
+        - timesharing을 지원하기 위해서는 context switch가 꼭 필요하며, 이에 소요되는 overhead는 감내해야함.
+        - 너무 많이 발생하지 않도록 조절해야함.
+    - communications models
+        - message passing
+        - shared memory
+            - 동시 접근 시 데이터가 깨지는 문제(synchronization problem)가 발생.
+
+4. thread
+    - thread. cpu를 할당하는 더 작은 단위
+    - multithreaded process
+        - 공통된 부분은 공유(code영역, data영역, files영역)
+        - registers, stack은 개별로 관리
+    - multi process로도 가능은 하지만 프로그램이 무거워진다.
+    - multithreading models
+        - thread는 크게 두 개로 나누어볼 수 있음 user thread / kernel thread
+        - many to one model
+            - kernel thread 한개에 연결.
+            - blocking 되는 문제 발생
+        - one to one model
+            - user thread가 blocking을 해도 나머지가 blocking되지 않음.
+            - 그러나 user thread 만큼 kernel thread가 생성되어서 리소스 너무 많이 잡아먹음.
+        - many to many model
+            - kernel thread 여러개에 중첩해서 연결
+        - two level model
+            - 중요한것만 one to one으로, 나머지는 many to many로 구현.
+
+5. cpu scheduling
+    - basic
+        - cpu burst, io burst를 번갈아가면서 동작.
+    - cpu scheduler
+        - running 상태에서 waiting 상태로 빠질 때(자발적 반납)
+        - running 상태에서 인터럽트 같은 이유로 ready 상태로 바뀔 때
+        - waiting 상태에서 ready 상태로 바뀔 때
+        - 끝날 때(자발적 반납)
+    - preemptive : 선점. os가 뺏어갈 수 있음.
+    - nonpreemptive : 비선점. os가 뺏어갈 수 없음.
+    - dispatcher
+        - 스케쥴러가 ready queue에서 선택해서 cpu 할당.
+        - context switch를 dispatcher가 하는것임.
+    - scheduling 기준(성능지표)
+        - CPU utilization(효율)
+        - throughput
+        - turnaround time
+        - waiting time 
+        - response time
+    - scheduling algorithm
+        - FCFS
+            - non-preemptive
+            - convoy effetct 문제
+                - cpu burst가 아주 긴 job을 처리하느라 나머지 job의 waiting time이 길어지는 현상
+        - SJF
+            - non-preemptive
+            - next cpu burst가 가장 짧은 job 할당
+        - Short-Remaining-Time First Scheduling
+            - preemptive 버전의 SJF
+            - next cpu burst가 가장 짧은 job이 우선순위 높음.
+            - 우선순위로 할당하고, 같으면 FCFS.
+            - starvation 문제 발생.
+                - 우선순위가 낮으면 계속 실행이 안됨.
+                - 해결하기 위해 aging 기법 사용. 우선순위 낮은 애들의 우선순위를 점차 늘림.
+        - RR
+            - time quantum(q) 기반.
+            - q가 크면 FCFS
+            - q가 작으면 context switch에 시간을 다 씀.
+            - q는 turnaround time에도 많은 영향을 줌.
+        - multilevel queue scheduling
+            - 프로세스가 들어가야하는 큐가 지정되어있음.
+        - multilevel feedback queue scheduling
+            - 상황에 따라 프로세스가 큐를 넘나듬.
+    - real-time cpu scheduling
+        - 실시간성(속도)이 중요. deadline 안에 끝내야함.
+        - rate monotonic scheduling
+            - 빈도의 역순으로 우선순위 할당.
+            - 빈번히 일어나는 프로세스에 높은 우선순위 할당.
+            - deadline을 못맞추는 문제 발생
+        - earliest deadline first scheduling
+            - deadline이 곧 우선순위.
+
+6. 동기화
+    - race condition
+        - 공유 자원에 동시접근할 때, 멈출 수 있다.
+    - critical-section problem
+        - critical section에 동시에 들어가서 데이터가 깨지는 문제.
+        - 동시접근이 되지 않도록 maximum 1개 접근만 허용해야함.
+        - 해결 조건
+            - mutual exclusion
+                - 이미 들어가있으면 아무도 못들어옴.
+            - progress
+                - 준비된 프로세스 중 누가 들어갈 것인지 결정.
+            - bounded waiting
+                - 준비가 된 프로세스라면 반드시 일정 시간 이후에 들어가야한다.
+    - semaphore
+        - wait()과 signal()로 구현하는 integer 변수
+        - binary semaphore : 0, 1
+        - counting semaphore : 0 ~ n
+        - semaphore를 잘못 쓰게 되면 deadlock 문제 발생
+        - semaphore를 잘못 구현하게 되면 starvation 문제 발생
+    
+    - priority inversion
+        - 우선순위가 낮은 프로세스가 자원을 가지고 있어서 우선순위가 높은 프로세스가 실행을 못하는 상태
+        - 이를 해결하기 위해 우선순위 계승 프로토콜을 사용할 수 있음.
+            - 위 상황에서 우선순위가 낮은 프로세스의 우선순위를 높이는 방식.
+    
+    - Monitor
+        - 프로그래머의 실수를 방지하기 위해서 나온것이 monitor.
+        - mutual exclusion은 해결해주지만 실행 순서를 제어할 순 없음.
+
+    - condition variables
+        - x.wait() : 무조건 준비상태
+        - x.signal() : wait하고있는 것 중 하나에게 제어권 넘어감.
+    
+7. 스킵
+
+8. deadlock
+    - deadlock 발생 조건
+        - mutual exclusion
+            - 한번에 한 프로세스만!
+        - hold and wait
+            - 하나를 가지고 있으면서 하나 더 요청
+        - no preemption
+            - 반납하기 전까지 회수 불가.
+        - circular wait
+            - 자원 소유 및 요청 상태가 원형을 이룸.
+    - resource allocation graph
+        - 어떤 프로세스가 어떤 자원을 가지고있고, 어떤 자원을 요청하는지 보기 위한 표현방법
+        - circle이 없으면 deadlock 발생안함.
+    - deadlock 해결방안
+        1. deadlock 아예 발생안하게
+            - deadlock prevention
+                - deadlock 조건을 만족시키지 않게끔 만듬.
+            - deadlock avoidance
+                - 부가적인 정보를이용하여 deadlock이 빠질지 안빠질지 판단.
+                - 부가정보
+                    - 현재 이용 가능한 자원
+                    - 각 프로세스에 할당된 자원
+                    - 앞으로 할당할 자원
+                - deadlock이 발생할 것 같으면 자원이 남아도 안줌.
+                - safe state인지 확인하고, 항상 이 상태를 유지하도록 하는것이 핵심.
+                    - safe sequence이면 safe state이다.
+                - resource type 별로 instance가 복수개인 경우에는 banker's algorithm을 이용.
+        2. deadlock 발생했는지 주기적으로 확인
+        3. 그냥 놔둠. 실제로 이게 젤 많이 쓰임. 리소스 문제때문.
+
+9. memory
+    - logical address / physical address
+    - address binding
+        - execution time 때 address binding이 일어나는 시스템에서는 논리/물리 주소가 다르다. 이 다른 주소를 유기적으로 연결하는게 MMU(Memory Management Unit).
+    - 연속적인 메모리할당에서 발생하는 문제
+        - 단편화 문제
+            - 내부단편화
+            - 외부단편화
+    - paging
+        - 단편화 해결 방안.
+        - 불연속적인 메모리 할당.
+        - page table 존재. page가 어떤 frame에 할당되어있는지 저장.
+        - TLB : page table을 위한 cache.
+    - segmentation
+        - 가변적 크기인 segment 단위로 프로세스를 나누고, 이 크기로 할당.
+        - 불연속적인 메모리 할당. 
+
+10. virtual memeory
+    - 모든 프로세스가 필요한 모든 메모리를 할당받지 않아도 실행하는데 문제가 없더라! 에서 시작.
+    - demand paging
+        - 사용되는 부분만 메모리에 적재.
+        - 다양한 추가 정보 bit가 있음. valid/invalid
+    - page fault
+        - 메모리에 page가 할당되어있지 않은 경우를 말함.
+        - free page를 찾아 그곳에 할당한다.
+        - 근데 메모리에 공간이 없다면?
+            - 기존 page(victim page)를 swap out한다.
+            - 그 자리에 할당!
+        - victim을 선택하는 방법
+            - FIFO
+                - belady's abnomaly 문제 발생
+                    - physical frame이 많은데도 page fault가 많이 발생하는 이상현상
+            - Optimal Algorithm
+                - 미래에 잘 사용되지 않은 것을 교체
+            - Least Recently Used(LRU)
+                - 과거에 잘 사용되지 않았던 것을 교체
+                - 언제 access되었는지 알려주는 reference bit이 존재.
+            - LRU Approximation
+                - second-chance algorithm
+                    - 모든 프레임에게 기회를 한번 더 줌.
+                    - FIFO와 같아질 수 있다는 문제점 있음.
+                - Enhanced Second-Chance
+                    - reference bit + modify bit 두 정보를 고려
+                - counting based
+                    - reference bit의 값 크기 고려
+        - thrashing
+            - 각 프로세스들이 충분히 많은 메모리를 할당받지 않으면 page fault가 계속 발생하므로 io에 많은 리소스를 소비하게된다. 프로세스가 이렇듯 증가한 io때문에 작업하기 어려워지는 문제
+            - 그렇다면 얼만큼 할당해주어야 하는가?
+                - locality model을 사용하면 됨.
+                    - locality는 현재 가장 활발하게 사용되는 메모리 영역을 말한다.
+                    - working set modle
+                        - locality를 찾기 위해 활용하는 방법.
+                        - working set : 과거 사용된 메모리 영역.
+                        - working set과 page fault
+                            - 초반에는 working set 구성을 위해 증가
+                            - 이후 working set이 구성됨에 따라 page fault 감소
+                            - 이후엔 거의 없음.
+    - kernel memory allocation
+        - buddy system
+            - 2 배수로 나눠서 할당
+        - slab
+            - 운영체제가 사용하는 데이터 구조들에 대해 미리 할당해서 관리.
+    
+    - other issues
+        - prepageing
+            - page fault가 발생하면 해당 page 뿐만아니라 근처 page까지 미리 적재.
+        - page size
+        - TLB reach
+        - program structure
+    
+    

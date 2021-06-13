@@ -11,10 +11,10 @@
         - [Linux Kernel Exploit Step-by-step Part1](/Security/linux-kernel-exploit/linux-kernel-exploit-step-by-step-part1.md)
         - [Linux Kernel Exploit Step-by-step Part2](/Security/linux-kernel-exploit/linux-kernel-exploit-step-by-step-part2.md)
     - Cryptography
-        - [수업정리](/Security/cryptography/kgu_lecture.md)
+        - [3학년 1학기 정보보호개론 수업 메모](/Security/cryptography/kgu_lecture.md)
     - Malware Analysis
         - [미켈란젤로 바이러스 분석](/Security/malware-analysis/michelangelo/michelangelo.md)
-        - [mini-100 바이러스 분석](/Security/malware-analysis/mini-100/analysis.asm.asm)
+        - [mini-100 바이러스 분석](/Security/malware-analysis/mini-100/analysis.asm)
 
 - Robotics
     - ROS
@@ -26,13 +26,13 @@
         - [ROS Tutorial 4](/Robotics/ROS/tutorial-4.md) - ROS 노드의 이해
 
 - AI
-    - [수업정리](/AI/kgu_lecture.md)
+    - [3학년 1학기 인공지능 수업 메모](/AI/kgu_lecture.md)
 
 - Vision
     - OpenCV
 
 - Operating System
-    - [수업정리](/OS/kgu_lecture.md)
+    - [3학년 1학기 운영체제 수업 메모](/OS/kgu_lecture.md)
 
 - Network
 
