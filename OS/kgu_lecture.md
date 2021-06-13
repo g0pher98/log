@@ -1270,3 +1270,235 @@ do {
         
         - 어떤 방식이 더 좋다고 말할 수 없음. 프로세스의 성격에 따라 case by case임.
 
+:13주차-1
+- page replacement examples(예시) - 계산문제임.
+    - 알고리즘 별(LRU, FIFO, Optimal) page fault가 얼만큼 발생하는가에 대한 문제
+
+- frame 할당
+    - 각 프로세스의 최소 frame할당 개수는 CPU에 따라 다름.
+    - 프로세스 시작 시 얼만큼의 frame을 할당하는가에 따라 할당 방법이 다름.
+        - fixed allocation
+        - priority allocation
+    - frame replacement가 발생할 때, 교체할 victim frame을 어디서 찾는지에 따라 다름.
+        - global allocation
+        - local allocation
+
+- fixed allocation
+    - equal allocation
+        - 모든 프로세스가 동일한 크기의 frame을 갖는다.
+        - 예를 들면 100개 frame이 있고, 5개 프로세스가 있으면, 20(100/5)frame 씩 할당 
+    - proportional allocation
+        - 프로세스 크기의 비율에 따라 차등.
+        ```
+        m = 전체 frame 개수
+        p = 프로세스.
+        s = p의 크기.
+        S = 전체 s의 합.
+        a = p에 할당될 frame 수. = (s / S) * m
+        ```
+
+- priority allocation
+    - 크기가 아닌 우선순위에 따라 할당.
+
+- global allocation VS. local allocation
+    - page fault 발생 시, victim frame을 어디서 선택하는가?
+    - global allocation
+        - p1에서 page fault가 발생했지만, p2나 p3 등 다른 p에서 victim frame을 가져옴. 
+        - 장점 : 모든 프로세스가 target이 되기 때문에 throughput(처리량)이 나아진다.
+        - 단점 : 반대로 다른 프로세스가 메모리를 뺏어갈 수 있으므로 process execution time을 예측하기가 어려워짐.
+    - local allocation
+        - p1에서 발생했으면 반드시 p1에서 victim frame을 찾음.
+        - 장점 : 다른 프로세스가 메모리를 뺏어가지 않기 때문에 퍼포먼스가 일관된 형태로 나타난다.
+        - 단점 : 메모리 효율이 떨어진다
+
+- 여기까지가 demand paging에 대한 기본 개념.
+- thrashing
+    - demand paging의 가장 큰 문제점.
+    - 모든 메모리를 할당하는게 아니라 일부만 할당한다. 따라서 각 프로세스가 충분히 많은 frame을 할당받지 못하면 page-fault가 자주 일어날 수 밖에 없다. 결국, i/o에 시간을 많이 사용할 수밖에 없다. 즉, cpu 효율이 떨어진다.
+    - page fault가 자주 발생해서 swap in/out에 모든 시간을 쏟는 현상을 thrashing이라고 한다.
+    - 이를 해결하기 위해서는 각 프로세스에게 가능한한 많은 메모리를 할당해주면 된다.
+    - 그렇다면 프로세스가 필요로 하는 양을 어떻게 알 것인가?
+        - 이에 대해 가장 많은 정보를 주는것이 locality이다.
+        - locality란, 현재 프로세스가 active하게 사용하고있는 메모리 영역.
+        - 현재 locality를 담을 수 있는 메모리 공간보다, 실제로 할당된 메모리 공간이 더 작기 때문에 thrashing이 발생한다.
+        - 즉, 현재 locality를 담을 수 있을 만큼의 충분한 메모리 공간을 할당해주면 page fault는 발생하지 않는다.
+    - 그러나 locality는 미래 사실이기 때문에 정확히 예측할 수 없다.
+    - 그렇다면 어떻게 이를 알 수 있는가?
+        - working set
+            - 과거의 메모리 access 패턴을 이용해서 locality를 찾아냄.
+
+- working-set model (계산)
+    - locality를 기반으로 함.
+    - working-set window : 현재로부터 고정된 수의 메모리 reference.
+        - 현재로부터 과거 n개의 메모리 access 패턴을 본다는 것.
+    - WS : Working Set
+        - 프로세스 p의 working-set window에 포함되어있는 page reference들.
+    - WSS : WS의 크기.
+        - working set window를 너무 작게 만드는 경우
+            - 현재 locality를 못담을 수도 있음.
+        - working set window를 너무 크게 만드는 경우
+            - active 하지 않은 locality도 담게됨.
+        - working set window가 무한대가 되면
+            - 지금까지 access한 전체 영역에 해당.
+    - D : 전체 WSS의 합
+        - 전체 프로세스가 필요로 하는 FRAME의 양.
+        - if (D > m ) : thrashing 발생.
+    
+    - 실제로 어떻게 working set을 측정하는가?
+        - reference bit와 interval timer를 이용한다.
+        - interval timer에 의해 reference bit이 rshift 되고, reference bit이 하나라도 1이 존재하면 working set window 내에서 접근이 있었던 것.
+        - reference bit이 크면 클수록 정교해짐.
+
+- working-set과 page fault
+    - working-set에서는 각 프로세스의 locality를 예측할 수 없다. 왜냐? 미래의 사실이기 때문에.
+        - 예측을 해도 완전히 다른 locality가 발생할 수도 있는 것.
+    - working set 모델에서의 page fault 패턴은 아주 비슷한 형태의 그래프를 그린다.
+        - 초반에는 working set이 locality를 담고있지 않기 때문에 page fault가 발생하면서 working set에 locality가 담겨지기 시작한다. 당연하게 page fault 횟수가 증가하게 된다. (상승그래프)
+        - 어느정도 working set이 현재 locality를 담게 되면 이에 맞게 memory가 점점 할당되면서 page falut는 줄어든다 (하강그래프)
+        - 충분한 memory가 할당되고 나서부터는 패턴이 바뀌기 전까지는 아주 낮은 page fault를 보인다.
+
+- page fault frequency(PFF)
+    - working-set 모델 외 방법.
+    - 프로세스마다 어느정도의 page fault는 허용한다. 라는 임계값을 설정.
+    - local replacement policy를 이용하여 처리
+        - page fault가 낮게 측정되면 frame을 반납
+        - page fault가 높게 측정되면 frame을 더 할당.
+
+
+:13주차-2
+- Memory-Mapped Files
+    - disk block을 page에 로딩해서 사용.
+    - 이는 disk i/o를 빠르게 할 수 있게 됨.
+    - file이 처음에 읽혀지면 page 단위로 만듬. 이를 file system으로부터 physicla page로 만듦.
+    - 이는 디스크 일부분이 메모리에 올라가있기 때문에 훨씬 빠르게 access가 가능.
+    - 지난번에 page table을 설정하여 여러 프로세스가 동일 page에 접근할 수 있다는 것을 설명했었다. 이를 이용해서 여러 프로세스가 하나의 파일을 쉽게 공유할 수 있게됨.
+    - 수정된 메모리의 내용을 언제 실제 디스크에 적용할 것인가? 가 이슈. 주기적으로 write할수도 있고, 수정할때마다 할수도 있다.
+
+- 여기까지는 사용자(user) 영역에서의 메모리 할당에 관한 이야기.
+
+- Kernel Memory Allocation
+    - 어떤 프로세스가 호출될지 알 수 없고, 각 프로세스가 메모리를 어떻게 사용하는지도 알 수 없다.
+    - kernel 메모리는 kernel만 사용하기 때문에, 메모리를 어떻게 사용하는지 잘 알 수 있음. 쉽게말해 kernel이라는 프로세스 하나가 계속 메모리를 사용하기 때문에 잘 알 수 있다는 것.
+    - 커널이 메모리 할당 방식이 다른 이유
+        - 특정메모리를 독점한다는 특징에 따라서 특화된 메모리 할당 방법을 이용. 
+        - 연속적인 메모리 접근을 하게되면 paging과 같이 불연속 메모리 할당 방식에 비해서 확실히 속도가 빠름. kernel 역시 속도가 중요하기 때문에 연속적인 할당방식을 사용.
+    - 대표적인 memory allocation 방식.
+        - buddy system
+        - slab allocation
+    
+- buddy system
+    - if 프로세스가 24kb를 필요로 한다! 
+        - 큰 메모리 256을 2로 계속 나누어간다.
+        - 최종적으로 32kb가 나오면 이 부분을 할당.
+    - 당연하게도 단편화가 발생.
+        - 내부단편화, 외부단편화 모두 발생할 수 있다.
+
+- slab allocation
+    - slab : 하나 이상의 연속된 page들
+    - cache : 여러개의 slab.
+    - kernel이 어떤 크기의 object를 사용한다는 것을 알고 있다. 따라서, 커널이 필요로 하는 data structure에 부합되는 object들을 담을 수 있는 메모리 공간으로 나누어져 있다.
+    - 연속된 메모리를 사용하기 때문에 빠르게 메모리 할당이 가능하다는 장점이 있다.
+    - 또한, paging 기법을 사용하기 때문에 단편화 문제도 해결한다.
+
+- paging 구현에서 발생할 수 있는 이슈.
+    - prepaging
+        - demand paging에서는 프로세스가 필요한 양만큼 메모리 할당을 받아서 사용.
+        - 필요하는 page가 메모리에 없으면 page fault가 발생. 디스크에 있는 page를 메모리에 로드.
+        - prepaging이란, 이처럼 디스크에 있는 page를 메모리에 로드할 때, 디스크에 있던 주변 page도 같이 메모리에 로드하는 것을 말함.
+        - 지금은 access가 일어나지 않았지만, 앞으로도 일어날 것이라고 보는 것.
+        - 사용하면 다행이지만 그렇지 않다면 오히려 메모리 낭비일 수 있다.
+        - s개의 prepage 에서 alpha 비율 만큼만 사용된다. 라고 했을 때,
+            ```
+            감소된 page fault 비용 : s * alpha
+            낭비된 비용 : s * (1-alpha)
+            ```
+            - 즉, alpha가 0에 가까울 수록 prepaging을 하면 안된다.
+        - 아무튼 page fault를 미리 막아보자 하는 차원에서의 방법임.
+    - page size에 따른 이슈
+        - fragmentation (단편화)
+            - page size가 클수록 내부단편화 발생 확률 높음.
+        - table size
+            - page size가 작을 수록 table size가 커짐. 관리해야하는 요소의 개수가 많아지기 때문.
+        - I/O overhead
+            - page szie가 클수록 I/O overhead는 감소. 한번에 많은 양을 보낼 수 있기 때문.
+        - locality
+            - page size가 클수록 너무 많은 locality가 한 page에 담길 수 있다.
+            - page size가 작을수록 하나의 locality가 하나의 page에 담길 수 없고 여러개의 page에 흩어질 수 있다.
+        - 최근 동향을 보면, page size는 점점 커져가고 있다.
+    - TLB Reach
+        - TLB를 통해서 access 할 수 있는 메모리의 크기를 말함.
+            - TLB Reach = (TLB size) * (page size)
+        - 메모리를 엑세스할 때, TLB에 있으면(TLB hit) memory access time을 줄일 수 있기 때문에 EAT(Effective Access Time)를 줄일 수 있음.
+        - 가장 좋은 케이스는 현재의 working set. 즉, locality가 모두 TLB에 올라가 있으면 당연히 memory access time이 빨라지기 때문에 좋아짐.
+        - TLB Reach를 키우기 위해서는 (TLB size)를 키우거나 (page size)를 키워야 함.
+            - TLB size가 커지면 당연히 레지스터 개수가 늘어나야하기 때문에 H/W COST가 늘어날수밖에 없음.
+            - page size가 커지면 단편화 문제가 발생한다.
+            - 최근 추세는 page size가 하나로 고정되는게 아니라 multiple하게 여러개의 size를 가지게끔 os가 구현됨.
+    - program structure
+        - 프로그램 구조를 어떻게 제작하느냐에 따라서 page fault 횟수가 달라질 수 있음.
+            - 예를 들면 128x128 배열이 있고, 각 행이 하나의 page에 저장된다고 할 때,
+            - 행을 모두 채우고 다음 행으로 넘어가는 프로그램은 128번의 page fault가 발생.
+            - 열을 모두 채우고 다음 열로 넘어가는 프로그램은 128*128=16384번의 page fault가 발생.
+    - I/O Interlock
+        - disk 데이터를 page 두 개에 걸쳐 메모리에 로드했다고 가정했을 때, 두 page가 replacement가 일어나면, 디스크는 이 사실을 모르기 때문에 replace된 상태의 page를 덮어버릴 수도 있다.
+        - 이를 위해 Lock bit를 설정해서, 해당 page가 replace되면 안된다는 것을 명시.
+
+:13주차-3
+- file
+    - 물리저장소 유닛.
+    - file을 구현하는 것은 os마다 다르고 정답이라는 것은 없다.
+
+    - 파일 내부 구조
+        - disk block 단위로 할당됨. 연속적이지 않을 수 있고, 내부 단편화가 발생할 수 있음.
+
+
+    - open file
+        - file pointer : 파일의 어느 부분을 읽고 있는가?
+        - file open counter : 몇개의 프로세스가 이 파일에 접근하고 있는가?
+        - disk location : 실제 위치
+        - access right : 접근 권한
+        - lock
+            - shared lock : reader lock
+            - exclusive lock : writer lock
+         
+        - 리눅스에서 운영체제는 프로세스와 상관없이 global하게 유지, 관리해주는 데이터가 존재하고, 프로세스 마다 유지,관리해주는 데이터가 존재한다.
+    
+    - access method
+        - sequential access. 순차적으로 byte단위로 읽기.
+        - direct access. 읽을 지점을 지정해서 바로 읽기
+        - 각 데이터의 위치정보를 indexing해서 빠르게 찾을 수 있음(like DB)
+
+- directory
+    - file을 담을 수 있는 공간
+    - 리눅스에서는 directory도 file로 관리하기 때문에 file과 operation이 같다.
+    - 디렉토리 관리하는 방법
+        - single level directory
+            - naming problem : 유니크한 파일 이름만 가능하기 때문에 문제.
+            - grouping problem : 모든 파일이 하나의 디렉토리에 있기 때문에 그룹화도 어려움.
+        - two level directory
+            - user 별로 directory 생성.
+            - path name 개념 추가.
+            - 다른 user 밑에서는 같은 파일 명 존재 가능.
+            - 여전히 grouping problem 발생. 사용자별로는 구분되지만, 동일 사용자 내에서 그룹화 불가.
+        - tree-structured directory
+            - 효율적인 탐색.
+            - 그룹화 가능
+            - 절대/상대주소 개념.
+        - acyclic-graph directory
+            - 같은 파일을 서로 다른 파일로 접근하는 것.
+            - delete 할 때 문제가 발생.
+        - general graph directory
+            - cycle이 존재.
+            - 무한 루프에 빠지는 문제 발생.
+            - 링크가 있는 상태에서 delete할 때 문제 발생.
+
+- file system mount
+    - 외부 장치를 마치 하나의 file system처럼 논리적으로 붙이는 작업.
+    - mount 되는 지점을 mount pointer 라고 함.
+
+- file protection
+    - file별로 접근에 대한 권한을 설정하기 위해 access control lists(ACLs)를 가지고 있음. 
+    - 그러나 사용자별로 권한을 생성하면 너무 많아질 것임.
+        - unix에서는 user, group, other로 나누어서 read, write, execute 권한을 설정.
+
+
