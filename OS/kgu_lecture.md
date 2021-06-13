@@ -1502,3 +1502,117 @@ do {
         - unix에서는 user, group, other로 나누어서 read, write, execute 권한을 설정.
 
 
+:14주차-1
+- file system을 구현하는 방법에 대해 알아본다.
+- file system structure
+    - 일반적으로 file system을 구현할 때, layer를 나눠서 구현한다. layer로 나눈다는 것 또한 방법론 중 하나이기 때문에, 사용하지 않아도, layer를 맘대로 나누어도 무관하다.
+    - layer
+        - application programs
+        - logical file system
+            - logical address를 기반으로 모든 file에 대한 meta-data를 관리한다.
+            - FCB(File Control Block)을 관리.
+                - name, ownership, permissions
+                - reference cound, time stamps
+                - ...
+        - file-organization module
+            - logical block과 physical block 간의 translation을 담당.
+        - basic file system
+            - 여러가지 버퍼관리.
+            - I/O가 느리기 때문에, I/O에 직접 접근하는게 아니라, buffer를 통해서 접근.
+        - I/O control
+            - 물리적인 디바이스에 접근하기 위한 device drive가 필요함. 이거이 i/o control에 해당.
+            - read, write를 실질적으로 수행하는 부분.
+        - devices
+    
+- file system data structure
+    - os 는 다양한 데이터 구조들을 처리할 수 있어야 한다.
+    - 어디에 저장되느냐에 따라 크게 두 분류로 나눌 수 있다.
+    - on-disk structures -> 비휘발성
+        - boot control block (BCB)
+            - 부팅 디스크의 0번째 블록(512bytes)에 저장된 내용.
+        - volume control block
+            - 현재 볼륨 안에 몇개의 블록이 있는지, 어떤게 사용중이고 사용중이 아닌지 등등의 정보를 담고 있음.
+        - directory
+        - per-file FCB
+    - in-memory structures -> 휘발성
+        - mount table
+        - directory cache
+        - global open-file table
+        - per-process open-file table
+        - 다양한 buffer들
+
+- virtual file system
+    - 각기 다른 file system 을 추상화.
+
+- directory 구현
+    - file로서 관리하기 때문에 결국엔 FCB를 이용.
+    - 구현방법
+        - linked list
+            - 탐색이 느리다는 것이 단점
+        - hash table
+            - hash function이 같을 때, 충돌문제가 발생할 수 있음.
+            - 빠르게 탐색할 수 있음.
+
+:14주차-2
+- allocation methods
+    - continuous allocation
+        - 연속된 disk block을 할당
+        - 디렉토리에서 파일 관리할 때, 어디서 시작되고, 길이가 얼만큼인지에 대한 정보만 가지고 있으면 된다.
+        - 원하는 위치에 바로 접근하기가 용이하다
+        - 간단한 만큼 문제가 많다.
+            - first-fit / best-fit / worst-fit 중에 어떤 것을 이용할지 선택해야함.
+            - 외부단편화가 발생.
+            - 할당 공간이 부족하면 아예 송두리채 복사해서 여유공간에 넣어야 하는 과정이 필요.
+    - linked allocation
+        - block들이 linked list로 구성.
+        - 디렉토리는 최초 block과 마지막 block만 알고있으면 됨.
+        - 단편화 없음.
+        - access가 어려움. link를 타고 타고 가야함.
+        - 노드별로 약간의 부분을 데이터가 아닌 다른 용도로 써야 함.(next link, ...) 이는 하나로 보면 작지만 모든 노드들을 모아보면 용량의 큰 소모가 발생.
+    - file-allocation table(FAT)
+        - table에 각 entry가 disk block을 가리킨다.
+        - free block을 찾는것도 쉬움. 다음 index가 0인 것을 찾으면 됨.
+    - indexed allocation
+        - paging과 비슷한 관점에서 보면 됨.
+        - index block안에 주소들을 index로 접근해서 얻을 수 있음
+        - index block 크기는 제각각이므로 overhead가 발생할 수 있음.
+        - 이러한 index block을 관리하는 방법이 여러개 있음
+            - linked scheme
+                - linked list를 이용.
+            - multi-level scheme
+                - outer index table을 가지고 index table을 관리.
+                - 그러나 index table이 file에 따라서 낭비되는 경우가 있음.
+                - 이를 해결하고자 나온것이 unix의 inode 시스템.
+            - unix inode
+                - 작은 파일은 direct block을 이용하여 관리.
+                - 큰 파일은 크기에 따라 single indirect, double indirect, triple indirect 순으로 관리.
+
+:14주차-3
+- free space 를 관리하는 방법
+    - bit vector
+        - 1 : free, 0 : not free
+        - 장점 : 간단하다. free block을 찾기 쉽다
+        - 단점 : 메모리가 커질수록 bit가 차지하는 영역이 커짐.
+    - linked list
+        - free space를 link로 연결.
+    - grouping
+        - n개의 free block을 링크드리스트 형식으로 연결
+    - counting
+        - 첫번째 free block과 연속된 block들의 size를 저장
+
+- 효율, 성능
+    - page cache
+        - i/o 는 buffer를 이용해 읽어들인다. 여기서 page cahce를 사용하게 될 경우, page cache에도 file 내용이, buffer에도 file 내용이 중복된다.
+        - unified buffer cache
+            - memory-mapped I/O에서 직접 buffer에 접근할 수 있도록 하면 중복문제를 해결할 수 있다.
+
+- consistent checking
+    - unix : fsck
+    - windows : chkdsk
+
+- log structured file system (or journaling)
+    - file에 대한 작업을 모두 log로 남기는 것. filesystem이 깨지면 log를 이용해서 원상복구할 수 있도록 하는 것.
+
+- network file system
+    - 원격지에 있는 file system을 마지 local처럼 사용할 수 있도록 하는 것.
+    - NFS Mounting
