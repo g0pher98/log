@@ -23,7 +23,7 @@ chmod 755 ./install_ros_kinetic.sh
 ## 설치 확인
 
 설치가 끝났다면 `roscore` 명령을 입력했을 때, 아래와 같이 정상적으로 실행이 되면 설치가 완료된 것이다.
-![roscore](/.resource/210316_0251.PNG)  
+![roscore](/.resource/images/210316_0251.PNG)  
 그러나 개발자분이 마지막에 신경을 써주시지 못한 부분이 있어서 `roscore`을 실행하면 오류가 발생한다.
 ``` bash
 source ~/.bashrc
