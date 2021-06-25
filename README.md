@@ -6,6 +6,7 @@ Hi, I'm Jaeseung Lee 😆
 
 What I Learned 🧐
 ------------------------
+- GIT
 - Security
     - [Web Hacking/](/Security/web-hacking/)
     - [System Hacking/](/Security/system-hacking/)
@@ -34,3 +35,13 @@ What I Learned 🧐
 - Database
 
 - Programming
+
+
+----------------------------
+
+![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=g0pher98&layout=compact&theme=radical)
+
+
+<br><br><br>
+*잘못된 내용이 있다면 Issue에 달아주시면 수정하겠습니다 :)*
+<br><br>
