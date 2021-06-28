@@ -1,8 +1,8 @@
 # 스타일 가이드 모음
 
 ## Python 스타일 가이드
-Python의 경우 PEP8(Python Enhance Proposal 8)이라는 스타일 가이드가 있습니다.  
-###Python 공식 스타일 가이드(일명: PEP8)  
+ 
+### Python 공식 스타일 가이드(PEP8)  
 https://www.python.org/dev/peps/pep-0008/
 
 ### Google Python 스타일 가이드  
