@@ -1,4 +1,4 @@
-# Topic 1
+# git 1
 git이란? 버전관리 프로그램.
 
 ## 버전관리란?
@@ -45,9 +45,19 @@ git reset <FILE_PATH_TO_RESET>
 ```
 staging area에서 제거. 즉, add 취소.
 ```
+git reset --soft <COMMIT_HASH>
+git reset --mixed <COMMIT_HASH>
 git reset --hard <COMMIT_HASH>
 ```
-과거 커밋으로 돌아가고 싶을 때 사용할 수 있음. working directory가 바뀜.
+과거 커밋으로 돌아가고 싶을 때 사용할 수 있음.  
+옵션마다 세 가지의 작업 영역의 변경사항이 다른데, 다음과 같다.
+1. --soft
+    repository만 바뀜.
+2. --mixed
+    staging area와 repository만 바뀜.
+3. --hard
+    모든 작업 영역 바뀜.
+
 
 ### commit
 ``` bash
