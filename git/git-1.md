@@ -51,13 +51,13 @@ git reset --hard <COMMIT_HASH>
 ```
 과거 커밋으로 돌아가고 싶을 때 사용할 수 있음.  
 옵션마다 세 가지의 작업 영역의 변경사항이 다른데, 다음과 같다.
-1. --soft
-    repository만 바뀜.
-2. --mixed
-    staging area와 repository만 바뀜.
-3. --hard
-    모든 작업 영역 바뀜.
+- `--soft` : repository만 바뀜.
+- `--mixed` : staging area와 repository만 바뀜.
+- `--hard` : 모든 작업 영역 바뀜.  
 
+COMMIT_HASH 부분에도 commit hash 뿐만 아니라, head를 기준으로 지칭할 수 있다.
+- 직전 커밋 : `HEAD^`
+- N번째 이전 커밋 : `HEAD~N`
 
 ### commit
 ``` bash
@@ -125,3 +125,11 @@ git config alias.history 'log --pretty=oneline'
 git diff <COMMIT_HASH_1> <COMMIT_HASH_2>
 ```
 두 커밋 사이의 변화 확인하는 명령.
+
+### tag
+``` bash
+git tag <TAG_NAME> <COMMIT_HASH>
+git tag -d <TAG_NAME> # remove
+git tag # tag listing
+```
+커밋에 태그를 달 수 있다. 보통 버전을 구분할 때 사용.
