@@ -9,6 +9,7 @@ What I Learned 🧐
 - GIT
 - Security
     - [Web Hacking/](/Security/web-hacking/)
+    - [Network Hacking/](/security/network-hacking/)
     - [System Hacking/](/Security/system-hacking/)
     - [Cryptography/](/Security/cryptography/)
     - [Malware Analysis/](/Security/malware-analysis/)
@@ -35,7 +36,7 @@ What I Learned 🧐
 - Database
 
 - Programming
-
+    - [javascript](/programming/javascript/)
 
 ----------------------------
 
