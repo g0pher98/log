@@ -8,20 +8,22 @@ What I Learned 🧐
 ------------------------
 - GIT
 - Security
-    - [Web Hacking/](/Security/web-hacking/)
+    - [Web Hacking/](/security/web-hacking/)
     - [Network Hacking/](/security/network-hacking/)
-    - [System Hacking/](/Security/system-hacking/)
-    - [Cryptography/](/Security/cryptography/)
-    - [Malware Analysis/](/Security/malware-analysis/)
+    - [System Hacking/](/security/system-hacking/)
+    - [Cryptography/](/security/cryptography/)
+    - [Malware Analysis/](/security/malware-analysis/)
         - Michelangelo virus Analysis
         - Mini-100 virus Analysis
-    - [Browser Exploit/](/Security/browser-exploit/)
+    - [Browser Exploit/](/security/browser-exploit/)
         - Downunderctf 2020 - is this pwn or web?
-    - [Linux Kernel Exploit/](/Security/linux-kernel-exploit/)
+    - [Linux Kernel Exploit/](/security/linux-kernel-exploit/)
         - CVE-2017-11176
+    - [Mobile Security](/mobile/)
+        - frida
 
 - Robotics
-    - [ROS/](/Robotics/ROS/)
+    - [ROS/](/robotics/ros/)
         - ROS Tutorial
 
 - AI
