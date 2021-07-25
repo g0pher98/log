@@ -1,5 +1,5 @@
-# Tutorial 10
-이번 장에서는 C++에서의 publish 및 subscriber 노드를 생성하는 방법에 대해 소개한다.
+# Tutorial 11
+이번 장에서는 python에서의 publish 및 subscriber 노드를 생성하는 방법에 대해 소개한다.
 [원문](http://wiki.ros.org/ROS/Tutorials/WritingPublisherSubscriber%28python%29)
 
 # publisher node 개발

@@ -40,24 +40,24 @@ $ echo "int64 num" > msg/Num.msg # .msg 파일 생성 및 데이터 삽입
 빌드 및 실행 시 메세지 관련 처리에 필요한 부분으로 보이나 아직 자세하게는 알아보지 않아도 될 것 같다. 간단하게 필요한 의존성 패키지를 설정해주는 과정이라고 보아도 무방할 것 같다.
 
 위 설정이 완료되었다면 이번에는 실제 의존성 연결을 하기 위해 `CMakeLists.txt` 파일을 수정해야한다. `find_package()` 라는 함수 부분을 찾아서 다음과 같이 `message_generation` 부분만 추가하면 된다.
-```
+``` bash
 find_package(catkin REQUIRED COMPONENTS
    roscpp
    rospy
    std_msgs
    message_generation
 )
-```
+``` 
 또한, `catkin_package()`에도 의존성을 명시해주어야 한다.
-```
+``` bash
 catkin_package(
-  ...
+  ... 
   CATKIN_DEPENDS message_runtime
   ...
 )
 ```
 다음으로는 `add_message_files()`에 msg 파일을 올려주어야 한다. 주석처리 되어있을텐데, 이를 제거해주고 아래와 같이 설정한다.
-```
+``` bash
 add_message_files(
   FILES
   Num.msg
@@ -65,7 +65,7 @@ add_message_files(
 ```
 
 이번에도 주석처리되어있는 `generate_messages()` 함수에서 주석을 제거해서 아래와 같이 만들어준다.
-```
+``` bash
 generate_messages(
   DEPENDENCIES
   std_msgs
@@ -97,7 +97,7 @@ int64 sum
 ```
 내용을 확인해보면 `---` 와 같은 구분선으로 상/하가 구분되어있다. 여기서 `a, b`가 request이고, `sum`
 msg 생성때와 마찬가지로 `package.xml`를 열어서 주석되어있는 코드 중 아래에 해당하는 코드 부분만 주석을 해제한다. 이미 진행했으면 하지 않아도 된다.
-```
+``` xml
 <build_depend>message_generation</build_depend>
 <exec_depend>message_runtime</exec_depend>
 ```
