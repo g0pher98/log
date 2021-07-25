@@ -38,4 +38,14 @@ git push origin master:master
 ```
 git checkout <COMMIT_HASH>
 ```
-이처럼 HEAD가 커밋을 직접적으로 가리키는 것을 `Detached HEAD`라고 한다. 브랜치로부터 떨어졌기 때문에 detached 라는 단어를 사용한다. `Detached HEAD`를 사용하는 이유가 몇가지 있는데 다
+이처럼 HEAD가 커밋을 직접적으로 가리키는 것을 `Detached HEAD`라고 한다. 브랜치로부터 떨어졌기 때문에 detached 라는 단어를 사용한다. `Detached HEAD`를 사용하는 이유가 몇가지 있는데 특정 커밋에서 다른 새로운 브랜치를 만들고 싶을 때 사용한다.
+
+# reset, checkout 차이점
+- reset
+    - HEAD가 가리키던 브랜치가 다른 커밋을 가리키도록 한다.
+    - HEAD도 결국 간접적으로 다른 커밋을 가리키게되는 효과가 생긴다
+
+- checkout
+    - HEAD 자체가 다른 커밋이나 브랜치를 가리키도록 한다.
+    - 브랜치를 통하지 않고, 커밋을 직접적으로 가리키기 때문에 Detached HEAD가 된다.
+
