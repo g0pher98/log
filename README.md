@@ -1,9 +1,3 @@
-Hi, I'm Jaeseung Lee 😆
-------------------------
-
-![g0pher98's GitHub stats](https://github-readme-stats.vercel.app/api?username=g0pher98&show_icons=true&theme=radical)
-
-
 What I Learned 🧐
 ------------------------
 - GIT
@@ -42,9 +36,5 @@ What I Learned 🧐
 
 ----------------------------
 
-![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=g0pher98&layout=compact&theme=radical)
-
-
-<br><br><br>
 *잘못된 내용이 있다면 Issue에 달아주시면 수정하겠습니다 :)*
 <br><br>
