@@ -65,7 +65,10 @@
         - cable network(= cable modem)
             ![image](https://user-images.githubusercontent.com/44149738/132982047-f5bc71b5-da38-4b60-af35-0ec6ecde0ea9.png)
             - 동축선(두꺼움)을 이용.
-            - 선으로 통신되는 frequency(주파수)를 채널별로 쪼개서 여러 종류의 데이터를 보낼 수 있도록 구성.
+            - 선으로 통신되는 부분을 채널별로 쪼개서 여러 종류의 데이터를 보낼 수 있도록 구성.
+                - 채널을 쪼개는 방식은 다음과 같음
+                    - FDM (Frequency Division Multiplexing)
+                    - TDM (Time Division Multiplexing)
             - 각 가정이 shared cable(공유되는 케이블)을 이용
                 - 집 안에서는 동축선(coax)
                 - 각 가정이 공유하는 선은 광섬유(fiber)
@@ -75,8 +78,12 @@
                 - 데이터를 올리는 것보다 다운 받는 경우가 많기 때문.
             - upstream 2Mbps
             - downstream 30Mbps
+            - 여러명이 동시에 케이블을 사용할 수 있는 share access network임.
         - FTTH(Fiber To The Home)
             ![image](https://user-images.githubusercontent.com/44149738/132982254-cabfba1c-58f9-4da6-a79b-3bb581110899.png)
+            - 제일 중요.
             - 광섬유가 central office에서 집까지 연결되는 방식.
+                - 정확히는 OLT 에서 ONU까지
             - 가정에서 가장 많이 사용하는 방식.
             - 속도가 가장 좋다. 1Gbps.
+        
