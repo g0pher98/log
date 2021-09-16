@@ -63,10 +63,26 @@
                 - full-node가 많아지면 비트코인이 더욱 견고해지지만, 상당한 리소스때문에 일반 사용자는 full-node가 되기 어려움.
             - lightweight client(SPV client)
                 - transaction 정보를 얻기 위해서는 full-node에 연결해야함.
-                - 지갑 사용자에 관련된 transaction 처리만 담당
+                - 지갑 사용자에 관련된 transaction 처리만 담당. 가벼움.
             - third-party API client
-                - 직접적으로 연결하지 안혹, third-party 시스템을 이용해 bitcoin에 연결
+                - 직접적으로 연결하지 않고, third-party 시스템을 이용해 bitcoin에 연결
         - bitcoin core
+            - bitcoin에 참여하는 노드가 되기 위한 방법.
             - 가장 대표적인 reference implementation
-
-
+        - quick start
+            - 지갑이 개인키/공개키를 생성하고, 공개키를 바탕으로 address 생성.
+            - address는 다른 사람들과 공유
+            - address가 생성되었다고 바로 비트코인에 등록되는 개념은 아니고 실제로 거래가 이루어져서 트랜젝션이 발생하면 그때 bitcoin system에 기록됨
+        - bitcoin 획득 방법
+            - 기존 사용자로부터 구매
+            - 물건/서비스 판매를 통한 획득
+            - ATM 기기를 이용한 구매
+            - 거래소를 통한 구매
+        - 송금
+            1. 특정 address에 대해 btc 전달 요청
+            2. wallet은 이 요청을 기반으로 transaction 생성 후 wallet 내 개인키를 통해 signing
+            3. bitcoin network에 transaction 전파( < 1sec)
+            4. 수신자는 몇초 후에 확인 가능
+            - 그러나 이는 unconfirmed 상태임. (블록체인 네트워크에 기록되진 않았음.)
+            - 10분마다 mining이 수행이 될 때, 트렌젝션이 블록에 추가가 되면 confirmed 상태가 됨.
+            - 이제서야 수신자는 해당 비트코인에 대해 정상적인 소유자가 됨.
