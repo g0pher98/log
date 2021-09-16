@@ -749,3 +749,10 @@ POC를 사용하기 위해 `gcc -o poc poc.c -lbluetooth` 명령으로 아래 �
 [+] Leaked: ffffffff98e00000, ffffffff98e001a4, 1229
 ```
 Leak 된 데이터 중 첫 번째가 하위 바이트가 0으로 초기화되어있어서 처음에 base 주소인줄 알았지만 그저 구조상 2byte를 버린 데이터일 뿐 다른 의미는 없어보인다.
+
+## Reference
+https://github.com/google/security-research/security/advisories/GHSA-7mh3-gq28-gfrq
+https://xcellerator.github.io/posts/bleeding_tooth/
+https://www.venustech.com.cn/new_type/aqldfx/20210416/22626.html
+https://code.woboq.org/linux/linux/net/bluetooth/a2mp.c.html
+https://code.woboq.org/linux/linux/net/bluetooth/a2mp.h.html
