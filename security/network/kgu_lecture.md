@@ -218,3 +218,73 @@
         - 정적/동적 비교
             - ![image](https://user-images.githubusercontent.com/44149738/133918096-4241c93e-1903-4d78-b3be-060daad9a86a.png)
 
+8. 전송계층
+    - 대표적으로 TCP가 있음
+    - TCP가 가진 주소를 포트(port)라고 하며, 0~65535번까지 존재
+    - 0 ~ 1023 : well known port
+    - TCP
+        - 연결 지향형 프로토콜
+        - IP와 함께 통신을 하는데 반드시 필요한 가장 기본적인 프로토콜
+        - TCP 특징
+            - 높은 신뢰성
+            - 가상 회선 연결 방식(규모적인 부분에서 이점)
+            - 연결의 설정과 해제
+            - 데이터 체크섬
+            - 시간 초과와 재전송
+            - 데이터 흐름 제어
+        - TCP 패킷 구조
+            - ![image](https://user-images.githubusercontent.com/44149738/133951443-e7e9c730-c00b-41ac-9662-08e6611cc7d9.png)
+
+        - 연결 설정 과정(three-way handshaking)
+            - tcp가 연결 전에 가상 경로를 설정
+            1. C ----- SYN -----> S
+            2. C <-- SYN + ACK -- S
+            3. C ----- ACK -----> S
+        
+        - 연결 해제 과정
+            1. C ---- FIN ---> S
+            2. C <--- ACK ---- S
+            3. C <--- FIN ---- S
+            4. C ---- ACK ---> S
+    
+    - UDP
+        - 비연결 지향형 프로토콜
+        - 응답 확인과정이 없어서 네트워크 부하를 주지 않음
+        - 그러나 확인 과정이 없어서 신뢰성도 없음.(무결성 보장 못함)
+        - UDP 특징
+            - 비연결 지향형
+            - 네트워크 부하 감소
+            - 비신뢰성
+            - 전송된 데이터의 일부가 손실됨
+        - UDP 패킷 구조
+            - ![image](https://user-images.githubusercontent.com/44149738/133952433-6c91aaff-eed7-4a0c-81e1-ea09f83b7d2a.png)
+
+9. 응용계층
+    - 관련 응용 프로그램이 별도 존재하며, 여러가지 프로토콜에 대하여 사용자 인터페이스를 제공
+    - 프로토콜
+        - FTP(file transfer protocol, 20, 21)
+            - 파일 전송을 위한 가장 기본적 프로토콜
+            - C와 S가 대화형으로 통신 가능
+        - Telnet(23)
+            - 원격에 로그인하도록 tcp 연결을 설정.
+        - SMTP(simple mail transfer protocol, 25)
+            - 메일 서비스
+        - DNS(domain name system, 53)
+            - 도메인 이름 주소를 통해 IP 주소를 확인할 수 있는 프로토콜
+        - TFTP(trivial file transfer protocol, 69)
+            - 파일을 전송하는 프로토콜
+            - UDP 패킷을 사용하고, 인증 기능을 제공하지 않음
+            - 임베디드 시스템에서 주로 사용
+        - HTTP(hypertext transfer protocol, 80)
+            - 인터넷을 위해 사용하는 기본적인 프로토콜
+        - POP3 & IMAP
+            - POP3(110) : 메일 서버로 전송된 메일을 "확인"할 때 사용
+            - IMAP(143) : POP3와 기본적으로 같으나, 메일이 서버에 남음
+        - RPC(remote procedure call, 111)
+            - sun의 remote procedure call을 나타냄
+        - NetBIOS(network basic input/output system, 138)
+            - 기본적인 사무기기와 window 시스템 간 파일 공유를 위한 것
+            - NBT(NetBIOS over tcp) 프로토콜을 사용해 원격의 인터넷으로 전달 가능
+        - SNMP(simple network management protocol, 161)
+            - 네트워크 관리와 모니터링을 위한 프로토콜
+
