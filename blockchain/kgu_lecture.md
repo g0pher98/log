@@ -86,3 +86,30 @@
             - 그러나 이는 unconfirmed 상태임. (블록체인 네트워크에 기록되진 않았음.)
             - 10분마다 mining이 수행이 될 때, 트렌젝션이 블록에 추가가 되면 confirmed 상태가 됨.
             - 이제서야 수신자는 해당 비트코인에 대해 정상적인 소유자가 됨.
+
+2. transactions
+    - 구조
+        - double-entry bookkeeping 과 비슷한 방식. 
+        - input을 output의 형태로 가치를 변화시키는 것.
+        - transaction 안에는 inputs(수입) 와 outputs(지출)에 대한 내용과 그 합계가 있다.
+        - (outputs 합) - (inputs 합) = 수수료
+        - input의 신뢰성을 판단하는 방법
+            - 이전 트랜젝션에서 받은 output을 기반으로 input 형성
+        - 잔돈은 잔돈이라고 명시하지는 않지만 다시 보내는 output을 형성함으로써 구현
+            - 일반적으로 익명성을 위해 같은곳으로 잔돈을 받지 않음.
+    - 올바른 input 구성하기
+        - 주소를 이용한 검색으로 해당 주소에 output으로 들어온 트랜젝션을 탐색
+        - output에 있지만 이후 input으로 사용된 트랜젝션은 이미 소진된 거래이기 때문에 제외.
+        - full-node client
+            - 모든 노드를 탐색
+        - lightweight client
+            - 모든 트랜젝션을 저장할수는 없으니 본인이 관심이 있는 항목에 대해서만 모아서 저장.
+            - 만약 정보가 누락되거나 부족할 경우, 주변의 full node client에게 정보 요청
+    - output 구성하기
+        - 실제로는 스트립트를 만들어서 output 구성
+        - 누군가 output을 사용하려고 할 때, 스크립트에 대한 솔루션을 제시해야지만 사용할 수 있음.
+        
+        
+        
+        
+
