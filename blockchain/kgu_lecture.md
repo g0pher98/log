@@ -123,5 +123,48 @@
     - block이 쌓이면 쌓일수록 아래에 있는 block은 그만큼 여러번 검증이 되었다고 볼 수 있기 때문에 신뢰성이 높아진다
     - 보통 6번 이상 쌓이게 되면 더이상 수정이 어려워진다.
         
-        
+4. bitcoin core
+    - 대표적인 비트코인 구현체
+    - 레포 : https://github.com/bitcoin/bitcoin.git
+    - 보통 비트코인 관련 개발자라면 full node로 진행함.
+        - 필요한 데이터를 바로 뽑아와야 하기 때문
+    - 필요사항
+        - disk 공간 > 300GB 
+            - 시간이 지날수록 점점 커짐
+        - ram > 2G
+        - 빠른 인터넷 대역폭
+    - bitcoind (bitcoin core daemon)
+        - `bitcoind -printtoconsole -txindex=1`
+    - bitcoin-cli
+        - 비트코인 코어 인터프리터 
+        - `bitcoin-cli getblockchaininfo`
 
+    - API 구조
+        - bitcoind는 데몬으로, 안정적으로 서버에서 웹을 구동시킨다. 웹 상에서 `JSON-RPC 2.0` 형태로 서비스를 제공한다.
+        - client는 어떤 형태로든 bitcoind 규격(rpc)에 맞춰서 요청을 하면 원하는 데이터를 응답받을 수 있다.
+    - API 사용
+        - `curl --user username:credential --data-binary '{"jsonrpc": "1.0", "id":"curltest", "method":"getblockchaininfo", "params": []}' -H 'content-type: text/plain;' http://127.0.0.1:8332/`
+        - `python-bitcoinlib` 라이브러리를 사용하면 python 코드를 간단하게 짜서 질의할 수 있음.
+    - 동기화
+        - full node에 필요한 block들을 모두 가져오는 과정
+        - mainnet : 실제 네트워크
+        - testnet : 테스팅용. 이것마저 큼,,,
+    - API
+        - `getrawtransaction()`
+            - block hash, txid를 파라미터로 받음
+            - raw한 transaction 그 자체
+        - `decoderawtransaction()`
+            - raw한 transaction을 파라미터로 받음
+            - raw한 transaction을 디코딩
+        - `getblockhash()`
+            - block height를 파라미터로 받음
+            - block hash를 반환
+        - `getblock()`
+            - block hash를 파라미터로 받음
+            - block 정보를 받음
+            - block 내 txid들을 확인할 수 있음
+    - python
+        - `python-bitcoinlib` 라이브러리가 있음
+        - `from bitcoin.rpc import RawProxy` 형태로 import
+        - `p = RawProxy(); p.getblockchaininfo()` 형태로 사용
+        - 이 외에도 다양한 언어, 다양한 라이브러리가 존재함.
