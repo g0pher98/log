@@ -168,3 +168,97 @@
         - `from bitcoin.rpc import RawProxy` 형태로 import
         - `p = RawProxy(); p.getblockchaininfo()` 형태로 사용
         - 이 외에도 다양한 언어, 다양한 라이브러리가 존재함.
+
+5. bitcoin address
+    - bitcoin의 owner인지 확인할 수 있는 key 존재
+    - bitcoin에서는 공개키 시스템을 사용
+        - one way function, trap door 특성 활용
+    - key는 비트코인에 기록되지 않고, 사용자가 저장해야 함.
+    - 대신 priv key를 기반으로 pub key를 만들고 이를 기반으로 address가 생성됨.
+    - key를 이용해서 전자서명을 하는 방식. -> 소유 증명.
+    - 암호화를 하는 것 보다는 전자서명을 하는 것에 집중.
+    - 비트코인은 ECDSA 라는 타원곡선 기반 암호화를 사용
+        - 타원곡선 상에서 덧셈을 활용
+            - ![image](https://user-images.githubusercontent.com/44149738/134524440-8e1e584e-a73f-4a28-953d-def4370ca5ff.png)
+            1. 두 점을 잇는 직선을 그림
+            2. 직선과 만나는 타원곡선의 한 점을 찾음
+                - 교점이 없는 경우 point at infinity라고 하며 0의 값을 가짐.
+            3. 교점에 x축 대칭인 점이 두 점의 합인 지점.
+            - 2P = P + P
+            - kP = P + P + ... + P (k times)
+            - priv key는 256bit의 정수.
+    - 비트코인에서는 `secp256k1` 이라는 타원곡선 암호시스템을 사용
+        - 다른 시스템에 비해 연산이 빠르고 안전함.
+        - ![image](https://user-images.githubusercontent.com/44149738/134524520-58cf6eee-bedd-4db8-90b1-1cd0018e6616.png)
+        - mod 연산을 거치면서 타원곡선이 선이 아닌 점의 형태로 나타남.
+    - 생성된 public key는 두 번의 hashing을 이용해서 address를 생성한다.
+        - ![image](https://user-images.githubusercontent.com/44149738/134527382-3ea945fe-0737-4490-9623-be546abd68cf.png)
+        - sha256 해싱
+        - RIPEMD160 해싱
+        - base58check encode
+            - b58 : 헷갈리는 단어를 뺀 58개 character로 인코딩
+            - b58check : b58에 추가로 version과 checksum
+                1. 머리에 version(1byte)
+                    - address 데이터는 0x00이 붙음
+                    - 이 때문에 항상 address 결과의 첫글자가 1이 되도록 함.
+                    - 이 외에도 다양한 prefix 값이 존재
+                2. 꼬리에 checksum(4bytes)
+                    - 이중으로 sha256 hashing 후 앞 4 bytes
+                3. 최종 b58 encoding
+
+6. key formats
+    - priv key formats
+        - WIF(Wallet Import Format)
+            - prefix 값으로 5가 들어감
+        - WIF-compressed
+            - HEX + suffix 01
+            - 위 데이터를 WIF로 나타냄
+            - K로 시작하는 것이 특징
+    - pub key formats
+        - K = (x, y)
+        - prefix 04 + x + y => 너무 길어짐.
+        - compressed -> x값만 저장
+            - 타원곡선 함수는 정해져있기 때문에 x값으로 y를 알 수 있음
+            - 그러나 x에 대한 y가 두 개일 수 있음.
+            - prefix 02 : 짝수(y가 음수)
+            - prefix 03 : 홀수(y가 양수)
+            - compressed를 사용하기 위해서는 priv key에 명시해주어야 함.(WIF-compressed)
+    - lib
+        - python ecdsa
+        - python pybitcointools (by Vitalik Buterin:이더리움 창시자)
+
+7. 기타 다양한 address
+    - P2PKH(Pay to public key hash)
+        - 가장 기본적인 형태
+        - 1로 시작
+    - P2SH(Pay to script)
+        - 3으로 시작
+        - 특정 한 명의 key를 이용해서 address를 생성하지 않음
+        - 임의의 script를 만들 수 있음. -> 이에 대한 hash갑이 address
+            - A = RIPEMD160(SHA256(script))
+        - script를 unlock할 수 있는 사람이 곧 소유자
+        - b58check로 version 5로 encoding하기 때문에 결과가 3으로 시작.
+        - multi-signature 기능 구현에 많이 사용됨
+            - address로 들어온 bitcoin을 사용하기 위해서는 2개 이상의 여러개의 전자서명이 제공이 되어야 한다.
+            - M of N multisig
+                - N개 키 중 M개의 키를 이용해 서명을 만들어야 사용할 수 있다.
+                - 이 M을 Threshold 라고 볼 수 있음
+            - 왜 쓰는가?
+                - 부부와 같이 공동 계좌 개념으로 운영하는 경우 사용할 수 있음. (1 of 2)
+                - 회사 직원이 공동 계좌를 사용할 때 여러명의 검토 및 승인을 거치게 할 수 있음.
+    - vanity address
+        - 사람이 보다 알아보기 쉬운 address
+        - 앞글자는 1인 일반적인 주소지만 그 뒤에 특정 단어를 넣을 수 있음
+        - `1LoveBPzzD...`
+        - brute-force 방식으로 획득.
+        - 안정성에는 문제 없음. 기존 address와 동등한 수준의 안정성.
+        - 고정하려는 단어가 길수록 오래걸림.
+            - 4자리 1분
+            - 5자리 1시간
+            - 6자리 2일
+        - GPU를 활용해서 연산하는 방식도 사용
+        - pool을 관리하는 방식도 존재
+    - paper wallets
+        - 종이에 프린트해서 저장하는 wallet
+        - priv key를 qr 형태로 출력
+        - 주로 key 백업용도로 사용
