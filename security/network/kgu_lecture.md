@@ -288,6 +288,72 @@
         - SNMP(simple network management protocol, 161)
             - 네트워크 관리와 모니터링을 위한 프로토콜
 
+10. whois
+    - 도메인 확인, 도메인과 관련된 사람 및 인터넷 자원을 찾아보기 위한 프로토콜
+    - 처음에는 와일드카드 검색이 가능했으나, 인터넷 상업화와 스팸메일 증가로 해당 기능 삭제
+    - 얻을 수 있는 정보
+        - 도메인 등록 및 관련 기관 정보
+        - 도메인 이름과 관련된 인터넷 자원 정보
+        - 등록자, 관리자, 기술관리자의 이름, 연락처, 이메일
+        - 레코드의 생성시기와 갱신 시기
+        - 주 DNS 서버와 보조 DNS 서버
+        - IP 주소의 할당 지역 위치
+    - 서버 목록
+        - 전체 : whois.internic.net
+        - 아시아 : www.arin.net, www.apnic.net
+        - 한국 : whois.krnic.net 
+        - 해커 애용 : whois.greektoos.com
+        - 검색서비스
+            - https://후이즈검색.한국/kor/whois/whois.jsp
+
+11. Hosts
+    - DNS가 존재하기 전에 사용. 지금도 목적에 따라 많이 사용.
+    - 경로
+        - 윈도우 : {시스템 경로}/system32/drivers/etc/hosts
+        - 리눅스 : /etc/hosts
+    - 파일 구조
+        - 보통 hosts 파일은 비어있음
+        - DNS 서버가 작동하지 않을 때, 별도의 네트워크를 구성하여 임의로 사용할 때, 다른 IP 주소를 가진 여러 대의 서버가 같은 도메인으로 클러스터링되어 운영되는 상태에서 특정 서버에 접속하고자 할 때 유용
+    - 윈도우10에서는 디펜더가 변조를 방지함.
+
+12. DNS
+    - IP를 도메인 이름으로 상호 매칭시켜주는 시스템
+    - DNS 계층구조
+        - ![image](https://user-images.githubusercontent.com/44149738/134617063-7a6095db-a5c6-4f6d-9765-08c8393f2164.png)
+        - 가장 상위 개체는 root(.)
+        - FQDN(Fully Qualified Domain Name) : 완성된 주소
+            - ex) www.g0pher.kr
+    - OS별 DNS 등록 및 확인
+        - 리눅스
+            - /etc/resolv.conf
+            - - `ifconfig`
+        - 윈도우
+            - 인터넷 프로토콜 등록 정보에서 추가
+            - `ipconfig /all` 으로 확인
+    - `ipconfig /displaydns` : 캐싱된 dns 확인
+    - `ipconfig /flushdns` : 캐시 flush
+    - DNS 서버의 구분
+        - 주 DNS : 중심 서버
+        - 부 DNS : 백업 서버
+        - 캐시 DNS : 임시 DNS 서버
+    - DNS 레코드의 종류
+        - ![image](https://user-images.githubusercontent.com/44149738/134632265-9b3acd33-ee0e-46d2-a8e3-ed5e23ed1122.png)
+        - ns : 네임서버
+        - mx : 메일서버
+        - soa : 도메인에 권한있는 서버
+        - all : 모두
+
+
+
+
+
+
+
+
+
+
+
+
 
 # 2주차 과제
 1. 프로토콜의 3가지 요소가 아닌 것은 무엇인가?  
