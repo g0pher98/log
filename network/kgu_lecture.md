@@ -86,4 +86,143 @@
                 - 정확히는 OLT 에서 ONU까지
             - 가정에서 가장 많이 사용하는 방식.
             - 속도가 가장 좋다. 1Gbps.
-        
+
+2. access network
+    - home network
+        - 일반 가정집에서 사용하는 구조
+        - NAT역할을 하는 공유기. 보통 유무선 공용임.
+    - enterprise access networks(ethernet)
+        - 회사나 대학과 같은 곳에서 주로 사용
+        - ISP로부터 서비스받고, 이를 라우터로 시작해서 뿌리내리는 형태
+        - 공유기와는 급이 다른 성능의 라우터를 사용. 10Gbps까지도 낼 수 있음
+    - wireless access networks
+        - 무선 통신. 활발히 사용되고 있음
+        - 독점이 아닌 공유(shared) 형태의 통신임.
+            - 전송속도가 사용자가 많아지면 느려짐.
+        - wifi, 4G, 5G와 같은 통신을 통해 access point나 base station(기지국)과 같은 end system에 접근함.
+        - 크게 두 가지로 나누어볼 수 있음
+            - wireless lan
+                - 무선랜, bluetooth
+                - 30미터 미만의 빌딩 안과 같은 공간에서 사용
+                - WiFi는 802.11b/g/n/a/ac 이라는 표준이 있음 : 11, 54, 450
+                    - IEEE 라고 하는 표준화 "단체"
+                        - 802 로 시작하는 표준화 "그룹"
+                            - 인터넷 네트워크 프로토콜을 표준화 함.
+                - 블루투스는 IEEE 802.15.1 WG(working group)에서 표준화 함.
+            - wide-area wireless access
+                - 3G, 4G:LTE, 5G
+
+3. physical media (물리 매체)
+    - physical link
+        - 물리적인 통신 경로
+        - 두 개로 나누어 볼 수 있음
+            - guided media
+                - 실제 물리적 통로
+                - ex) 구리선 광섬유 동축선
+            - unguided media
+                - 물리적 통로 없이 전파
+                - ex) 라디오
+
+    - guided media 종류
+        - twisted pair (TP)
+            - guided media 케이블 중 하나
+            - 랜선이 이 방식임.
+            - 절연구리선을 꼬아놓음
+                - 전자기장 간섭을 최소화하기 위함.
+
+        - coaxial cable (동축선)
+            - 두 개의 선이 있고, 양방향으로 주고받을 수 있음
+            - 여러개의 채널을 하나의 케이블에 담아서 보낼 수 있을 때 사용
+            - HFC(Hybrid Fiber and Coax) 방법으로 사용할 수도 있음
+            
+        - fiber optic cable (광섬유)
+            - 유리섬유에 빛으로 비트를 표현
+            - 오류가 거의 없음. -> 전자기장에 대한 간섭이 거의 없어서.
+                - 즉, 높은 속도로 만들어도 괜찮음! -> 속도가 빠름!
+            - 광섬유 특성상 급격히 꺾거나 나누기 어려움. point to point 특성을 가지고 있음.
+                - 다른 곳으로 쪼개기 위해서는 splitter와 같은 장비를 이용해서 나눠야함.
+
+    - unguided media 종류
+        - radio
+            - 전기신호를 흘림에 따라 자기장이 생성됨.
+            - 이후 전기장과 자기장의 상호작용을 통해 마치 파동(wave)처럼 퍼져나가게 됨.
+            - 선 연결이 필요 없다는 장점
+            - 양방향 통신이 가능
+            - 벽이나 장애물이 있으면 있으면 회절 및 굴절이 됨.
+                - 벽 뒤의 수신자도 통신이 가능
+                - 주파수가 올라갈수록 회절이 잘 안됨.
+                    - 5G가 직선구간에서만 잘되는 이유도 이것에 해당
+            - 종류
+                - LAN(WiFi)
+                    - AP
+                    - 54, 300, 450Mbps
+                - wide-area
+                    - base station
+                    - 4G : ~ 10Mbps
+                - terrestrial microwave
+                    - base station
+                    - DMB 생각하면 됨. 그냥 이런게 있음.
+                - satellite
+                    - 지구 -> 위성 -> 다른지역 전송
+                    - 거리가 멀어서 속도는 떨어짐
+                        - end-end 딜레이가 많이 발생
+                    - 돈이 많이 들게 됨.
+                        - 여러명이 나눠서 써야함.
+                            - bandwidth를 줄이고 그만큼 여러개를 만들어야함
+                                - 100Mbps 10개 x
+                                - 10Mbps 100개 o
+                    - 위성의 종류
+                        - geosynchronous
+                            - 고정위성.
+                            - 지구 자전과 같이 돌아서 정지해 있는 것처럼 보임
+                            - 매우 높이 있어서 딜레이 큼
+                        - low altitude
+                            - 유동위성
+                            - 비교적 높이가 낮아서 딜레이가 상대적으로 작음
+                            - 지구 자전때문에 움직이는것 처럼 보임.
+                                - 실제로 사람 입장에서는 움직이는게 맞음
+
+4. network core
+    - ![image](https://user-images.githubusercontent.com/44149738/135022931-2d028e40-f777-4723-afc1-657ff82f6b03.png)
+    - network core에는 기본적으로 라우터가 그물망처럼 서로 연결되어있음
+    - circuit switching 또는 packet-switching 방식을 이용할 수 있음
+        - circuit switching
+            - 전화선 같은 존재. 하나의 연결마다 독립적인 하나의 회선 제공
+        - packet-switching
+            - 패킷단위로 쪼갠 다음, end system에 전송
+            - link의 전체 용량(capacity)을 모두 사용할 수 있다는 장점이 있음.
+                - 자세한건 뒤에서 다룸
+    - alternative core: circuit switching
+        - 스위치간 통신에서 어떤 회선을 사용할 것인지 선택해서 독점.
+        - circuit-like 성능
+            - circuit과 거의 같은 성능. 즉, link를 독점하기 때문에 전체를 나혼자 사용하는것과 같은 효과
+        - 회선 사용을 예약 했는데 사용하지 않으면 다른 사람이 사용하지 못해서 낭비가 됨.
+        - 회선을 쪼개서 사용할 수도 있음
+        - 쪼개는 방식은 크게 두 가지가 있음.
+            - ![image](https://user-images.githubusercontent.com/44149738/135025490-b669b503-d547-4e56-b4e9-94c61bd16713.png)
+            - FDM (Frequency, 주파수)
+                - 주파수를 기준으로 분할
+            - TDM (Time, 시간)
+                - 시간을 기준으로 분할
+
+    - packet switching: queueing delay, loss
+        - 먼저 요청된 패킷을 먼저 처리.
+        - 예약 시스템의 낭비 문제를 해결할 수 있음
+        - 버퍼를 관리하는 과정(queueing)에서 대기로 인한 딜레이가 발생할 수 있음
+        - 버퍼가 가득 차면 패킷이 버려짐.(loss)
+    
+    - circuit switching VS packet switching
+        - 동시 사용 : packet switching은 많아도 가능
+            - 1Mbps 회선이 있다고 가정하자
+            - 100Kbps 데이터를 보낸다고 하면
+            - circuit switching
+                - 10%를 독점하기 때문에 10명만 사용 가능
+            - packet switching
+                - 10명 동시사용까지는 원할하게 사용 가능하나, 그 이상부터는 대기시간이 길거나 유실되는 상황 발생 가능
+                - 35명이 사용한다고 가정하면, 10명이 동시에 사용할 확률은 `.0004`임. 즉, 35명은 충분히 사용 가능하다고 볼 수 있음.
+        - 그렇다면 packet switching이 절대적으로 좋은가?
+            - packet switching은 폭발적인 통신이 발생하는 특성을 가진 네트워크에서 효율이 좋다.
+            - 여기서 폭발적이란, 지속적인 통신이 아닌, 필요할 때 발생하고 그 외에 사용하지 않을때는 고요한 그런 특성을 말함.
+            - 효율적으로 관리한다는 장점이 있지만, 혼잡한 순간이 발생할 수 있다는 단점도 존재한다.
+                - 프로토콜을 이용해서 신뢰성을 높이고 혼잡제어 기능이 필요하다.
+            - 실시간 서비스는 지속적인 데이터기 때문에 circuit like한 네트워크가 적합해보이지만 사실 아직 이런 기술이 개발되지 않음.
