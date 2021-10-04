@@ -344,6 +344,26 @@
         - all : 모두
 
 
+13. IP 추적
+    - 메일 서비스
+        - 메일에서 원본보기 기능을 이용하면 메일을 raw 하게 확인할 수 있음.
+        - 수많은 헤더 중에 Received를 확인하면 수신자의 IP를 확인할 수 있다.
+        - Received-SPF : 주요 메일 서버와 IP를 등록해두고, 메일이 전소오딘 서버의 IP와 메일 주소를 확인하여 스팸 메일 여부를 검사한 결과를 표시
+            - ![image](https://user-images.githubusercontent.com/44149738/135768118-a0898912-97f6-498a-82b8-b15edd2dea02.png)
+        - G suite 도구상자 messageheader 기능을 이용하면 메일 원본을 해석해준다.
+    - P2P 서비스
+        - 중간에 서버가 끼는 경우 영장과 같은 방법으로 확인할 수 있음
+        - 대용량 같은 경우 서버에서 IP만 제공받고, 직접 통신
+            - 여기서 IP가 드러나서 위험할 수 있음
+    - 웹 서비스
+        - 웹 접근에 대한 로그가 남음.
+            - `IIS 관리자` - `로깅` 에서 관련 설정 확인할 수 있음.
+            - 저장되는 기본 폴더는 `\inetpub\logs\LogFiles` 에 있음.
+    - traceroute
+        - TTL을 설정해서 경로 탐색
+        - 윈도우에서는 tracert를 사용 
+        - Open Visual Traceroute 라는 프로그램이 있음. trace route 과정을 비주얼하게 볼 수 있음.
+        - 오래되긴 했지만 sam spade 툴로 여러 ip 관련 분석을 진행해볼 수 있음. 
 
 
 
