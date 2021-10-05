@@ -117,3 +117,57 @@
     - 자바빈즈 액션태그
         - setProperty 액션태그
         - getProperty 액션태그
+
+6. 내장객체
+    - jsp 페이지에서 사용할 수 있도록 **jsp 컨테이너에 미리 정의된 객체**
+    - import 문 없이 자유롭게 사용 가능
+    - 객체 생성 안해도 직접 호출해서 사용 가능
+    - 내장 객체의 종류
+        - ![image](https://user-images.githubusercontent.com/44149738/136025394-2bbc84be-9ca0-4875-980b-d12e654187a6.png)
+    - request 내장 객체
+        - jsp에서 가장 많이 사용되는 기본 내장 객체
+        - 웹 브라우저에서 서버의 jsp 페이지로 전달하는 정보를 저장
+        - 파라미터 관련 메소드
+            - getParameter()
+            - getParameterValues()
+            - getParameterNames()
+            - getParameterMap()
+        - HTTP 헤더 관련 메소드
+            - getHeader()
+            - getHeaders()
+            - getHeaderNames()
+            - getIntHeader()
+            - getDateHeader()
+            - getCookies()
+        - 웹 브라우저/서버 관련 메소드
+            - getRemoteAddr()
+            - getContentLength()
+            - getProtocol()
+            - getServerName()
+            - getServerPort()
+            - getMethod()
+            - getRequestURI()
+            - ...
+    - response 내장 객체
+        - 요청 처리 결과
+        - `<jsp:forawrd />` 와 response.sendRedirect 차이점
+            - forward는 uri는 유지된 채 제어권만 넘김
+            - redirect는 아예 넘어가버림
+        - 페이지 이동 메소드
+            - sendRedirect()
+        - 응답 컨텐츠 관련 메소드
+            - sendError(404, "not found")
+            - setStatus()
+            - setContentType()
+            - getContentType()
+            - ...
+            - setIntHeader("Refresh", 3) // 3초마다 새로고침
+    - out 내장 객체
+        - 스크립틀릿 태그의 표현문 태그(`<%= %>`)와 같은 결과
+        - 메소드
+            - print()
+            - println()
+            - newLine()
+            - clearBuffer()
+            - flush()
+            - isAutoFlush()
