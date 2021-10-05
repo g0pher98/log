@@ -27,3 +27,22 @@
 
 2. Android Studio
     - 안드로이드를 pc에서 돌릴 수 있도록 예뮬레이팅을 지원하는 AVD(Android Virtual Device)를 지원함.
+
+3. 간단한 앱 개발
+    - Constrain Layout
+        - 가로, 세로 하나의 기준점이 있기만 하면 자리가 정해짐.
+        - 하나라도 정해지지 않을 경우 해당 축의 처음으로 이동하는데, 좌측 상단이 기준임.
+    - xml에서 button 생성
+        - layout_width, layout_height는 필수
+        - 안드로이드에서 크기는 보통 "dp" 라는 단위를 사용
+        - wrap_content 크기를 주면 내용물에 따라 유연하게 늘어남.
+        - match_parent 크기를 주면 부모에 맞춤. layout일 경우 layout에 맞게 최대치로 늘어남.
+        - 0dp를 주면 match_constraint 크기를 갖게 되며, 동일 layer의 object를 제외하고 최대치로 늘어남.
+    - 모든 위젯에는 id 속성이 있음
+        - id : object를 찾을 때, 접근할 때 사용하는 구분정보.
+            - `@+id/NewId`
+                - `@` : 앱에
+                - `+id` : id를 추가한다
+                - `/NewId` : 다음 데이터로
+        - 접근 시 `R.id.NewId` 형태로 접근.
+            - R이라는 리소스 영역에 정수형 상수로 저장됨.
