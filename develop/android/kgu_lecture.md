@@ -46,3 +46,41 @@
                 - `/NewId` : 다음 데이터로
         - 접근 시 `R.id.NewId` 형태로 접근.
             - R이라는 리소스 영역에 정수형 상수로 저장됨.
+    - 안드로이드 애플리케이션 resource
+        - drawable
+            - 그림파일
+        - layout
+            - 앱 레이아웃
+        - mipmap
+            - 아이콘
+        - values
+            - colors.xml : 색 관련 값
+            - strings.xml : 문자 관련 값
+                - `<string name="submit">제출</string>` 형태로 선언
+                - `@string/submit` 형태로 사용
+    - View
+        - textview, button 등 눈에 보이는 객체는 모두 view라고 부른다.
+        - 원하는 view 객체에 접근하기 위해서는 `findViewById()`를 사용하면 된다.
+            - findViewById(R.id.myView)
+    - 버튼 클릭 이벤트
+        ```java
+        public void onClickButton(View v) {
+            Toast.makeText(this, "제출되었습니다", Toast.LENGTH_SHORT).show();
+        }
+        ```
+        - 이벤트를 직접 설정해줄 수도 있음
+            ```java
+            TextView title = (TextView) findViewById(R.id.title1);
+            title.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Toast.makeText(getApplicationContext(), "회원가입을 진행중입니다", Toast.LENGTH_SHORT).show();
+                }
+            });
+            ```
+    - 안드로이드 프로젝트 구조
+        - `/java` : java 코드
+        - `/res` : 리소스 모음
+        - `/manifests` : 어플리케이션 정보를 저장
+            - 아이콘, 앱 이름, 테마, activity 정보 등이 존재
+        - `/Gradle Scripts` : 컴파일 시 필요 파일 존재. 민감하니 가능한 건드리지 말기.
