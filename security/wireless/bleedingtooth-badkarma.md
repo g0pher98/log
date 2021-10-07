@@ -331,7 +331,7 @@ struct l2cap_chan *a2mp_channel_create(struct l2cap_conn *conn,
 	return mgr->a2mp_chan;
 }
 ```
-최종적으로 `mgr->a2mp_chan`을 반환하는 것을 알 수 있다. 이 mgr 변수는 `amp_mgr_create()` 함수에 의해 생성된다. 이 함수도 살펴보자.
+최종적으로 `mgr->a2mp_chan`을 반환하는 것을 알 수 있다. 또한 type confusion을 발생시키는 변수인 `chan->data`에 mgr 데이터가 대입되는 것을 확인할 수 있다. 즉, 해당 변수는 `sock` 자료형이 아니라 `amp_mgr` 자료형으로 선언되었다. 이 mgr 변수는 `amp_mgr_create()` 함수에 의해 생성된다. 이 함수도 살펴보자.
 ```c++
 static struct amp_mgr *amp_mgr_create(struct l2cap_conn *conn, bool locked)
 {
