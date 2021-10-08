@@ -262,3 +262,101 @@
         - 종이에 프린트해서 저장하는 wallet
         - priv key를 qr 형태로 출력
         - 주로 key 백업용도로 사용
+
+8. wallet
+    - wallet은 사용자 친화적, 보안, 유연성 등을 고려해야 함.
+    - wallet이 가상화폐를 담고있는 공간이라는 오해를 하는 경우가 있다.
+        - 화폐가 존재하는게 아니라 key만 존재한다.
+        - 이 key를 이용해서 장부에 기록되어있는 내용을 사용하는 것.
+    - 종류
+        - non-deterministic wallet
+            - ![image](https://user-images.githubusercontent.com/44149738/136514710-42535242-fd0f-4a65-bd75-3f527d441681.png)
+            - 결정적이지 않다.
+            - 각각의 키가 연관성이 있는게 아니라 무작위로 생성
+            - 비트코인 초기단계에서 주로 사용했었음.
+        - deterministic wallet
+            - 각각의 키가 독립적이지 않고 연관성이 있음.
+            - 니모닉 코드라는 seed 사용
+            - type-1 wallet
+                - ![image](https://user-images.githubusercontent.com/44149738/136514757-5c3ded42-5e8d-4aca-ba3b-fcabb03aac8a.png)
+                - 기본적인 형태의 wallet
+                - 이전 address와 관련된 seed를 기반으로 다음 wallet 생성.
+                - 초기 seed만 알고있으면 모든 wallet 복원 가능하기 때문에 백업 리소스 크게 감소.
+            - HD wallet(type-2)
+                - ![image](https://user-images.githubusercontent.com/44149738/136514826-7f0bf093-821f-4c54-8f20-d35cc5228076.png)
+                - tree 구조를 띔.
+                - seed -> master key를 생성
+                - master key를 최상위 부모로 하여 트리구조로 child key 확장.
+                - 만들어진 키의 구조가 조직화된다는 장점이 있음.
+                - priv key를 공개하지 않고도 거래가 가능하다는 장점이 있음.
+    - Mnemonic code
+        - seed값을 저장하기에 사용자 입장에서 어려울 수 있음
+        - 이를 보다 사용자 친화적이게 바꾼것이 니모닉 코드
+        - 즉, 시드값을 읽을 수 있는 형태로 변환
+        - 12 ~ 24개의 단어로 구성
+        - ![image](https://user-images.githubusercontent.com/44149738/136516631-d7261329-1f44-4630-a416-0519b3abbda3.png)
+        - 니모닉 코드 = findInDict(랜덤값(128bit) + sha256(랜덤값) 앞 4bit)
+        - 니모닉 코드 to Seed
+            - ![image](https://user-images.githubusercontent.com/44149738/136517633-0a4bcb31-37a7-48bf-97ff-e99de37c900a.png)
+            - seed = PBKDF2(니모닉코드 + salt(mnemonic + password))
+            - 사용자의 password를 연산에 추가하여 니모닉 코드가 유출되어도 안전함.
+    - creating hd wallet from seed
+        - master priv key   =  left(hmac_sha512(seed), 256)
+        - master chain code = right(hmac_sha512(seed), 256) = seed for child keys
+        - child key 생성 방법 (CKD : Child Key Derivation)
+            - ![image](https://user-images.githubusercontent.com/44149738/136524107-f1279316-dffa-4b67-8bcd-1ba06186a385.png)
+            - parent의 priv key와 hmac 연산결과를 더한 것이 child priv key가 됨.
+            - ![image](https://user-images.githubusercontent.com/44149738/136524233-8114a04e-2a4e-42b0-83fd-43c06134be8b.png)
+            - parent priv key가 없어도 child를 생성 가능.
+                - 상위 노드의 key를 서버에 저장하지 않아도 된다는 장점
+
+9. key
+    - Entended key
+        - (priv/pub key + chain code) 이렇게 두 개의 값을 묶어놓은 것.
+        - 이 두개만 알면 child key들을 생성할 수 있음.
+        - xprv = priv key + chain code
+        - xpub = pub key + chain code 
+    - Hardened key
+        - 기존 방식은 잠재적인 위험이 있음.
+            - xpub와 child의 priv key가 노출이 되면 parent의 priv key를 얻을 수 있음
+            - ![image](https://user-images.githubusercontent.com/44149738/136526733-7a500138-a4be-46c9-b042-13cb3a34a3a8.png)
+        - 위 문제를 개선하고자 hardened derivation 이 나옴.
+        - priv key로만 계산하도록 구성
+            - child key로 parent key를 얻을 수 없음.
+            - parent와 child 사이에 벽을 하나 만드는 느낌
+        - 이 방법을 쓰게되면 xpub의 장점을 사용할 수 없게됨. pub key로만 쉽게 만들 수 없음. 무조건 priv key 필요.
+    - 실제로는 위 방법을 혼합해서 사용
+        - ![image](https://user-images.githubusercontent.com/44149738/136527245-06f61817-e6d1-480a-a03f-8aedf69043a6.png)
+        - 최초의 child는 hardened 방식을 사용해서 parent key가 유출되지 않도록 구성하고, 그 하위부터는 일반적인 방법으로 생성. 결국에 뚫려도 최상위 master key는 안전함.
+    - key의 identifier
+        - index number는 32bit의 크기를 가짐. 즉, 10의 32승개의 key 생성 가능
+        - index의 첫 1bit를 통해 normal 방식인지, hardened 방식인지 판단
+            - 0x00000000 ~ 0x7fffffff : normal
+            - 0x80000000 ~ 0xffffffff : hardened
+        - key에 id를 부여
+            - key가 tree의 어느 위치에 존재하는지 파악할 수 있도록 설정
+            - m : priv key
+            - M : pub key
+            - 0' : hardend 방식으로 생성된 child 중 0번째.
+            - M/23/17/0/0 : master key의 child 중 23번째 child 중 17번째 child 중 0번째 child 중 0번째 pub key
+        - depth가 깊어지면 파악이 어려움.
+            - BIP-44라는 규칙이 있음
+            - `m / purpose' / coin_type' / account' / change / address_index`
+                - purpose' : 44' (상수)
+                - coin_type'
+                    - bitcoin mainnet: `m/44'/0'`
+                    - bitcoin testnet: `m/44'/1'`
+                    - litecoin: `m/44'/2'`
+                - account'
+                    - 하나의 wallet이지만 여러개의 account를 만들 수 있음
+                    - 회사 wallet을 여러 부서에서 사용하는 느낌
+                    - `m/44'/0'/0'`, `m/44'/0'/0'`
+                - change
+                    - 0 : external chain : 외부 거래용
+                    - 1 : internal chain : 내부 거래용 (잔돈처리 같은 활동에 사용)
+                - address_index
+
+
+
+
+
