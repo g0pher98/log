@@ -226,3 +226,57 @@
             - 효율적으로 관리한다는 장점이 있지만, 혼잡한 순간이 발생할 수 있다는 단점도 존재한다.
                 - 프로토콜을 이용해서 신뢰성을 높이고 혼잡제어 기능이 필요하다.
             - 실시간 서비스는 지속적인 데이터기 때문에 circuit like한 네트워크가 적합해보이지만 사실 아직 이런 기술이 개발되지 않음.
+
+5. 인터넷 구조
+    - network of networks. end system이 access ISP 들을 통해서 연결되어있음.
+    - 점진적으로 덧붙혀지면서 인터넷이 확대되어오다보니 복잡한 구조를 띔.
+        - 복잡한 구조가 된 이유는 경제적, 국가 정책적 이유
+    - access net을 서로 연결하면 회선이 너무 많아져서 확장이 어려움.
+    - 이를 해결하고자 global ISP가 서로 연결되고, customer가 제공받는 형태로 구성
+    - global ISP가 여러개인 경우 서로 연결됨
+        - peering 또는 IXP를 통해 연결
+    - ![image](https://user-images.githubusercontent.com/44149738/136493591-40946eda-789e-4c8a-8415-a3001007a33e.png)
+
+6. 딜레이
+    - ![image](https://user-images.githubusercontent.com/44149738/136501210-ea9f25d3-cce1-4de2-ae89-8a2c75384e75.png)
+    - process delay
+        - 패킷에 오류검출, 결정 관련 처리 등 패킷을 처리할 때 드는 비용
+    - queueing delay
+        - 버퍼에서 앞의 패킷이 모두 빠질 때 까지 대기하는 시간
+        - 가변적임
+    - transmission delay
+        - 패킷 전송을 위해 대역폭에 맞게 쪼개서 올리는 시간
+        - delay = (Packet Length)/(Link bandwidth) = L/R
+    - propagation delay
+        - 실제 회선을 타고 출발지부터 목적지까지 이동하는 시간
+        - delay = (물리적 회선의 길이) / (전송속도) = d/s
+        - transmission delay와는 전혀 관계가 없다.
+    - 실제 delay는 얼마나 발생하는가?
+        - traceroute 프로그램을 사용하면 됨.
+
+7. 패킷 loss
+    - 버퍼가 가득 차면 패킷을 버린다(drop). 이를 loss라고 함.
+
+8. thuroughput (수율)
+    - 얼마나 빠르게 보낼 수 있는가를 나타냄
+    - instantaneous : 특정 시간에 특정 지점에서
+    - average : 긴 시간동안의 평균
+    - 가장 대역폭이 작은 link를 `bottleneck link`라고 함.
+        - 이 link가 곧 전체의 전송속도를 결정지음.
+
+9. protocol "layers(계층)"
+    - protocol stack
+        - application
+        - transport
+        - network
+        - link
+        - physical
+    - OSI 7 Layer
+        - ISO에서 제작
+        - presentation과 session 계층이 추가됨.
+    - encapsulation
+        - 계층별 패킷 명칭  
+            - application : messasge
+            - transport : segment
+            - network : datagram
+            - link : frame 
