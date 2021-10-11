@@ -356,7 +356,77 @@
                     - 1 : internal chain : 내부 거래용 (잔돈처리 같은 활동에 사용)
                 - address_index
 
+10. transaction
+    - 비트코인에서 가장 중요한 부분. 핵심.
+    - transaction output
+        - UTXO(Unspent Transaction Output)
+            - ![image](https://user-images.githubusercontent.com/44149738/136531611-f386cd88-27ed-4624-bf2c-f35db3cdee6b.png)
+            - tx output 중에서 아직 사용되지 않은 조각들을 관리
+            - tx에 input으로 작용한 output은 사용한 output이기 때문에 사용된 output으로 취급
+            - 모든 full 노드가 동일한 UTXO set을 얻을 수 있음.
+            - tx가 발생할 때 마다 UTXO set은 계속 바뀜
+            - 사용자 관점
+                - address 에 맞는 tx가 생성되면 내 지갑에 돈이 들어왔음을 체크
+                - UTXO set 내 합을 구해서 현재 내가 소유하고 있는 전체 돈을 알 수 있음.
+        - UTXO를 사용하지 않는 TX가 있음
+            - 이를 coinbase tx라고 함
+            - 채굴을 통해 얻는 경우임.
+        - 구조
+            - ![image](https://user-images.githubusercontent.com/44149738/136534192-c7d745a8-a79a-416b-99bb-ae0ca842e4a3.png)
+            - value로 사토시 단위의 금액 기술
+            - scriptPubKey 를 통해서 이 output을 사용할 수 있는 자격 명시
+                - locking script가 정확한 표현
+    - transaction input
+        - 기존 UTXO를 소비를 해서 새로운 UTXO를 만듦.
+        - 구조
+            - ![image](https://user-images.githubusercontent.com/44149738/136535381-fd0ee8ae-e6d5-43c3-b3ae-3cb79c81f94c.png)
+            - txid로 어떤 utxo를 소비할 것인지 명시
+            - vout으로 txid에 해당하는 tx의 output 중 몇 번째 output을 사용할 것인지 명시
+            - scriptSig로 unlocking script를 적어서 사용 권한 명시
+    - transaction fee
+        - 수수료. 채굴자가 획득함.
+        - 수수료 역할
+            - 채굴의 보상이 되기 때문에 활발한 채굴을 유도. 이는 곧 안정적인 네트워크 운영으로 이어짐
+            - 공격자는 dummy tx를 마구 날려서 다른 tx를 처리 못하는 dos 공격을 할 수도 있기 때문에 이를 방지하기도 함.
+        - 수수료 책정
+            - 일반적인 금융 거래에서는 금액을 기준으로 수수료가 책정됨.
+            - 비트코인에서는 금액은 관심없음. tx의 크기가 중요.
+                - tx 크기가 크면 소비해야하는 네트워크 자원과 스토리지가 많이 사용됨
+            - tx 크기에 따라 책정하지만 그 비율은 시장경제원리에 따름. 많이 내면 빨리 tx가 반영되고, 적게내면 그만큼 늦게 반영됨.
+            - 적정 수수료는 다음 사이트에서 계산해줌
+                - https://bitcoinfees.earn.com
+        - 수수료 지불 방법
+            - output을 수수료만큼 제외한 금액으로 기록하면 됨.
+            - 여기서 잔돈받는 address를 기입 안한다든지 실수가 발생하면 그만큼 수수료로 지불되는 거라서 그런 상황이 발생하면 채굴자는 냉큼 받아먹음.
 
-
-
-
+11. transaction script
+    - 스택기반 language임
+        - 매우 심플한 구조
+        - UTXO에 `locking script`라는 코드 생성
+        - UTXO를 사용하기 위해서 `locking script`를 해결해야함.
+        - tx의 input에 `unlocking script`를 작성해서 권한 증명
+    - turing incompleteness 하다
+        - loop나 분기하는 등 복잡한 코드가 없다.
+    - stateless 하다
+        - 외부 요인이 없음
+        - 어떠한 노드에서 실행되어도 같은 결과를 가짐
+    - locking script   
+        - scriptPubKey 라는 이름으로 불림
+        - 주로 공개키가 들어가기 때문
+    - unlocking script
+        - scriptSig 라는 이름으로 불림
+        - 주로 시그니처(전자서명)이 들어가기 때문
+    - validation
+        - ![image](https://user-images.githubusercontent.com/44149738/136786125-31b0d83a-fc87-4205-8248-62e194bfbba4.png)
+        - btc를 사용하기 위해 validation이라는 검증 과정 필요
+        - unlocking script + locking script 이렇게 두 데이터를 잇는다
+        - 각 노드는 이를 실행한다
+    - script execution
+        - 스택 기반이므로 push, pop 을 사용. 간단한 asm과 비슷한 형태
+        - unlocking script + locking script를 왼쪽부터 읽는다.
+        - 읽은 값이 숫자면 스택에 push
+        - 명령이면 실행.
+            - OP_ADD : pop 2개 -> push 결과
+            - OP_EQUAL : pop 2개 -> 같으면 push TRUE
+        - 실행이 모두 끝난 후에 스택에 TRUE 딱 한개의 값만 남았을 때, valid 하다고 본다.
+            - 즉, 해당 UTXO를 소비할 수 있다.
