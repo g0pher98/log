@@ -171,3 +171,23 @@
             - clearBuffer()
             - flush()
             - isAutoFlush()
+
+7. 폼(form)
+    - 사용자가 웹 브라우저를 통해 작성된 데이터를 한번에 웹 서버로 전송하는 양식
+    - 메소드
+        - get : url에 데이터를 넣어서 전송하는 방식
+        - post : 데이터를 별도로 첨부하여 전달하는 방식
+    - 데이터 입력 태그
+        - input
+        - select - option
+        - textarea
+    - form 데이터 처리하기
+        - request 내장 객체를 이용
+        ```jsp
+        String 변수 = request.getParameter(요청 파라미터 이름);
+        String[] 변수 = request.getParameterValues(요청 파라미터 이름);
+        ```
+        - setCharacterEncoding('UTF-8') : 인코딩 설정
+        - getParameterNames() : 파라미터 name 리스트 가져오기
+        - hasMoreElements()
+        - nextElement()
