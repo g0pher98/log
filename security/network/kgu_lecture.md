@@ -366,6 +366,161 @@
         - 오래되긴 했지만 sam spade 툴로 여러 ip 관련 분석을 진행해볼 수 있음. 
 
 
+14. 풋프린팅(footprinting)
+    - 발자국을 살펴보는 일
+    - 공격 대상의 정보를 모으는 방법 중 하나
+    - 사회 공학 기업(social engineering)
+        - 약한패스워드, 패스워드를 적어놓거나 공개된 곳에 공유하는 등의 원초적인 취약점
+    - 해킹에 필요한 정보
+        - 침투하고자 하는 계정
+            - id, pw, 이메일 등
+        - 게시판 이용
+        - 협력사나 계열사 보안조치 확인
+        - 직접 접속하는 것 보다 유틸리티로 웹 사이트를 다운로드한 뒤 검색하는 것이 좋음.
+
+15. 스캔
+    - 서버 및 서비스가 살아있는지 확인하는 과정
+    - 전통적으로 ping과 같은 방법으로 ICMP 스캔이 있음
+        - ICMP를 통해 활성화 여부를 확인하는 방법
+            - ![image](https://user-images.githubusercontent.com/44149738/136903696-39012dea-3f9c-4c5f-a464-ff06bff9ba17.png)
+        - Echo Request가 막혔을 때 이용할 수 있는 방법
+            1. timestamp request 패킷 이용.
+            2. information request 패킷 이용.
+            3. address mask request와 reply 패킷 이용
+            - ![image](https://user-images.githubusercontent.com/44149738/136904368-8d08d0b3-131e-4f8f-b778-b74bfd37173d.png)
+    - 공격에 사용되는 스캔들
+        - TCP
+            - TCP Open 스캔
+                - tcp를 이용한 가장 기본적인 스캔
+                - ![image](https://user-images.githubusercontent.com/44149738/136904503-0e684bce-afaf-459e-a719-d0eca2585a0a.png)
+                - 3way handshake 여부를 이용. SYN 전송시 `RST + ACK`가 오거나 안오면 죽은것.
+                - reverse ident : 서버의 데몬을 실행하고 있는 프로세스의 소유권자를 확인하기 위한 것
+                    - 보통 113번 포트를 사용자 인증에 사용하는데, 보통 중지되어있음.
+            - 스텔스(Stealth) 스캔
+                - 로그를 남기지 않고, 자신의 위치를 숨기는 스캔 모두를 통칭
+                - ![image](https://user-images.githubusercontent.com/44149738/136905284-24373408-77e3-4e8b-acbe-244b5735c371.png)
+                - 살아있을 때 rst를 보내버려서 연결이 맺어지지 않아서 기록이 남지 않음.
+                - 대표적으로 TCP Half Open 스캔이 있음
+                - FIN(Fisish 스캔)
+                    - 포트가 열린 경우 응답이 없고, 닫힌 경우 rst 패킷이 돌아옴
+                - NULL 스캔
+                    - 플래그 값을 설정하지 않고 보낸 패킷
+                - XMAS 스캔
+                    - ACK, FIN, RST, SYN, URG 플래그 모두를 설정하여 보낸 패킷
+                - ![image](https://user-images.githubusercontent.com/44149738/136905598-a3a0e946-77d7-4057-ae94-99ed85a87c01.png)
+            - ACK 패킷을 이용한 스캔
+                - RST 패킷을 받아 분석
+                - 열린 경우 : TTL 64 이하인 RST 패킷, 윈도우가 0이 아닌 임의 값을 가진 RST 패킷
+                - 닫힌 경우 : TTL값이 일정하게 큼, 윈도우 크기가 0인 RST 패킷
+            - TCP 패킷을 이용한 스캔
+                - 모든 시스템에 동일하게 적용되지는 않고, 많이 알려져서 거의 적용되지 않음.
+                - SYN 패킷을 이용한 스캔 방법은 세션을 성립하기 위한 정당한 패킷과 구별할 수 없어서 아직도 유효하며, 아주 효과적임
+            - TCP 단편화
+                - 크기가 20바이트인 TCP 헤더를 패킷 두 개로 나누어서 보냄
+                    - 첫 번째 패킷은 출발지와 도착지 IP주소
+                    - 두 번째 패킷은 스캔하려는 포트 번호
+                - 첫 번째 패킷은 포트정보가 없어서 방화벽을 통과하고, 두 번째 패킷은 IP주소가 없어 방화벽을 지날 수 있음
+            - 시간차를 이용한 스캔
+                - 짧은시간동안 많은 패킷을 보내는 방법
+                    - 방화벽과 IDS 처리 용량의 한계를 넘김
+                - 아주 긴 시간동안 패킷을 보내는 방법
+                    - 더미 패킷을 던짐
+                - 시간차에 의한 공격의 구분
+                    - ![image](https://user-images.githubusercontent.com/44149738/136906955-b75e5b31-a02e-4b50-891b-e107d545b54f.png)
+            - FTP 바운스 스캔
+                - 취약한 FTP 서버에서 PORT 명령을 사용하여 다른 시스템의 포트 활성화 여부를 확인.
+                - 대부분 통제하기 때문에 큰 의미는 없으나, 알아두면 좋음
+        - UDP 스캔
+            - 포트가 닫힌경우에만 ICMP Unreachable 패킷이 옴.
+            - 신뢰성이 떨어짐. 파급력있지는 않음.
+    - 실습
+        - fping
+            - `-q` : icmp req와 reply를 숨김
+            - `-a` : 활성화되어있는 시스템을 보여줌.
+            - `-s` : 스캔이 끝난 후 결과를 정리해서 보여줌.
+        - nmap
+            - 강력한 스캐닝 툴임
+            - `-sT` : TCP Open 스캔
+            - `-sS` : SYN 스텔스 스캔
+            - `-sF` : 특정 포트 스캔. `-p` 옵션이랑 함께 사용.
+            - `-f -sS` : 방화벽을 통과하기 위해 패킷을 쪼갬.
+            - 기타
+                - ![image](https://user-images.githubusercontent.com/44149738/136911305-b5d059ea-1ed5-4e7e-9317-498cab154909.png)
+
+16. 운영체제 탐지
+    - 배너 그래빙(banner grabbing)
+        - 원격지 시스템에 로그인을 하면 뜨는 안내문과 비슷한 배너를 확인하는 기술
+    - TCP/IP 반응 살펴보기
+        - FIN 스캔 이용
+            - 윈도우, BSD, CISCO, IRIS 등이 해당
+            - 세션 연결 시 TCP 패킷의 시퀀스 넘버 생성 관찰
+                - 윈도우 : 시간에 따른 시퀀스 넘버 생성
+                - 리눅스 : 완전한 랜덤
+                - FreeBSD, Digital-Unix, IRIX, 솔라리스 : 시간에 따른 랜덤한 증분
+    - netcraft 이용하기
+        - https://sitereport.netcraft.com/?url=http://www.naver.com
+
+
+17. 방화벽
+    - 1차 방어선
+    - 접속 허용/차단 결정
+    - IDS : 방화벽이 막을 수 없거나, 차단에 실패한 공격을 탐지하여 관리자에게 알려주는 역할
+    - firewalk(파이어워크)
+        - 방화벽의 ACL을 알아내는 방법
+        - 방화벽까지의 TTL보다 1만큼 큰 TTL을 생성해서 전송
+        - 패킷 차단 시, 아무 패킷도 돌아오지 않음
+        - 패킷을 그대로 보낼 시, 다음 라우터에서 traceroute 처럼 ICMP Time Exceeded 메세지(type11)를 보냄
+
+18. SNMP(Simple Network Management Protocol)
+    - 중앙 집중적인 관리 툴의 표준 프로토콜
+    - ICMP 만으로 네트워크를 관리하기에는 너무 복잡해졌기 때문에 UDP를 이용한 관리방법 등장
+    - 관리 시스템과 관리대상(AGENT)로 나뉨.
+    - Agent의 구성
+        - SNMP(simple network management protocol) : 전송 프로토콜
+        - MIB(management information base) : 관리할 개체의 집합
+        - SMI(structure fo management information) : 관리 방법
+    - 관리시스템과 agent 통신의 최소 일치 사항
+        - 버전, 커뮤니티, pdu 타입
+    - 관리시스템과 agent 통신
+        - ![image](https://user-images.githubusercontent.com/44149738/136928278-ac5c115e-d2b5-4ed2-a294-022eaa16e687.png)
+        - get request: 관리시스템이 특정 변수 값을 읽음.
+        - get next request: 관리 시스템이 이미 요청한 변수 다음 변수 값을 요청
+        - set request: 관리 시스템이 특정 변수 값의 변경을 요청
+        - get response: 에이전트가 관리 시스템에 해당 변수값을 전송
+        - trap: 에이전트의 특정 상황을 관리 시스템에 알림.
+    - MIB
+        - 관리자가 조회하거나 설정할 수 있는 개체들의 데이터베이스
+        - 개체별로 트리 형식 구조를 이룸 (RFC 1213)
+        - 네트워크 관리자는 MIB의 특정 값을 가져와서 agent의 상태를 보고 관리함.
+    - SMI
+        - 표준에 적합한 MIB를 생성하고 관리하는 기준(관리 정보 기준)
+    - OID
+        - MIB를 생성하려면 OID를 지정받아야 함. (IP 주소와 유사한 표기법 사용)
+        - 각 제조업체나 기관은 특정 번호를 할당받고 이 번호를 생산한 장비에 부여
+        - OID 구조
+            - ![image](https://user-images.githubusercontent.com/44149738/136928936-a5c5a366-49c7-48f6-baa9-76dce74c97c7.png)
+    - SNMP의 취약점
+        - 기본적으로 누구라도 SNMP의 MIB 정보를 볼 수 있음
+        - 패킷이 UDP로 전송되어 연결의 신뢰도가 낮음
+        - 데이터가 암호화되지 않은 평문으로 전송되어 스니핑 가능.
+    - 실습
+        ```bash
+        sudo apt install snmp # install client snmp
+        sudo nmap -sU -p 161 <server-ip> # check server snmp service is opened
+        sudo nmap -sU -p 161 --script=snmp-brute 192.168.171.129 # snmp community string crack : "public"
+        snmpwalk -v 1 -c public 192.168.171.129 1.3.6.1.2.1.1 # view system info by OID
+        ```
+    - 보안 대책
+        - SNMP가 불필요하다면 SNMP 사용을 막음
+        - 커뮤니티를 패스워드처럼 복잡하게 설정하여 쉽게 노출되지 않도록 관리
+        - 패킷을 주고받을 호스트를 설정하여 SNMP를 사용할 시스템의 IP를 등록
+    
+
+
+
+
+
+
 
 
 
@@ -432,6 +587,5 @@
 
 16. TCP 프로토콜에 대해 간단히 설명하시오  
     답) TCP 프로토콜은 연결 지향형 프로토콜입니다. 논리적인 "연결" 상태를 유지하기 위해서 3 way handshake 라는 연결과정과 4 way handshake 라는 연결 해제 과정을 진행하게 되는데, 이 과정에서 송신자와 패킷 내 송신자와의 일치 여부를 고려하지 않기 때문에 DoS 공격에 악용될 수 있습니다.
-
 
 
