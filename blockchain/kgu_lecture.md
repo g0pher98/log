@@ -455,3 +455,134 @@
                     - (a5, a6) = {(4,1) (3,2) (2,3)}
                 - 가능한 조합은 다음과 같음
                     - `{3 2 1 3 2 1}`
+
+12. P2PKH (pay to public key hash)
+    - btc tx에서 가장 많이 사용됨.
+    - locking script
+        - 돈을 받을 사람의 public key의 hash 값을 script에 넣음
+        - `DUP HASH160 <PubKeyHash> EQUALVERIFY CHECKSIG` script 구성
+    - unlocking script
+        - `<sign> <pubkey>`로 unlocking script를 구성
+    - 동작방식
+        - ![image](https://user-images.githubusercontent.com/44149738/137493000-979bf18f-7b1e-4b0d-9c94-604f12db48d0.png)
+        - ![image](https://user-images.githubusercontent.com/44149738/137493190-65460f8b-cbcf-4a64-9aba-356f9d4618ff.png)
+    - 목적 : 소유권 증명을 위해 결국 전자서명을 확인하는 것.
+    - 비트코인에서 전자서명
+        - UTXO의 올바른 소유주임을 증명하는데 사용.
+        - TX를 만들어서 전파했다고 하면, 나중에 해당 거래를 부정할 수 없음(부인방지).
+        - 중간에 누군가가 수신자를 변조했다고 했을 때, 이를 방지할 수 있음.
+        - 비트코인에서는 전자서명 알고리즘으로 ECDSA 라는 타원곡선 상의 DSA 알고리즘을 사용.
+
+13. ECDSA
+    ```
+    솔직히 이 부분은 도저히 모르겠다,,, DSA 기억이 안난다,,,
+    ```
+    - ![image](https://user-images.githubusercontent.com/44149738/137494362-7364fd8e-c873-4614-ba70-a316c9a8b81f.png)
+    - RSA 방식과 다르게 랜덤한 k를 생성해서 이를 이용하여 전자서명을 도출
+    - ![image](https://user-images.githubusercontent.com/44149738/137495166-3198872f-45a5-4feb-b907-56b1b7299237.png)
+    - ![image](https://user-images.githubusercontent.com/44149738/137495420-f1003f10-d6a6-4773-b85f-03ddefb4596b.png)
+    - 이렇게 전자서명 r과 s가 들어가는 것을 확인할 수 있다.
+    - 마지막에 `01` 부분은 hash type을 뜻한다.
+        - SIGHASH 라고 불린다.
+        - 대부분 ALL 타입을 사용(80% 이상의 TX가 사용)
+            - 대부분 애플리케이션도 위에 맞게 구성되어있음
+            - 복잡한 타입의 복잡한 SCRIPT를 사용하려면 일반적인 애플리케이션에서 지원하지 않기 때문에 이런 경우에는 별도의 작업을 통해서 코드를 구현해야한다.
+        - SIGHASH flag
+            - 마지막 1byte 부분
+            - tx의 어떤 부분이 message가 되어서 전자서명이 생성됐는지 표현
+            - flag
+                - 0x01 : all - 모든 input/output 포함.
+                - 0x02 : none - 모든 input은 포함하지만 output은 포함하지 않음
+                - 0x03 : single - 모든 input은 포함하지만, output은 1개만 포함
+        - ANYONECANPAY flag
+            - SIGHASH를 사용하면 같이 쓸 수 있음.
+            - SIGHASH와 0x08 OR 연산을 진행해서 표현.
+            - flag
+                - 0x81 : all|ANYONECANPAY - input 1개, output 포함.
+                - 0x82 : none|ANYONECANPAY - input 1개, output은 포함하지 않음
+                - 0x83 : single|ANYONECANPAY - input 1개, output 1개만 포함
+            - 이게 왜 필요한가?
+                - 여러 사용자가 tx를 만드는 경우가 있음
+                    - 돈 모아서 공동으로 구매하는 경우
+                    - 각각의 사용자는 자신의 INPUT에 대한 것만 서명을 확인함으로써 계속 확장해 나갈 수 있음.
+        - SIGHASH의 종류
+            - ![image](https://user-images.githubusercontent.com/44149738/137497384-51fac9f6-6321-439e-9111-8d71d6a94ab2.png)
+
+        - 사용처
+            - ALL|ANYONECANPAY
+                - `1 to *`
+                - crowdfunding 스타일의 구조에서 사용
+                    - 구매를 원하면 자신의 input에만 서명을 하면 됨.
+                    - crowdfunding이 무산되어도 애초에 그 tx는 인정되지 않기 때문에 지불을 하지 않은것과 같아서 환불 과정도 간단함.
+            - NONE
+                - `* to 0`
+                - 대상이 없는 수표를 발행하고 싶을 때.
+                - 나중에 주고싶은 사람이 생기면 output에 기입하면 됨.
+            - NONE|ANYONECANPAY
+                - `1 to 0`
+                - 기부 형태
+                - 개개인의 잔돈? 같은 돈을 조금씩 모음
+                - 돈이 모이면 기부대상을 설정해서 보냄.
+
+14. Bitcoin addresses, Balances, and other Absdtractions
+    - tx를 분석해주는 사이트 원리
+        - input의 UTXO가 있는 tx를 참조해서 송신자 address 구함
+        - output의 UTXO가 있는 tx를 참조해서 수신자 address 구함.
+    - total received (총 받은 금액)
+        - 모든 tx를 검색해서 output의 P2PKH script 내에 bob의 pub key hash가 있는지 확인.
+        - 위 조건을 만족하는 output의 합을 구함.
+    - final balance(잔고) 구하는 원리
+        - UTXO SET을 구성
+        - Bob의 UTXO만 따로 구성
+        - 다 더함.
+
+15. Multisignature
+    - M of N 스키마
+        - N명의 사용자 중에서 M명의 사용자가 서명을 하게되면 올바른 서명이라고 판단.
+        - locking script 안에 N개의 pubkey를 넣음
+        - unlocking script에는 M개 이상만 만족하면 됨
+    - locking script (2 of 3)
+        - `2 <sig A> <sig B> <sig C> 3 CHECKMULTISIG`
+    - unlocking script
+        - `<sig B> <sig C>`
+    - 공동의 계좌를 사용하는 경우에 활용될 수 있다.
+        - 최소 M명 이상의 동의를 구해야만 사용 가능하도록 구성할 수 있음.
+    - 개인 계좌의 보안성을 높이기 위해 사용될 수 있다.
+        - 여러 기기에 priv key를 보존하기 위해서 사용.
+        - 최소 M개 이상의 기기가 존재할 때, 사용할 수 있도록 구성할 수 있음.
+    - 백업용도로 사용할 수 있음.
+        - KEY를 잃어버려도 다른 KEY를 이용해서 복구할 수 있음.
+    - 이 외에도 다양한 하게 활용할 수 있음
+        - 2 factor 인증에 사용 : 2 of 2
+        - 자식 계좌에 부모 1명 이상의 동의가 필요 : 2 of 3
+        - 중고와 같은 거래에서 구매자와 판매자 간 상호 동의가 필요할 때 : 2 of 3
+        - ...
+    - bug in multisignature
+        - 스택에서 하나 더 읽어버리는 버그가 있음
+        - 그러나 분산시스템 특성상 이를 수정하기가 어려움
+        - 이를 해결하기 위해 unlocking script 작성할 때, 앞에 0을 하나 더 붙이기로 함.
+
+16. P2SH (Pay to script hash)
+    - 2012 부터 소개되어서 도입
+    - 복잡한 형태의 tx script를 간단하게 바꿔보자!
+    - 기존방식으로는 multisig에 pubkey 개수가 많아지면 UTXO가 길어지고, UTXO가 길어지면 그걸 포함하는 TX가 길어진다. -> 수수료가 증가된다.
+    - ![image](https://user-images.githubusercontent.com/44149738/137504912-451a9042-823b-404a-bb50-8ebc261bdbb7.png)
+    - 위와 같이 이제는 script를 사용자가 가지고 있고, locking script에는 redeem script의 hash값만 가지고 있음.
+    - P2SH address
+        - p2sh 기반 address를 만드는 방법은 pubkey 사용할때와 비슷하다
+        - 방법은 BIP-13으로 지정되어있음
+        - script -> hash -> address
+    - 장점
+        - tx가 작아짐
+        - 전송자는 P2SH인지 확인할 필요없이 그냥 address처럼 사용하면 됨.
+        - script가 UTXO에 들어가지 않아도 되어서 메모리 공간적 효율이 좋다.
+        - 지불 시 script를 입력하면 되므로 script가 기록되는 시기를 늦출 수 있다.
+        - 크기가 작아지므로 지불자의 수수료를 줄일 수 있음
+            - 반대로 수신자의 수수료는 늘어남.
+            - 이 부분은 문제가 없다고 판단
+    - 사용 시 주의사항
+        - 중간에 추가된 기능이기 때문에 0.9.2 버전 이후부터 사용 가능.
+            - 현재는 뭐 거의 사용 가능
+        - script는 재귀적일 수 없다. 비트코인에서 이런 부분은 제약을 두고있음.
+        - redeem script를 잘못 만들면 복구 불가
+
