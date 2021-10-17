@@ -280,3 +280,126 @@
             - transport : segment
             - network : datagram
             - link : frame 
+
+10. network security
+    - malware
+        - virus : 능동적 감염(이메일 첨부파일과 같이 침투함.)
+        - worm : 수동적 감염
+    - spyware : 은밀하게 활동하는 malware. virus나 worm과 같은 형태로 침투해서 keystrokes, web 기록 등 다양한 정보를 수집해서 특정 사이트(해커의)에 업로드.
+    - DDoS(Distributed Denial of Service)
+        - 감염이 되면 botnet에 등록되고, 원격지에서 공격자가 조종하게 됨.
+    - DoS(Denial of Service)
+        - 가짜 트래픽으로 리소스를 점령해버려서 가용성을 떨어트림
+        - 여러 기기를 감염시켜서 봇넷에 등록
+        - 타겟 서버로 패킷을 특정 시간에 날리도록 명령
+    - sniffing
+        - broadcast로 보내게 되면 해커도 들을 수 있다.
+        - promiscuous network interface로 브로드캐스트된 패킷을 수신할 수 있다.
+    - ip spoofing
+        - ip를 변조해서 대상을 속이는 공격
+
+11. 인터넷 역사
+    - 인터넷은 1960년대에 탄생함 (1961 - 1972)
+        - packet-switching 이 더 효율적이라고 판단해서 이것저것 생기던 시기
+    - internetworking 시대. (1972 - 1980)
+        - net과 net이 만나 internet이 됨.
+        - best effort model : 서로 연결된 네트워크가 패킷을 전달하도록 노력은 하지만 목적지까지 간다는 보장은 하지 못함. 
+        - 라우터에 패킷의 상태정보가 저장되지 않음.
+            - 저장하게 되는 순간부터는 라우터가 하는 일이 너무 많아짐.
+        - A, B 네트워크를 연결했다고 해도 서로의 네트워크를 고려할 필요 없음
+            - 본인 네트워크만 잘 관리하면 됨.
+        - Ethernet이 처음 발생
+        - ATM이라는 네트워크의 초기.
+        - ARPAnet에 연결된 네트워크가 200개나 됨
+    - network가 세련되어짐 (1980 - 1990)
+        - tcp/ip가 소개됨
+        - smtp, dns, ftp가 제안됨
+        - TCP congestion control 알고리즘이 개선됨
+        - 국가단위의 national network가 형성됨
+        - 10만개 이상의 네트워크 호스트가 연결되게 됨
+    - 상업적인 웹 및 앱(1990 - 2000)
+        - ARPAnet(기관용) 더 이상 사용하지 않음.
+        - NSF 네트워크(연구용) 사용하지 않음
+        - 웹의 등장
+            - hypertext를 기반으로 버너스리가 만든 문서. HTML, HTTP.
+            - 최초의 웹브라우저
+                - Mosaic -> 나중에 넷스케이프로 바뀜 -> explorer -> chrome 등
+        - killer app : 서비스의 핵심이 되는 앱
+            - 메신저, p2p 파일공유
+        - network security가 주목받기 시작함.
+        - 5천만개의 host, 1억명 이상의 사용자가 인터넷을 사용함.
+        - Gbps가 운영되기 시작
+    - 2005 - 현재
+        - 50억개 device가 인터넷에 연결.(핸드폰, tv 등)
+        - broadband access (광대역 접근)가 가능한 서비스 등장
+            - 언제 어디서든지 접속하고싶다!
+        - high speed wireless access
+            - 4G, 5G, WiFi 등
+        - SNS 서비스 등장
+        - 거대한 IT 회사들이 자신이 소유한 네트워크(CDN)을 만들기 시작함.
+
+12. network app
+    - 애플리케이션 계층에서의 서비스는 쉽게 구성할 수 있다.
+    - 라우터와 같은 network-core device를 고려할 필요 없다.
+    - 즉, end system만 신경써서 개발할 수 있기 때문에 빠른 개발이 가능하다. sw 전파도 end system에만 설치하면 되어 빠르게 가능.
+
+13. application architectures
+    - client-server 아키텍처
+        - server는 항상 켜져있음. 고정된 ip가 있음.
+        - client가 server에 접속을 함.
+        - client는 보통 dhcp를 사용 == ip가 동적으로 할당됨.
+        - client 끼리 통신을 위해 server를 꼭 거쳐야 함. (상하구조)
+    - p2p 아키텍처
+        - 상대방과 직접 통신 가능 (수평구조)
+        - peer to peer
+        - 서로 요청 및 제공이 가능.
+        - peer가 무수히 많아도 서비스 가능
+            - self scalability 하다 => 새로운 peer가 들어오면 서비스를 요청하기도 하지만 제공도 하기 때문에 결국엔 확장되어 리소스 문제가 없다(?)
+
+    - process communicating
+        - process : 실행되고있는 프로그램
+        - inter-process communication : 같은 호스트 내 서로다른 프로세스가 통신 가능
+        - 그렇다면 다른 호스트의 프로세스가 커뮤니케이션하려면?
+            - 하나는 client process(요청자), 나머지 하나는 server process(수신자)가 됨.
+            - os에게 다른 호스트에게 요청하라고 명령해야함.
+                - socket 사용
+        - sockets
+            - process는 socket을 통해서 os 밖 다른 host와 통신할 수 있다.
+            - 호스트와 프로세스를 구별할 수 있는 identifier가 필요함.
+                - 일반적으로 ip와 port 정보 필요.
+                - http(80), mail(25) 와 같이 일반적으로 사용되는 포트가 있음.
+
+    - app-layer protocol defines
+        - type(ex. req|resp)이 정의되어야 함.
+        - message syntax가 정의되어야 함. (프로토콜 별 정해진 필드 같은 느낌.)
+        - message semantics 정의.
+            - 메세지 안의 필드가 "의미"하는게 무엇인지.
+        - 메세지를 언제, 어떻게 주고받을지 rule을 정해야함.
+        - 이렇게 만들어진 프로토콜의 종류
+            - open protocols
+                - RFC로 구조가 공표된 프로토콜
+                - 상호 운영이 가능하도록 하기 위함
+            - proprietary protocols
+                - 개인적인 프로토콜
+                - ex) skype, 각종 게임 등
+    
+    - application layer의 프로토콜이 메세지를 전송할 때, 전송계층에 기대할 수 있는 기능
+        - data loss
+            - 파일전송과 같은 서비스는 무조건 loss가 있으면 안됨.
+            - 그러나 오디오와 같은 서비스는 어느정도의 loss를 허용하기도 함.
+            - application마다 transport 계층에 요구하는 사항이 다를 수 있다.
+        - timing
+            - 게임이나 전화처럼 매우 낮은 딜레이를 원하는 서비스가 있을 수 있음
+            - 반대로 파일전송과 같이 크게 민감하지 않은 경우도 있음. 
+        - throughput
+            - minimum throughput이 중요한 서비스가 있을 수 있음.
+                - 비디오 서비스와 같은 경우는 중간에 끊기면 안되기 때문에 중요
+            - 반대로 작아도 상관없는 경우도 있음
+                - 이런 서비스를 elastic apps 라고 함.
+                - throughput이 크면 좋지만 작아도 상관없음.
+        - security
+            - 데이터의 변조 없이 정확하게 전달.
+            - encryption과 같은 것.
+    
+        - 종류별 서비스들의 요구사항
+            - ![image](https://user-images.githubusercontent.com/44149738/137630129-c68bba44-1139-4349-a567-d4ed7114b17d.png)
