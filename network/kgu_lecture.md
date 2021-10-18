@@ -403,3 +403,80 @@
     
         - 종류별 서비스들의 요구사항
             - ![image](https://user-images.githubusercontent.com/44149738/137630129-c68bba44-1139-4349-a567-d4ed7114b17d.png)
+
+14. 실제 transport 프로토콜
+    - tcp
+        - 신뢰할 수 있는 프로토콜
+            - 송신자가 보낸 데이터는 수신자가 무조건 똑같이 받는다
+        - flow control
+            - sender가 너무 빠르지 않게 receiver가 받을 수 있는 속도로 조절해서 보냄.
+        - congestion control
+            - network 혼잡상태에 따라 전송 속도 조절.
+        - 제공하지 않는 것
+            - timing
+            - minium throughput
+            - guarantee, security
+        - security는 왜 제공하지 않는가?
+            - 초창기에는 보안이 중요하지 않았기 때문에 구성되지 않음
+            - SSL(Secure Socket Layer)
+                - 보안성이 제공되는 소켓 레이어를 말함
+                - end point를 인증하는 기능으로 사용할 수 있음
+                - application 단에서 구현됨.
+                - 암호화 한 후 tcp에게 전달.
+    - udp
+        - 신뢰할 수 없는 프로토콜
+            - 손실이 발생할 수 있다
+            - 굳이 손실을 방지하지 않음
+        - simple함.
+        - 스트리밍 서비스에 주로 사용
+
+15. web and http
+    - web page란 여러 objects(이미지, 제목, 표, 등)들로 구성된 페이지
+    - 기본이 되는 html 파일이 있고, referenced object를 포함하는 형태로 되어있다.
+    - 웹페이지를 지칭하는 identifier가 있음 == URL(hostname + pathname)
+    - HTTP
+        - web page를 전달할 때 사용하는 프로토콜
+        - server/client model
+            - client : http 프로토콜을 통해 web object를 요청 및 수신하여 브라우저에 띄움.
+            - server : http 프로토콜을 통해 요청에 대한 결과를 전송한다.
+        - 기본적으로 stateless 형태로 구성되어있다.
+            - 상태정보. 즉, 과거에 대한 저장이 없다.
+            - 프로토콜이 상태정보를 저장하게 되면 프로토콜이 매우 복잡해지기 때문
+    - non-persistent HTTP   
+        - 매 요청마다 TCP connection을 맺음.
+        - response time
+            - RTT (Round Trip Time)
+                - 왕복 시간을 말함
+            - connection을 위한 RTT + HTTP 처리를 위한 RTT + 처리시간
+        - issue
+            - object마다 2RTT 시간이 필요함.
+            - TCP를 열었다 닫았다를 반복하면서 os overhead 발생
+            - 2RTT라는 시간을 줄이기 위해 종종 여러개의 tcp를 병렬로 한번에 열어서 데이터를 한번에 받아오는 방법도 있는데, 그래도 각각의 TCP CONNECTION이 Object마다 열려야 한다는 부분은 해결이 안됨.
+    - persistent HTTP
+        - tcp 연결을 열면 끝나고 나서 close 한다.
+        - 추가적인 http 메세지가 열려있는 tcp connection을 이용
+        - 약 1RTT(약간 큼)의 시간에 받아올 수 있음.
+        - 열려있는 TCP로 여러개 OBJECT를 받을 수 있기 때문에 object에 따른 os overhead도 비교적 적다.
+    - HTTP syntax
+        - 사람이 읽을 수 있는 ascii로 되어있음
+        - `/r/n` : carriage return + line feed : 개행에 사용
+        - `request line`과 `header lines`로 나뉨
+        - request line 형태: `GET /index.html HTTP/1.1/r/n` 
+        - header lines 형태: `Header field Name : Values`
+    - method
+        - get : 데이터를 url로 전송
+        - post : 데이터를 form으로 body 부분에 담아 전송
+        - head : 서버는 object를 줄 필요는 없어요~
+        - 버전별
+            - HTTP/1.0
+                - GET, POST, HEAD
+            - HTTP/1.1
+                - GET, POST, HEAD
+                - PUT
+                    - 파일을 업로드
+                - DELETE
+                    - 파일을 삭제
+    - HTTP response
+        - status line, header lines, blank line, entity body 로 이루어져 있음
+        
+
