@@ -1,38 +1,27 @@
 What I Learned 🧐
 ------------------------
-- GIT
+- Develop
+    - android
+    - jsp
 - Security
-    - [Web Hacking/](/security/web-hacking/)
-    - [Network Hacking/](/security/network-hacking/)
-    - [System Hacking/](/security/system-hacking/)
-    - [Cryptography/](/security/cryptography/)
-    - [Malware Analysis/](/security/malware-analysis/)
-        - Michelangelo virus Analysis
-        - Mini-100 virus Analysis
-    - [Browser Exploit/](/security/browser-exploit/)
-        - Downunderctf 2020 - is this pwn or web?
-    - [Linux Kernel Exploit/](/security/linux-kernel-exploit/)
+    - browser exploit
+        - chrome V8
+    - car ECU fuzzing
+    - cryptography
+    - malware analysis
+    - linux kernel exploit
         - CVE-2017-11176
-    - [Mobile Security](/mobile/)
+    - mobile
         - frida
-
+    - wireless
+        - bluetooth
+            - CVE-2020-12352
+            - CVE-2020-12351
 - Robotics
-    - [ROS/](/robotics/ros/)
-        - ROS Tutorial
-
+    - ROS
 - AI
-
-- Vision
-    - OpenCV
-
 - Operating System
-
 - Network
-
-- Database
-
-- Programming
-    - [javascript](/programming/javascript/)
 
 ----------------------------
 

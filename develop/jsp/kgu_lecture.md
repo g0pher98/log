@@ -191,3 +191,28 @@
         - getParameterNames() : 파라미터 name 리스트 가져오기
         - hasMoreElements()
         - nextElement()
+
+8. file upload
+    - form 태그를 사용하여 전송
+        - form에 `enctype="multipart/form-data"` 있어야 함
+        - POST로 보내야함
+    - 단순한 자바 코드로 작성하여 처리할 수 없어서 오픈 라이브러리를 사용
+        - 오픈 라이브러리 종류
+            - cos.jar
+                - MultiparRequest 이용
+                    - 파일 자체만 다루는 클래스
+                    - 한글 인코딩 값을 얻기 쉬움.
+                    - 서버에 동일 파일명이 있으면 자동으로 변경
+                - 가장 간단한 방법
+                - `com.oreilly.servlet.*`
+                - `com.oreilly.servlet.multipart.*`
+            - commonsfileupload.jar
+                - 아파치 api 사용
+                - 편리하고 강력한 기능
+                - 서버의 메모리상에서 파일 처리가 가능하도록 지원
+                - `org.apache.commons.fileupload.*`
+                - commons.apache.org 에서 다운
+                - 메소드
+                    - ![image](https://user-images.githubusercontent.com/44149738/137807409-36e6cf16-fa44-4c74-b25c-9f655aa3b75a.png)
+            - ![image](https://user-images.githubusercontent.com/44149738/137805295-dc9c9b3f-897b-4c1a-8d1d-97c5ab184e3d.png)
+    
