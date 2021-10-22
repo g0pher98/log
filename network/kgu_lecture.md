@@ -478,5 +478,74 @@
                     - 파일을 삭제
     - HTTP response
         - status line, header lines, blank line, entity body 로 이루어져 있음
-        
+        - status code
+            - 200 : OK
+            - 301 : Moved Permanently. 현재 요청한 리소스가 다른 위치로 이동했음을 뜻함. (Location: 이동한 위치)
+            - 400 : Bad request. web 서버가 요청을 이해하지 못함. http 버전에 맞게 요청이 구성되지 않을 경우 많이 뜸.
+            - 404 : Not found. 자원이 없음.
+            - 505 : HTTP Version Not Supported. HTTP 버전이 안맞는 경우.
+    
+16. cookie
+    - cookie를 사용하는 방법
+        - HTTP response에 cookie 헤더가 포함되어있어야 함
+        - HTTP request에 cookie를 담아 서버에 알려줄 수 있다.
+        - cookie file은 웹 브라우저에 의해 관리됨.
+        - 쿠키에 대한 백엔드 데이터베이스가 있어야 한다(??????? 개발자 마음 아닌가 ?)
+    - cookie 사용처
+        - authorization : 인증
+        - shopping carts : 장바구니
+        - recommendations : 추천기능
+        - user session state : 세션
+    - state를 유지하는 방법
+        - 프로토콜의 endpoints에 저장.
+    - privacy
+        - 웹사이트가 나에 대해 너무 많은 걸 알게됨.
+        - 요즘에는 쿠키도 개인정보로 다루어짐 
 
+17. web caches (= proxy server?)
+    - client가 object 원본까지 가지 않아도 되도록 함을 목적으로 함.
+    - 리소스(트래픽), 응답속도 측면에서 좋음
+    - client(origin server 입장에서)이면서 동시에 server(real client 입장에서)임.
+    - ISP에 의해서 대학이나 회사 등에 설치됨.
+    - conditional get
+        - 캐시 방식의 고질적인 문제가 있음.
+            - origin server 변경으로 인한 차이가 발생할 수 있음.
+        - 이를 해결하기 위해 나온게 conditional get
+        - 일정 시간이 지나면 origin server에 최신버전인지 질의
+        - If-modified-since 헤더를 이용해서 확인
+            - 수정사항 없으면 304
+            - 수정사항 있으면 200과 함께 데이터 응답
+
+18. Electronic mail
+    - 주요 요소
+        - user agent(e-mail app)
+        - mail server
+        - smtp protocol
+    - user agent
+        - mail reader app
+        - e.g. outlook, thunderbird, iphone mail, web browser, ...
+    - mail server
+        - mailbox와 message queue로 이루어져 있음
+        - mailbox
+            - 도착한 메세지를 저장하는 공간
+        - message queue
+            - 사용자가 메일을 전송하려고 할 때, 저장하는 큐
+        - smtp protocol 사용
+    - SMTP
+        - TCP 사용. 25번포트.
+        - 메일서버끼리 직접적으로 주고받음
+        - 3 단계에 거쳐 메일을 전송
+            - handshaking 
+            - transfer of messages
+            - closure
+        - command/response (like http, ftp)
+            - commands : ascii text
+            - response: status code and phrase(ascii)
+        - message는 반드시 7bit ascii로만 전송하도록 되어있음.
+        - HTTP와의 비슷한점/다른점
+            - http는 pull이지만 smtp는 push다.
+            - 둘 다 ascii 코드로 이루어져 있고, `<status_code> <status_phrase>` 구조로 이루어진 req/resp 관계가 있다.
+            - 차이점
+                - http : 하나의 response에는 하나의 object만 들어갈 수 있음
+                - smtp : 하나의 object가 여러개의 msg에 들어갈 수 있고, 여러개의 object가 하나의 msg에 들어갈 수도 있음.
+        - 구조는 RFC 822에 표준화 되어있음.
