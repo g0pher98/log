@@ -633,3 +633,41 @@
         - output 레벨에서는 CHECKSEQUENCEVERIFY  opcode 를 사용해서 이용 가능
         - absolute 방식과 거의 비슷함.
 
+19. script 흐름 제어
+    - ![image](https://user-images.githubusercontent.com/44149738/138492577-dda42056-1045-4601-b48d-97285e91aa7e.png)
+    - IF와 같은 조건을 사용할 수 있음.
+    - 그러나 IF를 사용하지 않아도 비슷한 효과를 낼 수는 있음. (guard 문)
+        - ![image](https://user-images.githubusercontent.com/44149738/138492849-3c73fa00-b2f5-48aa-9e5f-67abdfb3cf0a.png)
+        - script가 복잡한 경우는 if를 사용해야함.
+    - if문은 locking script에, if문을 판단할 condition은 unlocking script에 기입.
+        - ![image](https://user-images.githubusercontent.com/44149738/138493386-20a06f98-121d-461e-8b89-1d3bf82d7d9e.png)
+
+20. segregated witness
+    - utxo 사용 가능하다는 증거자료로 사용됨
+    - ![image](https://user-images.githubusercontent.com/44149738/138495236-5bd1191c-37c3-412d-a49a-2d513febb756.png)
+    - 위와 같이 input 안에 있던 script 내용을 witness data로 밖으로 빼냄.
+    - 이게 왜 좋은가?
+        - 기존 비트코인의 문제점
+            - tx id는 tx의 hash값임.
+            - tx 내용을 바꾸자고 한다면(?) 기존 tx와 의미가 달라짐
+            - tx 내 script를 약간 바꿈으로써 같은 내용이지만 다른 의미를 가지도록 할 수 있게됨
+            - 이를 이용하여 공격이 가능해짐.
+        - 버전정보를 넣을 수 있게 됨.
+        - 검증이 끝난 tx는 witness 데이터가 필요 없기 때문에 공간절약이 됨.
+            - = 합의성능이 좋아짐
+        - 전자서명 알고리즘 개선 등 많은 장점이 있음.
+    - segwit은 tx 단위로 돌아가는 것인가?
+        - X. output 단위로 돌아감.
+        - UTXO마다 segwit이 적용이 될수도, 안될수도 있음
+    - segwit 기능이 없는 예전 버전의 sw의 호환성을 위해 soft fork로 업데이트가 진행됨.
+    - P2WPKH
+        - Pay to Witness Public Key Hash
+        - ![image](https://user-images.githubusercontent.com/44149738/138503106-86b56527-4916-4b80-9a8c-f5e69d4c67f1.png)
+        - output script가 함축된 형태로 존재
+        - check 하는 방식 자체는 기존 P2WPKH 와 비슷한데, witness가 밖으로 빠진다는 점, output script 형태가 좀 달라진다는 점이 다르다.
+    - P2WSH
+        - Pay to Witness Script Hash
+        - ![image](https://user-images.githubusercontent.com/44149738/138503407-5e26d9e7-7149-475e-98fb-19c017c39b9f.png)
+        - 32byte의 hash값을 사용하여 P2WPKH와 다르게 표현.
+
+
