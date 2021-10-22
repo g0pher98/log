@@ -586,3 +586,50 @@
         - script는 재귀적일 수 없다. 비트코인에서 이런 부분은 제약을 두고있음.
         - redeem script를 잘못 만들면 복구 불가
 
+17. RETURN
+    - 블록체인은 금융 뿐만 아니라 다양한 분야에 사용될 수 있음.
+    - 이러한 확장을 가능하게 하는 것이 script이다.
+    - script를 다양하게 활용해서 새로운 아이템을 만들어내는 것을 스마트 컨트랙트라고 한다.
+    - 금융 거래가 아닌 다른 용도임을 나타내기 위해 RETURN이라는 OP가 생성됨.
+    - `RETURN <DATA>` 형태로 사용되며, DATA는 80bytes까지 기록할 수 있음.
+    - RETURN이 사용된 output은 UTXO가 아님. 사용할 수 없는 output임. = unlocking script가 없음.
+    - 예
+        - proof of existence
+            - 문서 보장 서비스
+            - `RETURN DOCPROOF <hash of document>` 형태로 사용
+            - 문서의 생성 시점 및 존재 여부 보장
+            - 분쟁 발생 시 증거가 됨
+    - 수수료
+        - tx fee가 필요하긴 함.
+
+18. Timelock
+    - UTXO를 바로 사용하는 것이 아닌, 특정 시간 이후에 사용할 수 있도록 하는 기능.
+    - 분류
+        - absolute timelock
+            - 정확한 시각을 기록
+        - relative timelock
+            - tx 기준 상대적 시간 기록
+    - 사용법
+        - tx에 nLocktime 이라는 필드 사용. default = 0
+        - 0 ~ 500 million : block height
+            - 블록 높이를 기준으로 valid 여부 판단.
+        - 그 이상 : timestamp
+    - 한계점
+        - 3개월 timelock을 걸어두고, 다른 사람한테 지불하는 겨우.
+        - 3개월 뒤에는 이미 없어진 tx.
+        - 즉, double-spending 문제 발생.
+    - check lock time verify (CLTV)
+        - absolute timelock 방식
+        - 위 문제를 해결하고자 만들어진 방식
+        - TX에 LOCK을 거는게 아니라 output에 lock을 거는 방식.
+        - `<now + 3 months> CHECKLOCKTIMEVERIFY DROP <script ... >` 형태로 구성
+        - 기존 방식과 똑같이 block 기준으로 시간을 정할수도 있다.
+    - relative timelock 
+        - transaction 레벨에서는 `nSequence` 라는 필드를 사용해서 이용 가능
+            - ![image](https://user-images.githubusercontent.com/44149738/138492035-108cd31a-9a2e-4b18-934b-bf65155e4249.png)
+            - nSequence (default = 0xffffffff)
+            - nSequence가 2^31 보다 작으면 timelock이 걸려있다는 것
+            - nLocktime은 tx마다 있었지만 nSequence는 input 필드마다 하나씩 있음.
+        - output 레벨에서는 CHECKSEQUENCEVERIFY  opcode 를 사용해서 이용 가능
+        - absolute 방식과 거의 비슷함.
+
