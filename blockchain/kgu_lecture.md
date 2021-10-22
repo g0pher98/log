@@ -671,3 +671,106 @@
         - 32byte의 hash값을 사용하여 P2WPKH와 다르게 표현.
 
 
+21. Bitcoin network
+    - p2p 형태. 중앙서버 존재하지 않음
+        - 특정 영역 장애 발생해도 문제 없음
+        - 누구나 참여할 수 있고, 오픈이 쉬움
+    - node의 종류
+        - ![image](https://user-images.githubusercontent.com/44149738/138520889-7a636096-8d6c-47b2-ae6b-99c231048cae.png)
+        - W : wallet : key 관리 및 tx를 새로 생성하는 기능
+        - M : miner : 새로운 블럭을 생성하는 과정. 최근 tx를 모아 적합한 block을 생성(PoW)
+        - B : full blockchain(ledger) :  일부 노드는 장부관리를 해야 함.
+        - N : routing node : 기본적으로 모든 노드가 나에게 날아온 tx를 검사하고 전달
+    - bitnodes 홈페이지
+        - 노드들의 개수, 위치 등의 정보를 알려주는 사이트
+    - extended bitcoin network(확장버전)
+        - ![image](https://user-images.githubusercontent.com/44149738/138521809-bed548db-6fad-4a46-9780-1cbe91a4afdd.png)
+        - mining pool : 채굴을 나눠서 같이하는 형태
+        - lightweight wallet client : 보다 가벼운 wallet
+    
+    - bitcoin relay network
+        - miner에게는 bitcoin network의 전파속도가 중요함.
+            - 다른사람이 채굴에 성공했는데, 그 소식을 너무 늦게 들으면 다음 채굴도 연달아 늦어짐.
+        - miner들 사이에 전파속도를 빠르게 하기 위함.
+        - 종류
+            - origin bitcoin relay network
+                - 2015년에 나옴.
+                - AWS를 사용해서 전피
+            - Fast Internet Bitcoin Relay Engine (FIBRE)
+                - UDP를 사용해서 속도를 높임
+            - Falcon
+                - 블록 전체를 받지 않아도 일부를 바로 전송하는 형태로 속도를 높임.
+
+22. Network Discovery
+    - 새로운 node를 받았다고 했을 때, bitcoin network에 어떻게 연결하는가?
+        - 기존의 peer를 찾아서 연결해야함.
+        - 랜덤한 노드를 선택해서 연결함
+        - 가장 가까운 노드를 선택하지 않는 이유
+            - 연결이 집중되거나 고르지 않을 수 있기 때문.
+            - 장애 해결 문제, 동기화 문제 등이 있을 수 있음.
+        - DNS seed를 이용해서 node들의 ip address를 얻을 수 있음
+            - 서버 종류
+                - static한 리스트를 제공하는 서버
+                    - bitcoin core의 경우.
+                - 자체적인 크롤링을 통해서 그 중 랜덤하게 뽑아서 제공 
+        - connection을 맺는 과정
+            - ![image](https://user-images.githubusercontent.com/44149738/138523357-c20b3f01-01b3-497c-81a1-bd68569b09b7.png)
+            - version 안에는 다양한 정보가 있음
+            - bestheight는 가장 높은 block을 말함.            
+        - 연결 이후 신규 노드 홍보
+            - ![image](https://user-images.githubusercontent.com/44149738/138523527-25516f38-6c0c-42dd-8eb9-c2319768c360.png)
+            - addr : 나의 ip
+            - getaddr : 너가 가지고있는 노드들 ip 줘바
+        - 한참동안 트래픽이 없으면 주기적으로 통신해서 살아있는지 확인
+            - 90분동안 통신이 안되면 죽은것을 판단하고 새 노드와 연결
+
+23. full node
+    - 가장 최신상태의 block들을 다 가지고 있고, 관리하는 노드
+    - 탈중앙화의 중심이 됨.
+    - 장점 : 다른 노드 도움 없이 독립적으로 tx에 대한 검사를 수행할 수 있어서 중앙화된 기관 필요 없음.
+    - 단점 : 운영 자체가 부담. 저장공간도 많이 필요하고, sync 맞추는데 시간이 걸림.
+    - 동기화
+        - ![image](https://user-images.githubusercontent.com/44149738/138524228-b9f931ea-6509-4b8e-b1e8-d661b474ed6a.png)
+        - 기본적으로 genesis block은 sw에 하드코딩 되어있음
+        - inv : 받아야하는 블럭 중 500개 블럭에 해당하는 해시값
+            - 한 노드가 다 주는게 아님. 그쪽 사정도 생각해야지,,,
+        - getdata : block 요청
+
+24. SPV Node
+    - full node는 너무 무겁다.
+    - 일반적인 사용자는 그정도까지는 필요 없다! 가볍게 해줘! -> spv node
+    - full node를 저장하지 않은 상태에서 어떻게 결제(tx 검증)를 진행할 수 있을까?
+        - SPV Node는 각각 블럭의 헤더 정보만(바디는 제외하고) 가지고 있음.
+            - 헤더만 가져오면 얼마 안됨.
+        - tx는 body부분에 들어가게 됨.
+    - 완벽하게 안전하게 검증한다고 보기는 어려움
+        - 약간의 위험성 존재
+        - 그러나 이러한 약간의 위험성만 감수하면 완전 편리해짐
+            - 기존에는 tx를 등록하고 반영될 때까지 기다려야 송금이 완료되어서 시간이 오래걸리는데, 얼추 맞다고 판단이 되면 거래는 끝나고, 나중에 tx를 올리면 됨.
+    - 조금 더 자세한 거래과정
+        - ![image](https://user-images.githubusercontent.com/44149738/138525311-f6e7d18e-7f21-4e38-bb50-2419675159e6.png)
+        - 지불자가 tx3를 만든다고 했을 때, tx3에 사용된 input이 어떤 tx의 output인지 알려줌.
+        - 수신자는 이를 그대로 믿는것이 아니라 확인과정을 거침.
+            - merkle 트리 구조를 이용해서 root까지의 경로 상에 tx가 존재하는지 확인.
+            - tx1, 2 depth를 체크해야 함. 6이 넘으면 신뢰도가 매우 높다고 봄.(안전하다)
+                - 동기화 차이에 의한 잘못된 기록이 있을 수 있음.
+                - 합의 과정을 통해 조정을 하는데, 그 전까지는 불안정.
+        - tx3 검증
+            - double spending 문제의 위험성이 존재
+                - 헤더만 가지고는 사용 여부를 알기 어려움.
+            - 두 가지 방식
+                - tx가 다른 노드에 의해 기록되어 검증이 되기를 기다림
+                    - tx3가 추가 된다면 => double spending 아님
+                    - 그러나 6 depth(약 1시간) 정도 기다려야 조금 더 명확하게 신뢰할 수 있음
+                    - 소액 결제에는 부적합 ㅠ
+                - double spending 위험성을 감수.
+                    - 나중에 문제가 발생하면 그때 알아서 처리
+                    - 굉장히 빠르고 편리하지만 위험성 존재.
+                    - 액수가 크지 않은 경우에 적합. (설마 이 가격인데 사기를 치겠어? 느낌)
+    - 블록 헤더에 대한 싱크를 맞추는 방법
+        - ![image](https://user-images.githubusercontent.com/44149738/138526324-0c1fb705-ef4d-49d6-bb65-6542392b7eec.png)
+        - 한 노드로부터 다 받아오기 보다는 랜덤하게 여러 노드로부터 분산해서 받아온다.
+            - 한 노드만 믿고 사기당하면 안되기 때문
+            - SPV node 자체가 취약하기 때문에 동기화 받아오는 노드가 사기치면 당한다!
+            - 공격자 node가 주변에 있어서 다같이 공격하는 경우도 있음
+                - 이 공격을 sybil attack 이라고 함.
