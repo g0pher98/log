@@ -626,10 +626,84 @@
             - SSH
             - VPN
 
-            
+20. arp 스푸핑
+    - mac 주소를 속이는 것.
+    - 2계층에서 작동하기 때문에 공격 대상이 같은 랜에 있어야 함.
+    - 실습
+        - 환경
+            - kali / 192.168.171.133 / 00:0c:29:d4:2a:09
+            - ubuntu desktop / 192.168.171.131 / 00:0c:29:68:29:3d
+            - ubuntu server / 192.168.171.132 / 00:0c:29:6f:bf:81
+        - 설치
+            - `apt install fake` in kali
+        - arp table 채우기
+            - `fping -a -g 192.168.171.1/24`
+            - 이후 `arp -a` 명령으로 네트워크 탐색
+        - 스푸핑
+            - `sudo fragrouter -B1` 명령으로 패킷 릴레이
+            - `sudo tcpdump -xX` 명령으로 패킷 스니핑
+            - `sudo send_arp 192.168.171.131 00:0c:29:d4:2a:09 192.168.171.131 00:0c:29:68:29:3d`
+                - client에게 서버의 MAC 주소를 Kali의 MAC으로 속임
+            - client에서 server로 telnet 접속을 하면 잘 된다.
+            - 그러나 kali의 wireshark에는 telnet 정보가 뜸.
+    - 보안 대책
+        - `arp -s <IP> <MAC>` 형태로 STATIC 하게 ARP table을 관리
+            - 스푸핑 공격이 들어와도 변하지 않음
+            - 그러나 자산이 너무 많으면 관리가 어려움.
+            - 자동화 해주는 솔루션들이 있음.
+- trust(트러스트)
+    - ip로만 접근 인가하는 방식.
+    - 편리하지만 사용이 위험함.
+    - 이제는 안씀.
+    - SSE(Single Sign On) : 트러스트 약점이 알려지면서 개발됨.
+        - 대표적인 예로는 커버로스(kerberos)를 사용하는 윈도우의 액티브 디렉토리, 썬 마이크로시스템즈의 NIS+ 등이 있음.
+    - 설정과 역할
+        - `./etc/hosts.equiv` : 시스템 전체에 영향을 미침
+        - `.$HOME/rhost` : 사용자 한 사람에 귀속하는 파일
 
+21. IP 스푸핑
+    - trust 같은 환경에서 사용.
+    - 그러나 trust 자체를 요즘은 잘 사용 안함.
+    - 심지어 보안때문에 패스워드 검사는 함.
+    - 또한, ssh 권고하기 때문에 쓸일도 없음
+    - 상용화된 솔루션도 많음.
+    - 보안대책
+        - trust를 사용하지 않는 것
+        - mac 주소를 static으로 지정
 
+22. DNS 스푸핑
+    - 웹 스푸핑과 비슷
+    - ARP 스푸핑과 같은 선행작업이 필요
+    - DNS 응답 쿼리가 도달하기 전에 먼저 위조된 DNS 응답 패킷을 보냄.
+        - 나중에 도착한 응답은 무시.
+    - 실습
+        - arpspoof, fragrouter, dnsspoof, ettercap
+        - 환경
+            - win7 / 171.128 / 2b:96:79
+            - kali / 171.133 / d4:2a:09
+        - 공격
+            - `vi /etc/ettercap/etter.dns`
+                - `*.google.*    A    192.168.171.133` 추가
+            - ettercap 실행
+                - 체크표시 클릭 -> 스니핑 시작
+                - [메뉴 - hosts - scan for hosts] -> host 스캐닝
+                - [메뉴 - hosts - hosts list] -> 스캐닝 결과 보기
+                - 라우터(.2)를 target1로, victim(.128)을 target2로 설정
+                - [지구본 - ARP poisoning] -> ARP 스푸핑
+                - [메뉴 - plugin - manage plugins] 에서 dns_spoof 더블클릭 -> dns 스푸핑
+                    - 여기서 조금 기다려야 함.
+            - 피해자 pc에서 google.com에 http로 접속하면 해커의 웹서버로 이동.
+    - 보안대책
+        - 중요한 사이트는 hosts 파일에 적어두어서 스푸핑 당하지 않도록 설정.
+        - dns 서버에 대한 dns 스푸핑 공격도 존재.
+            - 이는 bind를 최신 버전으로 바꿔서 해결
+                - bind : ptr 레코드 뿐만 아니라 ptr 레코드에 의한 a 레코드 정보까지 확인
+                    - ptr : ip에 대한 도메인 이름 해석
+                    - a : forward zone에서 도메인 이름에 대한 ip 주소를 해석 
 
+23. E-MAIL 스푸핑
+    - 실습
+        - hmailserver, sendmail
 
 
 
