@@ -84,3 +84,58 @@
         - `/manifests` : 어플리케이션 정보를 저장
             - 아이콘, 앱 이름, 테마, activity 정보 등이 존재
         - `/Gradle Scripts` : 컴파일 시 필요 파일 존재. 민감하니 가능한 건드리지 말기.
+
+4. View
+    - 화면에 보여지는 모든 것들은 View 클래스를 상속해서 만들어짐.
+    - layout의 경우 ViewGroup을 상속받음
+    - ![image](https://user-images.githubusercontent.com/44149738/138570461-b320354c-db1e-4878-b0bc-55958ce36fc6.png)
+    - View를 직접 쓸 일은 거의 없음. 대부분 상속받은 뒤쪽 클래스들을 사용.
+    - view의 속성
+        - 모든 object들이 공통으로 갖게되는 속성
+        - id : 위젯의 id
+            - `@+id/button1` 포맷으로 선언
+            - `(Button)findViewById(R.id.button1)` 형태로 찾음.
+        - layout_width, layout_height
+            - 가로세로 크기
+            - 절대적, 상대적 다 가능
+            - match_parent
+                - 내부 view에 맞춤
+            - wrap_content
+                - 상위 레이아웃에 맞춤
+        - background
+            - `#RRGGBB` 포멧의 색상 사용
+            - `#aaRRGGBB` 형태의 투명도 설정도 가능
+        - padding
+            - 위젯 내부 object와 위젯 사이의 공간
+        - margin
+            - 위젯 바깥쪽 여백
+        - visibility
+            - gone(2) : 그냥 없는 것
+            - invisiable(1) : 있는데 안보임
+            - visible(0) : 보임.
+        - enabled, clickable
+            - true/false 값을 가짐
+            - enabled : 비활성화 여부
+            - clickable : 클릭 시 이벤트 유무.
+    - 단위
+        - px(pixels) : 픽셀의 크기가 기기마다 다름. -> 모바일에서는 되도록 쓰지말자.
+        - in(inches) : 실제 인치 크기
+        - mm(milimeters) : 실제 mm크기
+        - pt(points)
+        - dp(density-independent pixels) : 제일 많이 씀. 단위면적당 들어가는 픽셀수.
+        - sp(scale-independent pixels) : dp와 같으나, 사용자의 글씨 크기에 맞춤. font size에 많이 사용.
+
+5. basic widget
+    - TextView
+        - 텍스트를 보여줄 때 사용.
+        - 보여지기만 하고, 사용자가 수정은 안됨.
+            - EditText 라고 따로 있음.
+        - 속성
+            - text
+            - textColor
+            - textSize
+            - textStyle : bold | italic | normal
+            - singleLine : 레이아웃을 넘어갔을 시 줄바꿈 여부(싱글라인인 경우 넘어가는건 ... 처리됨)
+        - java코드에서 수정
+            - ![image](https://user-images.githubusercontent.com/44149738/138571743-f33dbdf0-3e35-46b9-a724-f26a67e47383.png)
+
