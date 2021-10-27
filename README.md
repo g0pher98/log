@@ -13,6 +13,9 @@ What I Learned 🧐
         - CVE-2017-11176
     - mobile
         - frida
+    - web hacking
+        - fiddler
+        - flask
     - wireless
         - bluetooth
             - CVE-2020-12352
