@@ -549,3 +549,130 @@
                 - http : 하나의 response에는 하나의 object만 들어갈 수 있음
                 - smtp : 하나의 object가 여러개의 msg에 들어갈 수 있고, 여러개의 object가 하나의 msg에 들어갈 수도 있음.
         - 구조는 RFC 822에 표준화 되어있음.
+
+19. mail access protocols
+    - SMTP : 수신자의 ms까지 전송하고, 저장하는 프로토콜
+    - mail access protocol: 수신자의 ms에서 메일을 읽을 때 사용하는 프로토콜
+        - POP(Post Ofiice Protocol - RFC 1939)
+            - 사용자 인증, 메일 다운로드
+        - IMAP(Internet Mail Access Protocol - RFC 1730)
+            - 더 다양한 기능, email을 정리 및 재정렬하는 기능
+        - HTTP
+            - Gmail, Hotmail, etc.
+            - 가장 많이 사용하는 형태
+    - POP3
+        - 110번 포트
+        - 버전3 가 가장 유명
+        - ASCII를 이용해서 req, res
+        - ![image](https://user-images.githubusercontent.com/44149738/139498073-49625643-84e2-417e-9ba2-361c713e71f5.png)
+        - 인증 과정(authorization phase)
+            - client commands
+                - user : 유저명
+                - pass : 비번
+            - server res
+                - `+OK`
+                - `-ERR`
+        - 메일 다운로드 과정 (transaction phase)
+            - list : 메일 번호, 메일 크기 리스팅
+            - retr : 번호에 해당하는 메일 받기
+            - dele : 번호에 해당하는 메일 삭제
+            - quit : 종료
+        - pop3 tmi
+            - 기본적으로 download and delete 형태임. 받고 삭제.
+            - delete를 안하도록 설정할 수 있음.
+                - 그러나 메일박스가 계속 차게 됨
+            - stateless한 세션임. 즉, 이전 세션을 기억하지 않음.
+    - IMAP
+        - 서버에 모두 저장하는 형태
+        - 이전 세션을 기억함.
+            - 변경사항이 그대로 유지됨.
+
+- DNS
+    - Domain Name System
+    - IP주소와 Hostname을 번역하는 서비스
+    - 계층적으로 분산된 데이터베이스 형태로 구현되어있음
+    - 응용계층 layer로 구현되어있음.
+        - 그 이유는 인터넷 초기에는 DNS 필요성을 못느껴서 존재하지 않았기 때문.
+        - 이미 인터넷 환경이 발전한 후에 고안되었기 때문에 응용계층으로 구현
+    - 서비스
+        - hostname -> ip
+        - host aliasing(별칭)
+        - mail server aliasing(메일서버 정보)
+        - load distribution
+            - 웹 서버를 중복해서 설치해놓고 많은 ip를 하나의 hostname에 매핑
+            - 이렇게 해서 부하가 분산되도록 할 수 있음.(로드밸런싱?)
+    - DNS가 단일(중앙집중형)이 아닌 이유
+        - SPoF(Single Point of Failure) 문제 발생
+        - 트래픽 양도 어마무시함.
+        - 거리가 멀면 멀수록 속도가 느려짐
+        - 업데이트 요청이 많아지면 거기에 시간을 너무 쏟게됨.
+    - 계층
+        - 크게 3개로 나누어짐
+        1. Root DNS
+            - 전 세계에 13개 정도만 있어도 운영이 됨.
+        2. Top Level DNS (TLD)
+            - `.com`
+            - `.org`
+            - ...
+        3. Authoritative DNS
+            - 기관이 운영하는 고유한 서버
+            - `kknock.org`
+            - `naver.com`
+            - ...
+        - 질의 과정 (www.amazon.com 질의 가정)
+            0. local dns server에 질의 후 캐싱된 내용이 없다면 다음으로 넘어감
+            1. root dns에 `.com` dns server 주소를 질의
+            2. `.com` dns server에 `amazon.com` dns server 주소를 질의
+            3. `amazon.com` dns server에 `www.amazon.com` 주소 질의
+    - Local DNS name server
+        - 위 DNS 3계층에 포함되지는 않음.
+        - Local DNS에 가장 먼저 질의. 모르면 기본 DNS 동작 수행
+        - dns 정보를 캐싱하거나, 데이터베이스를 구성해둔 proxy 역할을 하는 것으로 볼 수 있음.
+    - 질의 방식
+        1. iterated query(반복적 쿼리)
+            - ![image](https://user-images.githubusercontent.com/44149738/139502576-2a3a6fc9-721f-4f90-b340-7c9c17837b56.png)
+            - "나는 모르지만, 여기 dns 서버로 가봐!" 개념
+        2. recursive query(재귀적 쿼리)
+            - 질의 과정을 다음 dns로 넘겨버리는 방식
+            - root에 가까운 dns 서버에 부하가 심해짐.
+    - 캐싱, 레코드 업데이트
+        - dns는 질의 결과를 추후 cache로 활용.
+        - 그러나 캐시를 활용하면 업데이트 문제가 발생.
+            - timeout을 두어서 갱신해야함(TTL).
+            - 그럼에도 업데이트 갭이 발생할 수 있음.
+                - TTL 값을 얼만큼으로 둘 것인가가 중요. 아직도 논의되고 있음.
+        - 반면 TLD 서버의 경우 잘 변경되지 않기 때문에 고정한다.
+    - DNS 레코드
+        - RR(Resource Records)
+            - ![image](https://user-images.githubusercontent.com/44149738/139503248-6173cedb-c841-472d-ac67-9f1b3588fe67.png)
+            - type
+                - A
+                    - name = hostname
+                    - value = IP주소
+                - NS
+                    - name = domain
+                    - value = 해당 도메인을 담당하는 authoritative ns의 hostname
+                - CNAME (Canonical name)
+                    - name = 별명 name
+                    - value = 별명에 해당하는 실제 name
+                - MX
+                    - name = domain
+                    - value = 메일서버의 hostname
+    - dns protocol messages
+        - query와 reply 메세지로 구성되어있음
+            - 그런데 포맷이 같음!
+        - ![image](https://user-images.githubusercontent.com/44149738/139504128-95d0ee3d-49ab-4f85-897e-2d02de9c0075.png)
+        - msg header
+            - identification
+                - dns query의 특정 번호.
+            - flags
+                - query(0) or reply(1)
+                - recursion 방식 요청
+                - recursion available!
+                - reply is authoritative
+                    - authoritative로부터 도착한 최종 답변
+            - number of questions : 질의 내용
+            - number of answer RRs : 답변 내용
+            - number of authority RRs : 하위 ns 정보
+            - number of additional RRs : 추가 도움되는 정보를 담는 공간
+    
