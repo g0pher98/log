@@ -247,6 +247,72 @@
                     2. RegExp 객체를 사용하는 방법
                         - 정규표현식이 자주 변경될 때 사용.
 
-
-
-    
+10. 다국어처리
+    - 다양한 언어와 지역에서 기술변경 없이 소프트웨어에 바로 적용하는 것.
+    - 다국어는 다양한 언어와 지역에 적용될 수 있도록 하는 국제화(internationalization, i18n)와 언어별 구성 요소를 추가하여 특정 지역의 언어나 문화에 맞추는 지역화(localization, L10n)를 포함.
+    - 지역화
+        - 특정 언어와 지역에 맞게 적합화 하는 것.
+        - L10n으로 표기
+        - 고려되는 사항
+            - 숫자, 날짜, 시간, 화폐, 키보드, 문자열 순서 및 정렬, 심벌, 아이콘, 색상
+            - 문화별 오해의 소지가 있는 문자나 그림
+            - 지역별 법률 차이
+    - 국제화
+        - 다국어 지원
+        - i18n 으로 표기
+        - 어느 국가에서나 사용할 수 있도록 하는 지역화 기능을 포함
+        - 다음과 같은 처리를 포함해서 지원해야함
+            - 유니코드의 사용이나 기존 인코딩을 적절히 처리. 사용자 인터페이스에 표시할 문자열에는 문자 코드가 포함되지 않도록 설계 및 개발해야 함.
+        - 세로/가로/우->좌 쓰기 등 언어의 특정을 반영하는 처리 등을 지원해야 함.
+        - 언어적,지역적,문화적 특성 등에 대한 사용자 설정 지원
+        - 지역화 정보를 코드와 분리
+    - locale 클래스를 이용한 다국어 처리
+        - request 내장 객체를 이용하여 브라우저에 정의된 언어나 국가정보를 가져오는 방법
+        - `java.util.Locale request.getLocale();
+        - jsp 페이지에 page 디렉티브 태그(`<%@ %>`)의 import 속성으로 java.util.Locale을 설정
+        - 메소드 종류
+            - ![image](https://user-images.githubusercontent.com/44149738/139557442-0b7b4e8f-d5af-4a09-85de-8e94da6dd56c.png)
+        - 언어설정
+            - response.setHeader('Content-Language', 'es')
+            - 위와 같이 헤더 설정을 통해 해당 국가별 언어를 제대로 표현할 수 있음.
+        - 시간설정
+            - java.text.DateFormat import
+            - response.getDateTimeInstance() 사용
+        - 화폐설정
+            - java.text.NumberFormat import
+            - NumberFormat.getCurrencyInstance(locale) 사용
+    - JSTL fmt 태그를 이용한 다국어 처리
+        - taglib prefix로 jstl 사용을 선언
+        - JSTL 태그의 종류
+            - ![image](https://user-images.githubusercontent.com/44149738/139563874-50648207-8453-4e27-a25f-d8bb6ec83542.png)
+            - setLocale 태그 : 국제화 태그가 사용할 locale을 설정
+            - requestEncoding 태그 : 요청 파라미터의 문자 인코딩을 설정하는 태그
+            - 메세지 처리 태그
+                - 메시지 처리 태그에서 사용하는 파일로, 메시지 번들이라고도 함
+                - 리소스 번들로 사용하는 파일은 보통 `/WEB-INF/classes/` 폴더에 있음.
+                    - 근데 실습에서는 `/src/.../com/bundle/`에 넣네?
+                    - ![image](https://user-images.githubusercontent.com/44149738/139565913-b68e0429-6034-48e3-89c8-577beab10949.png)
+                - `java.util.Properties` 클래스에 정의된 방법으로 메시지를 읽어오기 때문에 확장자가 `properties`인 파일이 반드시 있어야 함.
+            - properties를 생성하는 방법 두 가지
+                1. 메모장에서 작성 후, 저장할 때 filename.properties로 저장
+                2. 이클립스에서 생성하는 경우
+                    - ctrl + n (fild > new > other), wizards에 text 검색
+                    - 이후 general > untitled text file 선택
+                    - 영어 아무거나 저장 후 한국어 넣고 다시 저장.
+                        - 오류가 뜨면 utf-8로 저장
+                        - ![image](https://user-images.githubusercontent.com/44149738/139566015-e149a36b-5242-444f-a6e1-8aa0aa3e0df9.png)
+            - properties 파일 종류
+                - ![image](https://user-images.githubusercontent.com/44149738/139564292-83760d56-15cb-4ea4-a958-7936240a8e55.png)
+            - bundle 태그
+                - `<fmt:bundle basename="리소스번들" ... >` 형태로 사용
+                - 사용할 리소스 번들을 설정하는 태그
+            - message 태그
+                - `<fmt:message key=".. .">` 형태로 사용
+                - bundle 태그에서 설정한 리소스 번들에서 메세지를 읽어와 출력
+            - setBundle 태그
+                - `<fmt:setBundle ...>` 형태로 사용
+                - 리소스 번들을 가져와서 변수로 저장한 후 jsp 페이지 어디에서나 사용할 수 있는 태그 
+            - format Number 태그
+                - 숫자를 형식에 맞춰 출력하는 태그
+            - timeZone
+                - 사용자 locale에 따라 날짜를 출력하는 방법
