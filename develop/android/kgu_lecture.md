@@ -175,3 +175,42 @@
                 }
             })
             ```
+    - ImageView & ImageButton
+        - 이미지를 표시 및 이미지가 들어간 버튼
+        - ImageView가 View를 상속
+        - ImageButton이 ImageView를 상속
+        - image는 `res/drawable`에 넣어두고 `@drawable/ImageID` 형태로 가져온다.
+        - attributes(속성)
+            - src : 이미지 참조
+            - maxHeight
+            - maxWidth
+            - scaleType : 이미지 확대/축소/이동 등을 할 때 사이즈를 어떻게 맞출 것인지 설정.
+        - 이미지 등록
+            - 파일명은 변수명 설정과 동일한 규칙을 따르도록 수정해야한다.
+            - xml로 이미지를 만들 수 있음. (like svg)
+            - 드래그앤드롭으로 넣을 수 있음.
+        - xml에서 `app:srcCompat="@drawable/sample1"` 이렇게 삽입할 수 있다.
+        - java에서 image를 넣는 방법
+            - setImageDrawable() 사용하지 말것!!!
+            - setImageResource(R.drawable.sample2) 사용
+
+6. Layout
+    - overview
+        - user interface를 선언하는 것
+        - attributes
+            - orientation : 가로세로
+            - gravity : 어디를 기준으로 배치될 것인가. 블록이 쌓이는 기준
+            - padding
+            - layout_weight : 비율 설정
+            - baselineAligned : 글씨의 가장 하단 줄을 맞추는 옵션
+        - layout type
+            - constraint layout
+                - 반응형을 만들기 위함.
+            - linear layout
+                - 한 방향으로 선형으로 배치할 때 사용
+                - 구조가 유연하지는 않음.
+            - frame layout
+            - table layout
+    - linear layout
+        - 한줄로 배치하는 것
+        - 가로(horizontal)/세로(vertical) 방향으로 배치 가능
