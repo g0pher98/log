@@ -587,7 +587,7 @@
         - 이전 세션을 기억함.
             - 변경사항이 그대로 유지됨.
 
-- DNS
+20. DNS
     - Domain Name System
     - IP주소와 Hostname을 번역하는 서비스
     - 계층적으로 분산된 데이터베이스 형태로 구현되어있음
@@ -675,4 +675,100 @@
             - number of answer RRs : 답변 내용
             - number of authority RRs : 하위 ns 정보
             - number of additional RRs : 추가 도움되는 정보를 담는 공간
+
+
+21. 터널링
+    - 터널링과 VPN
+        - 터널링
+            - 인터넷을 사적이고 안전한 네트워크의 일부로 사용하게 하는 기술
+        - 캡슐화
+            - 터널 장비를 지날 때, 2계층 이상의 정보를 벗겨내지 않고 캡슐화
+            - ![image](https://user-images.githubusercontent.com/44149738/141281078-ff14d70c-5b83-408f-a7e0-915351771d8a.png)
+            - 대표적으로 VPN
+        - VPN (Virtual Private Network)
+            - 터널링의 대표적인 보안 장비
+        - Internal Network (or IntraNet)
+            - 기업 내부 데이터 통신용 네트워크
+            - 인터넷과 구분된 별도의 임대회선(leased line) 사용
+            - 가격이 고가임
+                - 임대 회선과 비슷한 수준의 기밀성을 제공하려면 vpn 사용 및 암호화 필요
+                - vpn 암호화 프로토콜에는 PPTP, L2TF, IPSec, SSL 등이 있음
+        - 실습 - vpn
+            - 환경: ubuntu 14
+            - apt install openvpn easy-rsa
+            - sudo vi /etc/openvpn/server.conf 
+                - 다음과 같이 설정
+                - ![image](https://user-images.githubusercontent.com/44149738/141300789-8aaac699-5a84-4b67-9e6f-31b23cb432ab.png)
+            - sudo vi /etc/sysctl.conf
+                - 다음과 같이 설정
+                    - ![image](https://user-images.githubusercontent.com/44149738/141300865-997f51fb-f396-4898-a38e-9edc048c85ba.png)
+            - cp -r /usr/share/easy-rsa/ /etc/openvpn
+            - mkdir /etc/openvpn/easy-rsa/keys # 키 저장공간 생성
+            - sudo vi /etc/openvpn/easy-rsa/vars
+                - 다음과 같이 본인 설정에 맞게 자유롭게 변경
+                - ![image](https://user-images.githubusercontent.com/44149738/141301785-68e94c59-84e8-4e28-af10-3ee9aa5eb0aa.png)
+            - openssl dhparam -out /etc/openvpn/dh2048.pem 2048 # 인증서에 사용할 디피헬만키 생성
+            - cd /etc/openvpn/easy-rsa
+            - source ./vars
+            - ./clean-all
+            - ./build-ca # ca 인증서 생성
+            - ./build-key-server server # 서버의 인증서와 키 생성
+            - ls /etc/openvpn/easy-rsa/keys
+                - 여기에 ca.pem, crt, key 그리고 server.crt, csr, key 이렇게 다 있는지 확인
+                - 이거를 openvpn에 넣어주면 됨
+            - cp /etc/openvpn/easy-rsa/keys/ca.crt /etc/openvpn
+            - cp /etc/openvpn/easy-rsa/keys/server.crt /etc/openvpn
+            - cp /etc/openvpn/easy-rsa/keys/server.key /etc/openvpn
+            - 이제 시작
+            - service openvpn start
+            - service openvpn status
+            - 클라이언트 인증서와 키 생성
+            - cd /etc/openvpn/easy-rsa
+            - ./build-key client01
+            - 클라이언트(windows)에서도 openvpn 설치.
+                - 이것도 예전버전으로. 2.3.11
+                - 실행 시 관리자권한으로.
+            - 프로그램이 설치된 폴더에서 config/client.ovpn 파일 열어서 수정
+                - 아래 부분도 수정
+                - ![image](https://user-images.githubusercontent.com/44149738/141307801-291acc22-64ff-4f16-9e1f-4f7d9fc89c4f.png)
+                - remote 부분의 ip를 서버의 ip로  잘 설정해주어야 함. 포트는 1194
+            - ubuntu 에서 ca.crt랑, client01.cr, client01.key 3개 파일을 윈도우로 가져옴.
+                - config 폴더에 넣음
+            - openvpn을 실행해서 트레이 우클릭 후 connect!
+            - ping(win -> ubuntu) 과정을 ubuntu에서 wireshark로 캡쳐해보기
+                - openvpn으로 암호화 됨
+        - 실습2 - ssh 터널링
+            - win7, ubuntu 14 환경.
+            - apt install openssh-server # ssh 설치
+            - vi /etc/ssh/sshd-config 파일의 내용 아래와 같이 수정.
+                - 없으면 생성.
+                - ![image](https://user-images.githubusercontent.com/44149738/141615516-c81a21ee-093c-46d9-a811-b1e184f166d0.png)
+            - /etc/init.d/ssh restart # ssh 재시작
+            - windows에서 putty로 접속 
+            - 인터넷도 옵션에서 프록시 5000 포트로 설정하면 터널링된 상태로 통신
+    - 은닉채널
+        - 은닉 메세지를 전송하기 위해 기본 통신 채널에 기생하는 채널
+        - ackcmd 툴
+            - ack 패킷만 이용해서 세션을 성립시키지 않음.
+            - ack 패킷 안에 숨겨진 데이터를 주고받음.
+            - 세션이 맺어지지 않아서 방화벽에 탐지도 안됨.
+            - 그러나 너무 많으면 탐지할 수도 있으니 live 여부정도나 간단한 커맨드 정도로 사용
+            - 공격 후 백도어로 데이터 송수신에 사용할 수도 있을 듯
+        - 어떻게 방어할 수 있을까? 어떻게 방어를 우회할 수 있을까?
+            - 요즘 머신러닝을 이용해서 탐지.
+        - dns2tcp 툴
+            - ubuntu 14, ubuntu server 16 환경
+            - 서버에서 dns2tcp 세팅
+                - apt install dns2tcp
+                - vi ./dns2tcpd_config
+                    - ![image](https://user-images.githubusercontent.com/44149738/141644633-4230ea7b-94a9-45ec-8eba-3d40f63c45f6.png)
+                - dns2tcpd -d 3 -f ./dns2tcpd_config
+                    - 만약 충돌나면 udp 53 포트 사용중인 것.
+                    - 프로세스에서 kill 해야함.
+            - 클라이언트에서 dns2tcp 세팅
+                - apt install dns2tcp
+                - vi ./dns2tcpc_config
+                    - ![image](https://user-images.githubusercontent.com/44149738/141644694-4927db0a-7e8c-46ef-b329-610df6077a46.png)
+                - dns2tcpc -f ./dns2tcpc_config
+            - udp를 이용해서 ssh 접속이 가능해짐. dns를 이용해 은닉하는 방법
     
