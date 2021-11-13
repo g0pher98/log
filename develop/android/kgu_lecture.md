@@ -138,4 +138,40 @@
             - singleLine : 레이아웃을 넘어갔을 시 줄바꿈 여부(싱글라인인 경우 넘어가는건 ... 처리됨)
         - java코드에서 수정
             - ![image](https://user-images.githubusercontent.com/44149738/138571743-f33dbdf0-3e35-46b9-a724-f26a67e47383.png)
-
+    - button
+        - 버튼
+        - setOnclickListener() 메소드로 클릭 이벤트 지정해줌
+            ``` java
+            b.setOnclickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Toast.makeText(getApplicationContext(), "Click!", Toast.LENGTH_SHORT).show();
+                }
+            })
+            ```
+    - EditText
+        - input창
+        - input의 성격에 따라 속성이 다름.(비번, 이메일, 숫자 등)
+        - getText() 메소드는 Editable 객체를 반환.
+            - string으로 사용하고 싶으면 toString()으로 변환해주면 됨.
+    - CompoundButtons
+        - 클릭할 때마다 상태가 바뀌는 버튼
+        - button을 상속한 클래스
+        - subclasses
+            - CheckBox
+            - RadioButton
+                - 이 객체는 radio group을 이용해서 객체들을 묶어주어야 한다.
+            - Switch
+            - ToggleButton
+        - isChecked() 메소드를 이용해서 체크 여부를 확인
+        - setOnCheckedChangeListener를 통해서 체크가 변경되었을 때를 감지
+            ```java
+            c.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compundButton, boolean b) {
+                    if (b) {
+                        // ...
+                    }
+                }
+            })
+            ```
