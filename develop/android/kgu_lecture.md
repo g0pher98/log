@@ -214,3 +214,97 @@
     - linear layout
         - 한줄로 배치하는 것
         - 가로(horizontal)/세로(vertical) 방향으로 배치 가능
+    - frame layout
+        - 무언가를 넣을 프레임을 생성.
+        - 한개가 딱 들어가고, 여러개 들어가면 겹쳐짐
+        - 한 칸 안에 다 넣을때 사용
+    - table layout
+        - 테이블 만드는 레이아웃
+        - `TableRow` 라는 view를 사용해서 줄을 만듬
+        - 좌우로는 병합이 되는데 상하로 병합이 안됨.
+        - attributes
+            - stretchColumns : 빈공간을 채우도록 좌우로 늘린다.
+                - 숫자를 넣으면 해당 column이 늘어난다.
+                - 균등하게 늘어나게 하려면 `*`을 넣으면 된다.
+            - shrinkColumns : layout overflow 발생 시 줄여서 크기 맞춤
+        - layout에 들어간 자식 객체에 생기는 attributes
+            - layout_column
+                - 몇번 column에 배치할 것인지 설정
+            - layout_span
+                - 몇개의 column에 걸쳐 표현할 것인지 설정
+
+7. Menu
+    - 메뉴의 종류
+        - ![image](https://user-images.githubusercontent.com/44149738/141668905-3a575db3-d05b-4763-ac5b-878db9cf5d8e.png)
+        - options menu
+            - 보통 앱 전체에 영향을 주는 메뉴
+        - context menu
+            - 보통 long click 시 표현.
+            - 보통 선택한 항목에만 영향을 줌
+        - popup menu
+            - context menu랑 비슷함.
+    - 메뉴를 만들기 위해서는 XML로 먼저 선언하는게 편하고 좋음
+        ```xml
+        <menu>
+            <item></item>
+            <item></item>
+            <item>
+                <menu>
+                    <item></item>
+                </menu>
+            </item>
+        </menu>
+        ```
+        - `res/menu/` 에 넣으면 됨. 처음엔 없어서 type을 menu로 선택해서 directory를 새로 만듬
+        - `menu resource file`을 선택해서 파일 추가. 기본 xml이 적혀있음.
+    - `<item>`
+        - id : 아이디
+        - icon : 아이콘 뜨는것
+        - title : 표시 뭐라고 될건지(?) 
+        - showAsAction : 앱바(?)를 사용할 때 사용.
+    - option menu 사용법
+        - `onCreateOptionsMenu()` 메소드를 override 해서 activity에서 메뉴를 띄워야 할 때 띄울 수 있도록 설정해주어야 한다.
+            ```java
+            @Override
+            public boolean onCreateOptionsMenu(Menu menu) {
+                MenuInflater inflater = getMenuInflater();
+                inflater.inflate(R.menu.game_menu, menu);
+                return true;
+            }
+            ```
+            - inflater는 menu xml 구조를 object로 변환해주는 것을 말함.
+            - `R.menu.<xml파일이름>` 으로 접근
+        - `onOptionsSelected()` 메소드를 override 해서 메뉴를 선택했을 때, 액션을 지정할 수 있다.
+            ```java
+            public boolean onOptionsItemSelected(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.item1:
+                        // ...
+                        return true;
+                    case R.id.item2:
+                        // ...
+                        return true;
+                    default:
+                        return super.onOptionsItemSelected(item);
+                } 
+            }
+        ```
+    - context menu 사용법
+        - long click 시 메뉴 띄워줌
+        - `registerForContextMenu(View)` : View 설정
+        - `onCreateContextMenu()` : 메뉴를 띄울 때 사용
+            ```java
+            @Override
+            public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) { // 어떤 view를 클릭했을 때 뜰 건지 view를 파라미터로 설정
+                super.onCreateContextMenu(menu, v, menuInfo);
+                // ...
+            }
+            ```
+        - `onContextItemSelected()` : 선택 시 액션 설정
+            - `onCreateContextMenu`는 내부에서 view마다 다르게 설정하지만 본 메소드는 안에서 switch로 선택된 메뉴의 id를 한번에 구분해야함.
+
+            
+            
+                    
+
+
