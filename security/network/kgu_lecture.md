@@ -713,6 +713,207 @@
 
 
 
+24. 터널링
+    - 터널링과 VPN
+        - 터널링
+            - 인터넷을 사적이고 안전한 네트워크의 일부로 사용하게 하는 기술
+        - 캡슐화
+            - 터널 장비를 지날 때, 2계층 이상의 정보를 벗겨내지 않고 캡슐화
+            - ![image](https://user-images.githubusercontent.com/44149738/141281078-ff14d70c-5b83-408f-a7e0-915351771d8a.png)
+            - 대표적으로 VPN
+        - VPN (Virtual Private Network)
+            - 터널링의 대표적인 보안 장비
+        - Internal Network (or IntraNet)
+            - 기업 내부 데이터 통신용 네트워크
+            - 인터넷과 구분된 별도의 임대회선(leased line) 사용
+            - 가격이 고가임
+                - 임대 회선과 비슷한 수준의 기밀성을 제공하려면 vpn 사용 및 암호화 필요
+                - vpn 암호화 프로토콜에는 PPTP, L2TF, IPSec, SSL 등이 있음
+        - 실습 - vpn
+            - 환경: ubuntu 14
+            - apt install openvpn easy-rsa
+            - sudo vi /etc/openvpn/server.conf 
+                - 다음과 같이 설정
+                - ![image](https://user-images.githubusercontent.com/44149738/141300789-8aaac699-5a84-4b67-9e6f-31b23cb432ab.png)
+            - sudo vi /etc/sysctl.conf
+                - 다음과 같이 설정
+                    - ![image](https://user-images.githubusercontent.com/44149738/141300865-997f51fb-f396-4898-a38e-9edc048c85ba.png)
+            - cp -r /usr/share/easy-rsa/ /etc/openvpn
+            - mkdir /etc/openvpn/easy-rsa/keys # 키 저장공간 생성
+            - sudo vi /etc/openvpn/easy-rsa/vars
+                - 다음과 같이 본인 설정에 맞게 자유롭게 변경
+                - ![image](https://user-images.githubusercontent.com/44149738/141301785-68e94c59-84e8-4e28-af10-3ee9aa5eb0aa.png)
+            - openssl dhparam -out /etc/openvpn/dh2048.pem 2048 # 인증서에 사용할 디피헬만키 생성
+            - cd /etc/openvpn/easy-rsa
+            - source ./vars
+            - ./clean-all
+            - ./build-ca # ca 인증서 생성
+            - ./build-key-server server # 서버의 인증서와 키 생성
+            - ls /etc/openvpn/easy-rsa/keys
+                - 여기에 ca.pem, crt, key 그리고 server.crt, csr, key 이렇게 다 있는지 확인
+                - 이거를 openvpn에 넣어주면 됨
+            - cp /etc/openvpn/easy-rsa/keys/ca.crt /etc/openvpn
+            - cp /etc/openvpn/easy-rsa/keys/server.crt /etc/openvpn
+            - cp /etc/openvpn/easy-rsa/keys/server.key /etc/openvpn
+            - 이제 시작
+            - service openvpn start
+            - service openvpn status
+            - 클라이언트 인증서와 키 생성
+            - cd /etc/openvpn/easy-rsa
+            - ./build-key client01
+            - 클라이언트(windows)에서도 openvpn 설치.
+                - 이것도 예전버전으로. 2.3.11
+                - 실행 시 관리자권한으로.
+            - 프로그램이 설치된 폴더에서 config/client.ovpn 파일 열어서 수정
+                - 아래 부분도 수정
+                - ![image](https://user-images.githubusercontent.com/44149738/141307801-291acc22-64ff-4f16-9e1f-4f7d9fc89c4f.png)
+                - remote 부분의 ip를 서버의 ip로  잘 설정해주어야 함. 포트는 1194
+            - ubuntu 에서 ca.crt랑, client01.cr, client01.key 3개 파일을 윈도우로 가져옴.
+                - config 폴더에 넣음
+            - openvpn을 실행해서 트레이 우클릭 후 connect!
+            - ping(win -> ubuntu) 과정을 ubuntu에서 wireshark로 캡쳐해보기
+                - openvpn으로 암호화 됨
+        - 실습2 - ssh 터널링
+            - win7, ubuntu 14 환경.
+            - apt install openssh-server # ssh 설치
+            - vi /etc/ssh/sshd-config 파일의 내용 아래와 같이 수정.
+                - 없으면 생성.
+                - ![image](https://user-images.githubusercontent.com/44149738/141615516-c81a21ee-093c-46d9-a811-b1e184f166d0.png)
+            - /etc/init.d/ssh restart # ssh 재시작
+            - windows에서 putty로 접속 
+            - 인터넷도 옵션에서 프록시 5000 포트로 설정하면 터널링된 상태로 통신
+    - 은닉채널
+        - 은닉 메세지를 전송하기 위해 기본 통신 채널에 기생하는 채널
+        - ackcmd 툴
+            - ack 패킷만 이용해서 세션을 성립시키지 않음.
+            - ack 패킷 안에 숨겨진 데이터를 주고받음.
+            - 세션이 맺어지지 않아서 방화벽에 탐지도 안됨.
+            - 그러나 너무 많으면 탐지할 수도 있으니 live 여부정도나 간단한 커맨드 정도로 사용
+            - 공격 후 백도어로 데이터 송수신에 사용할 수도 있을 듯
+        - 어떻게 방어할 수 있을까? 어떻게 방어를 우회할 수 있을까?
+            - 요즘 머신러닝을 이용해서 탐지.
+        - dns2tcp 툴
+            - ubuntu 14, ubuntu server 16 환경
+            - 서버에서 dns2tcp 세팅
+                - apt install dns2tcp
+                - vi ./dns2tcpd_config
+                    - ![image](https://user-images.githubusercontent.com/44149738/141644633-4230ea7b-94a9-45ec-8eba-3d40f63c45f6.png)
+                - dns2tcpd -d 3 -f ./dns2tcpd_config
+                    - 만약 충돌나면 udp 53 포트 사용중인 것.
+                    - 프로세스에서 kill 해야함.
+            - 클라이언트에서 dns2tcp 세팅
+                - apt install dns2tcp
+                - vi ./dns2tcpc_config
+                    - ![image](https://user-images.githubusercontent.com/44149738/141644694-4927db0a-7e8c-46ef-b329-610df6077a46.png)
+                - dns2tcpc -f ./dns2tcpc_config
+            - udp를 이용해서 ssh 접속이 가능해짐. dns를 이용해 은닉하는 방법
+25. 세션 하이재킹
+    - 세션을 가로채는 공격
+    - active 한 공격
+    - TCP 세션 하이재킹
+        - 크게 두가지 종류
+            - Non-Blind Attack(로컬 세션 하이재킹 공격)
+                - 클라이언트와 서버가 통신할 때, 시퀀스 넘버를 이용하여 공격
+            - Blind Attack(원격 세션 하이재킹)
+                - 공격 대상을 탐지할 수 없으며, 시퀀스 넘버를 알아낼 수 없음
+                - 사실상 시퀀스 경우의 수가 많아서 현실성은 없음.
+        - TCP 시퀀스 넘버 교환
+            - ![image](https://user-images.githubusercontent.com/44149738/141683462-1910d983-8a90-4b6c-9f4d-bf5edada34c6.png)
+        - 동기화 상태 (3way handshaking)
+            - ![image](https://user-images.githubusercontent.com/44149738/141683534-8d86ea68-6ef8-41ab-946b-429c6dfb6dcf.png)
+        - 비동기 상태
+            - 동기화가 이루어지지 못한 상태. 이 상태에서 하이재킹이 발생
+            1. 데이터가 아예 전송되기 전은 안정적인 상태
+            2. 데이터가 전송되었으나, 클라이언트에 전달되지 않았을 때.
+            3. 패킷 수신이 불가능한 상태.
+        - 비동기 상태로 만드는 방법
+            - 서버에서 초기 설정 단계의 접속을 끊고 다른 시퀀스 넘버로 새로운 접속 생성.
+            - 대량의 null 데이터(의미없는)를 보내는 방법 -> 결과가 어떨지 몰라서 의도한 대로 공격을 이끌어가기 어려움.
+        - TCP 세션 하이재킹 시 TCP 세션의 변경 과정
+            - ![image](https://user-images.githubusercontent.com/44149738/141683936-fee7c0af-bbf2-465b-9089-a3e11a07c02c.png)
+        - ACK Strom
+            - 만약 실제 client와 hacker가 서버로 ack를 보내게 된다면 동일 아이피에서 이상현상이 지속적으로 발생하게 되고, 연결을 위해 두 클라이언트는 끊임없이 경쟁하면서 ack를 보내게 됨. 서버는 이상한 현상을 해결하기 위해 재요청하고, 이러한 과정이 무한이 반복되는 경우를 뜻함.
+            - 이러한 부자연스러운 상황으로인해 공격이 탐지될 수 있음
+            - 이 현상을 막기 위해 ARP 스푸핑을 해두고 공격을 실시
+        - 실습
+            - arpspoof, shijack 툴 필요
+            - 공격 순서
+                1. 클라이언트가 서버로 telnet 접속
+                2. 공격자가 arp 스푸핑으로 패킷의 흐름을 제어
+                3. 클라이언트와 서버의 통신 끊고, 해당 세션 탈취
+            - kali에 shijack 설치
+                - https://packetstormsecurity.com/files/24657/shijack.tgz.html
+                - 위 링크에서 다운로드
+                - tar xvzf shijack.tgz 명령으로 압축 해제
+                - 디렉토리에 들어가서 shijack-lnx 실행
+            - ubuntu desktop에서 ubuntu server로 telnet 접속
+            - kali가 패킷 릴레이 및 스푸핑
+                - fragrouter -B1 # 패킷릴레이 
+                - arpspoof -t 192.168.0.2 192.168.0.200 # 텔넷 서버에 대한 arp 공격
+                - arpspoof -t 192.168.0.200 192.168.0.2 # 클라이언트에 대한 arp 공격
+            - kali에서 tcpdump를 통해 스니핑 할 수 있음
+                - telnet 통신중인 상호 ip, port 확인
+            - 위 내용으로 세션 하이재킹 수행
+                - shijack-lnx eth0 192.168.0.200 37426 192.168.0.2 23
+                - 이후 mkdir 명령으로 디렉토리 만들면 잘 만들어짐.
+        - 보안대책
+            - ssh와 같이 암호화된 연결 지향 
+                - 그러나 불가능한것까지는 아님. 하지만 티가 날 수 있음
+            - 시퀀스 넘버를 주기적으로 체크하여 비동기화 상태에 빠지는지 탐지
+            - ACK Storm 탐지
+                - 잠깐 발생하는 상황이지만 발견할 수 있다면 탐지할 수 있음
+            - 패킷의 유실과 재전송 증가를 탐지
+            - 예상치 못한 접속의 리셋 탐지
+                - 리셋 패킷은 여러 이유에 의해서 발생됨
+26. MITM
+    - 중간자공격
+    - arp 리다이렉트, icmp 리다이렉트, apr 스푸핑 등이 이해 해당되기는 함.
+    - 정확하게는 암호화된 채널을 사용하면서 위 공격들이 막혀서 생긴 공격
+    - 위 세가지와 큰 차이점은, 위 세가지 공격은 패킷의 내용을 바꾸지는 않음. 그러나 mitm은 바꿈.
+    - 실습
+        - 윈도우 서버에 `C:\inetpub\wwwroot` 에 아무 이미지나 업로드
+        - kali에서는 etterfilter 설정
+            - filter.txt를 만듬
+            - sudo etterfilter -o filter.ef filter.txt # 필터 파일로 생성(컴파일)
+            - ettercap 실행
+                - target 설정. (client)
+                - filter 설정. load filter --> filter.ef 선택
+        - client에서 iis 접속
+        - 이미지가 replace되는 것을 확인
+    - SSH MITM
+        - SSH 암호화 기법
+            1. 서버로부터 SSH 접속용 공개키 받음
+            2. 개인키로 데이터를 암호화하고, 이를 다시 서버의 공개키로 암호화 하여 서버로 전송
+            3. 서버는 개인키로 복호화한 후 클라이언트의 공개키로 복호화해서 데이터를 읽음
+        - SSH 초기 연결 시 MITM으로 공격
+    - SSL MITM
+        - SSH 스니핑
+            - SSH와 동일한 방식
+        - 실습
+            - SSL 통신 확인하기
+                - daum.net과 같이 ssl 사용하는 아무 사이트나 접속
+                - https 확인
+            - DNS 스푸핑 공격 준비
+                - `vi ./dnsspoof.hosts`
+                - `192.168.0.201 *.daum.net` 추가
+            - ARP 스푸핑 공격 수행 및 패킷 릴레이
+            - 패킷 복호화
+            - ssldump로 패킷을 복호화
+                - ssldump -a -d -r wireshark.pcap -k webmitm.crt > wireshark_dec.txt
+        - 실제로는 SSL 2.0으로 넘어가서 잘 안되기도 하고, 리소스도 생각보다 큼. 이론적으로만 알아두면 될듯.
+        - SSH 스트립
+            - https를 유지해주는게 아니라 클라이언트한테는 http로 통신
+        - 실습
+            - ssltrip 툴을 사용해야하는데, 공홈 안됨 ㅠ.
+            - 이것도 이론만,,,
+            - bettercap(?) 이라는 툴을 사용하기도 하나봄
+    - MITM 대책
+        - 기본적인 대응책은 ARP스푸핑과 DNS스푸핑의 경우와 같음
+            - static 한 정보를 체크해야함
+        - SSH MITM의 경우 SSH2.0을 사용하면 막을 수 있음
+    - SSL Strip 대책
+        - HTTP가 SSL로 잘 접속되고 있는지 확인
+     
 
 
 
