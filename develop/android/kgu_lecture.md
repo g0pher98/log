@@ -303,8 +303,89 @@
         - `onContextItemSelected()` : 선택 시 액션 설정
             - `onCreateContextMenu`는 내부에서 view마다 다르게 설정하지만 본 메소드는 안에서 switch로 선택된 메뉴의 id를 한번에 구분해야함.
 
-            
-            
-                    
+8. Dialog
+    - 작은 팝업 창
+    - subclasses
+        - AlertDialog : 수업에서는 이것만 다룸
+        - DatePickerDialog
+        - TimePickerDialog
+    - AlertDialog
+        - 요소
+            - title : 제목 영역(없어도 됨)
+            - context area : 내용 영역
+            - action buttons : 확인/취소 등 하단버튼
+        - 사용법
+            1. builder 세팅
+                - `AlertDialog.Builder` 클래스 생성
+                    ```java
+                    AlertDialog.Builder builder - new AlertDialog.Builder(this);
+                    ```
+                - dialog 제목 정하기
+                    ```java
+                    builder.setTitle("dialog title~");
+                    ```
+                - content area에 메세지를 넣는다
+                    ```java
+                    builder.setMessage("message~");
+                    ```
+                - button 설정하기
+                    - positive button -> ok 같은거
+                        - `.setPositiveButton("ok", null)`
+                    - negative button -> 취소 같은거
+                        - `.setNegativeButton("cancel", null)`
+                    - neutral button -> 기타 옵션
+                        - `.setNeutralButton("neutral", null)`
+                    - ![image](https://user-images.githubusercontent.com/44149738/141670127-102728ba-88f7-4a3e-8de8-635eaac1860f.png)
+            2. dialog 생성
+                - AlertDialog 클래스 생성
+                    - `dialog = builder.create();`
+                - 출력
+                    - `dialog.show();`
+            - ![image](https://user-images.githubusercontent.com/44149738/141670233-bfb460e7-f37d-40ca-bde6-8b466310dbc0.png)
+        - context area에 선택 리스트 추가하는 방법
+            - 3 종류가 있음
+                - traditional single-choice list
+                - persistent single-choice : radio buttons
+                - persistent multiple-choice : checkboxes
+            - `.setItems(String[] list, new DialogInterface.OnClickListener() {})` 메소드로 넣을 수 있음
+                - 첫 번째 인자로 String 배열을 넣으면 된다.
+                - 두 번째 인자로는 onclicklistener.
+            - `.setMultiChoiceItems(String[] list, boolean[] checked, new DialogInterface.OnMultiChoiceClickListener() {})`
+                - 두 번째 인자로 click 여부를 저장할 boolean 배열 전달
+            - `.setSingleChoiceItems(String[] list, int i, new DialogInterface.OnClickListener() {})`
+        - context area 커스터마이징
+            - `res/layout/dialog.xml` 같은 형태로 layout xml 생성
+            - inflate를 이용해서 xml 파일을 view 형태로 변환
+            - builder의 `.setView()` 메소드를 이용해서 context area에 view를 설정.
+9. activity & intent
+    - 안드로이드 component 4가지 (매우 중요)
+        - Activity
+            - 가장 기본적인 컴포넌트. 화면을 구성.
+            - 화면에 뜨지 않으면 동작하지 않음.
+        - Service
+            - 백그라운드에서 계속 무언가를 수행할 때 사용. 문자가 온다든지.
+            - 화면에 띄워져있지 않아도 실행
+        - Broadcast Receiver
+            - 이벤트 발생 시 수행. 전화가 온다든지.
+        - Content Provider
+            - 데이터를 다른 앱과 공유하는 컴포넌트
+    - activity
+        - 새로운 activity 만들기
+            - 화면을 전환하는 방법이 MainActivity와 Fragment 두 개 있음.
+            - 요즘 대세는 fragment 사용. 예쁘고, 스무스하고, 리소스 적음.
+            - New - Activity - Empty Activity 선택해서 새로운 activity 만들 수 있음
+                - generate a layout file 옵션을 체크
+                - launcher activity 옵션은 체크 해제
+                    - launcher activity는 처음 시작할 때 보이는 activity를 말함
+                - 생성하면 java 파일 하나, xml 파일 하나가 생성됨.
+                    - menifest 파일에도 해당 activity에 대한 내용을 추가해야함.(자동추가됨)
+            - activity 사용법
+                ```java
+                Intent intent = new Intent(getApplicationContext(), NewActivity.class);
+                startActivity(intent);
+                ```
+                - 종료할 때는 `finish()` 호출
+
+
 
 
