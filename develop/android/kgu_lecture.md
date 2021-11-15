@@ -357,7 +357,7 @@
             - `res/layout/dialog.xml` 같은 형태로 layout xml 생성
             - inflate를 이용해서 xml 파일을 view 형태로 변환
             - builder의 `.setView()` 메소드를 이용해서 context area에 view를 설정.
-9. activity & intent
+9. activity
     - 안드로이드 component 4가지 (매우 중요)
         - Activity
             - 가장 기본적인 컴포넌트. 화면을 구성.
@@ -385,7 +385,38 @@
                 startActivity(intent);
                 ```
                 - 종료할 때는 `finish()` 호출
+10. intent
+    - activity를 연다거나 무언가 할 일을 지정해줌.
+    - 또는 activity 간 데이터 교환에 사용됨
+    - intent 종류
+        - explicit intent : 명시적으로 클래스를 지정
+        - implicit intent : 정확하게 지정하지 않고, 해당 액션에 대한 최적의 동작을 수행
+    - 메세지 교환
+        - putExtra()
+        - getExtra() / getStringExtra() / getIntExtra()
+        - 두 메소드를 이용해서 교환.
+    - 다시 최근 activity로 돌아가는 방법
+        - 많이 사용하지만, 권장하지는 않는 방법
+            - activity를 띄울 때, request code를 함께 넘김.
+            - `startActivityForResult(intent, 1);`
+            - 새로 띄운 activity가 종료되면 실행 시 설정해준 request code로 이전 activity는 어떤 activity로부터 넘어온 것인지 알 수 있음.
+            - 종료 시 데이터를 넘길 때는 putExtra 메소드를 사용하면 됨.
+            - extra를 설정해준 뒤 setResult(RESULT_OK, intent)로 결과 지정 후 finish
+            - 받는쪽 intent에서는 onActivityResult(req_code, res_code, data) 메소드로 받음.
+        - 새로운 방법
+            ```java
+            activityResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        Intent data = result.getData(); // 이렇게 intent를 가져올 수 있음
+                        if (result.getResultCode() == Activity.RESULT_OK) {
+                            // ...
+                        }
+                    }
+                }
 
-
-
-
+            )
+            ```
+        
