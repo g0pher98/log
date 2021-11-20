@@ -774,3 +774,85 @@
             - SPV node 자체가 취약하기 때문에 동기화 받아오는 노드가 사기치면 당한다!
             - 공격자 node가 주변에 있어서 다같이 공격하는 경우도 있음
                 - 이 공격을 sybil attack 이라고 함.
+    - Bloom Filter
+        - full node가 SPV client에게 모든 정보를 줄 필요가 없음
+        - SPV client가 받아보는 정보를 보면 사용자가 누군지 특정할 수 있음(익명성을 해침)
+        - 안전하게 필요한 정보만 줄 수 있도록 일종의 필터를 사용.
+        - 필터가 맞는 트랜젝션이 여러개(본인게 아닌 경우) 있을 수 있음.
+            - 남들이 사용자 특정이 보다 어려워짐
+            - 효율은 떨어질 수 있음
+        - 원리
+            - N개 비트와 M개 hash function으로 구성
+            - ![image](https://user-images.githubusercontent.com/44149738/142081795-b247946a-0a94-4082-956c-01140b3291a4.png)
+            - 초기에는 0으로 초기화되어있음
+            - ![image](https://user-images.githubusercontent.com/44149738/142081971-e5aa82b3-ea30-431c-868a-e19a5d884beb.png)
+            - pattern의 hash값이 index가 되어 해당 비트를 활성화
+            - 이미 활성화되어있는 비트는 그대로 둠
+
+25. blockchain overview
+    - data structure
+        - block이 이전 block과 연결되어있다.
+        - 채굴로 생성된 block이 동시에 생성되면 다음과 같이 가지가 생성될 수 있음
+        - ![image](https://user-images.githubusercontent.com/44149738/142083056-29a923df-55d8-4c0e-bbe4-2e61a478cddc.png)
+        - 일시적으로 fork가 발생할 수는 있으나, 길게 거시적인 관점에서 보았을 때는 결국 하나에 수렴하는 형태를 띈다.
+    - block structure
+        - 크게 header, transactions 로 나뉨
+            - ![image](https://user-images.githubusercontent.com/44149738/142083447-2caa91e2-beef-4386-bb17-4906a9c70f17.png)
+        - 헤더부분은 크진 않음 80bytes 정도
+        - 하나의 tx는 보통 4000bytes 정도이고, 하나의 block 안에는 평균 1900개의 tx가 존재
+    - block identifiers
+        - block을 대표하는 id가 필요. 어떤 데이터를 id로 쓸 것인가?
+        - block hash
+            - 정확히는 헤더부분에 대한 hash값.
+            - sha256 twice를 적용해서 32bytes의 id값을 얻음
+        - block height
+            - block의 높이로 표현하기도 함.
+            - block hash가 너무 길기 때문.
+            - 그러나 block height가 유니크하지 않은 경우도 있음.(fork가 발생한 경우)
+    - immutability (불변성)
+        - 기록되면 변하지 않는 성질
+        - ![image](https://user-images.githubusercontent.com/44149738/142084666-cb232b37-501a-4301-80fe-65a30935323d.png)
+        - block 내용을 수정하려고 하면 블록 내에 merkle root도 변경되게 되는데, 그렇게 되면 block hash를 맞추기가 무척 어렵다.
+        - 그 사이에 block이 쌓이면 그걸 다 변조해야한다.
+        - 따라서 block이 몇 개가 쌓여버리면 불변성을 가진다고 판단.
+
+26. Merkle Tree
+    - 기본적으로 binary hash tree라는 구조에서 사용
+        - tree 구조인데, 각 dir를 hash로 관리
+        - 규모가 큰 dataset의 무결성 보장
+    - in bitcoin
+        - 하나의 블록을 summarize
+        - txs들의 대표값으로써 merkle root를 만들어 헤더에 넣음.
+        - 헤더는 block hash에 직접적인 연관이 있으므로 hash는 변경되지 않음
+        - 효율성 측면의 장점도 있음
+            - tx가 해당 블록 안에 있는지 검사를 하려면 txs에 대해 전수조사해야함.
+            - merkle root를 사용하게 되면 O(log N) 만큼의 시간이 걸림
+                - 1000개의 tx이면 10번정도로 알 수 있음
+    - 동작 원리
+        - ![image](https://user-images.githubusercontent.com/44149738/142087377-2242df52-2960-44f1-9a96-9af719ca279a.png)
+        - A, B, C, D 라는 TX가 있다고 가정.
+        - twice hashing을 tree구조 하위부터 타고 올라가면서 진행
+    - K tx가 내부에 있는지 확인하는 방법
+        - ![image](https://user-images.githubusercontent.com/44149738/142088843-214b0246-06d8-4c8d-b735-309321de448e.png)
+        - merkle path : tree 하단부터 타고 올라온 경로
+            - HASH 연산을 위해 합친 데이터를 포함.
+            - K = { H_L, H_IJ, H_MNOP, H_ABCDEFGH }
+        - H_K를 merkel path를 기반으로 한 연산 결과와 같은지 확인.
+    - Merkle tree는 SPV에서 많이 사용됨
+        - client가 full block을 download 하지 않고 tx를 체크할 수 있음
+        - full node는 SPV 노드에게 Merkle block 메세지를 보냄(block header + merkle path)
+        - 검증과정에 큰 데이터가 송수신되지 않기 때문에 좋다.
+    - Test 용 블록체인
+        - testnet
+            - 구성은 mainnet과 동일. 그러나 서로 연결되어있지는 않음.
+            - 약간의 차이가 있음
+                - 여기의 코인은 가짜돈임! 가치가 없음
+                - 마이닝 레벨도 매우 낮춤(원활한 테스트를 위해)
+            - 공짜로 테스트넷용 비트코인을 받을 수 있는 사이트도 있음
+        - regtest
+            - testnet도 결국엔 다같이 쓰는거라 테스트가 어려울 수 있음.
+            - 아예 로컬상에서 내 머신 안에서 또는 몇대만 가지고 진행.
+
+
+
+
