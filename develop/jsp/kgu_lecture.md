@@ -316,3 +316,44 @@
                 - 숫자를 형식에 맞춰 출력하는 태그
             - timeZone
                 - 사용자 locale에 따라 날짜를 출력하는 방법
+
+11. 시큐리티
+    - 허가된 사용자만이 특정 페이지에 접근할 수 있도록 제한하는 기능
+    - 종류
+        - 인증(authentication)
+            - 사용자 이름과 암호를 확인하여 수행
+        - 권한 부여(authorization)
+            - 접근할 수 있는 사람인지 확인하여 승인
+    - 처리방법
+        - 선언적 시큐리티 : web.xml에 작성해서 인증 수행
+        - 프로그래밍적 시큐리티
+    - 선언적 시큐리티
+        - 역할 설정 방법
+            ```xml            
+            <security-role>
+                <role-name>역할이름</role-name>
+            </security-role>
+            ```
+        - 제약사항 설정 방법
+            ```xml
+            <security-constraint>
+                <web-resource-collection>웹 자원에 대한 접근 설정</web-resource-collection>
+                <auth-constraint>웹 자원에 접근할 수 있는 인증된 사용자 설정</auth-constraint>
+                <user-data-constraint>데이터 정송 시 데이터 보호 설정</user-data-constraint>
+            </security-constraint>
+            ```
+            - ![image](https://user-images.githubusercontent.com/44149738/142765776-633043fc-5fae-4534-87b0-ddf568d3653e.png)
+            - ![image](https://user-images.githubusercontent.com/44149738/142765821-55d52750-93a1-4f42-9a90-bfd069851f5d.png)
+            - `user-data-constraint` - `transport-guarantee`
+                - ![image](https://user-images.githubusercontent.com/44149738/142765924-a63905f0-cbd1-4996-ab79-199d5ff57cc3.png)
+        - 인증 설정
+            - `login-config`를 사용
+                - ![image](https://user-images.githubusercontent.com/44149738/142766074-ba635bc7-4ffd-4729-b8b1-2292b878f2ab.png)
+                - `auth-method`
+                    - ![image](https://user-images.githubusercontent.com/44149738/142766163-676c1c16-88c4-4660-acbe-fc75caf984e2.png)
+                    - FORM 속성을 사용하게 되면 action 및 name을 고정해야함
+                        - ![image](https://user-images.githubusercontent.com/44149738/142766273-b39e24f5-bfd5-4476-9505-9567400558c5.png)
+                    - form 사용 시 `form-login-config` 사용.
+                        - ![image](https://user-images.githubusercontent.com/44149738/142766361-3028b7d4-be9c-4505-8ca1-5b5de629fd9d.png)
+
+
