@@ -374,3 +374,32 @@
                 - ![image](https://user-images.githubusercontent.com/44149738/142829844-2798bd5d-c0a5-49ed-965c-427cd9803315.png)
     - try-catch-finally를 이용한 예외처리
 
+13. 세션
+    - 클라이언트와 웹서버 간 상태를 지속적으로 유지하는 방법.
+    - 사용법
+        - 생성
+            - `session.setAttribute(String name, Object value)` 메소드 사용해서 생성
+        - 조회
+            - `(String) session.getAttribute(String name)` 메소드로 값 가져오기. 형변환 필수
+            - `Enumeration enum = session.getAttributeNames()` 나열
+                - `enum.hasMoreElements()` 로 while문 돌면서 하나씩 출력 가능
+        - 삭제
+            - `session.removeAttribute(String name)` 메소드로 항목 삭제
+            - `session.invalidate()` 메소드로 세션 전체 파기
+        - 유효시간
+            - `setMaxInactivateInterval(int interval)` 메소드로 설정
+                - 기본 단위는 second
+
+14. 쿠키
+    - 메소드 종류
+        - ![image](https://user-images.githubusercontent.com/44149738/142846126-3cea9201-492c-47ab-86f2-da7bc63911ff.png)
+    - 쿠키와 세션의 차이
+        - ![image](https://user-images.githubusercontent.com/44149738/142846269-f3272c03-941a-4d27-9053-c2dc2c67ed0a.png)
+    - 사용법
+        - 쿠키 객체 얻기
+            - `Cookie[] cookies = request.getCookies()`
+        - 정보 얻기
+            - `cookies[i].getName(), cookies[i].getValue()`
+        - 쿠키 삭제
+            - `cookie.setMaxAge(0)`
+        
