@@ -360,4 +360,17 @@
             - 메소드
                 - ![image](https://user-images.githubusercontent.com/44149738/142766680-67c2d3f8-1e60-4264-b985-28f52616a388.png)
 
+12. 예외처리
+    - page 디렉티브 태그를 이용한 예외처리
+        - errorPage와 isErrorPage를 사용
+        - `<%@ page errorPage="error.jsp" %>` 상단에 선언되어있으면 에러 발생시 이 페이지로 이동
+        - `<%@ page isErrorPage="true" %>` 가 상단에 선언되면 에러페이지임.
+        - 에러관련 정보 출력 방법
+            - ![image](https://user-images.githubusercontent.com/44149738/142829341-e810f112-0a63-4ada-a64b-89af088c9a26.png)
+    - web.xml 파일을 이용한 예외처리
+        - `<error-code>` 또는 `<exception-type>`을 이용
+            - ![image](https://user-images.githubusercontent.com/44149738/142829459-9e780117-b4c8-4120-bfce-3149ec451552.png)
+            - `exception-type` 태그 안에는 예외 유형을 정의하는데, 예외 유형의 종류는 다음과 같다.
+                - ![image](https://user-images.githubusercontent.com/44149738/142829844-2798bd5d-c0a5-49ed-965c-427cd9803315.png)
+    - try-catch-finally를 이용한 예외처리
 
