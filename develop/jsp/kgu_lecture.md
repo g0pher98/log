@@ -402,4 +402,12 @@
             - `cookies[i].getName(), cookies[i].getValue()`
         - 쿠키 삭제
             - `cookie.setMaxAge(0)`
-        
+
+15. 데이터베이스
+    - 여러 자료를 동시에 여러 사람이 공유하여 사용할 수 있도록 체계화한 데이터의 집합.
+    - mysql을 사용할 예정
+    - sql 문장의 종류
+        - 데이터 정의 언어 : create, alter, drop
+        - 데이터 조작 언어 : select, insert, delete
+        - 데이터 제어 언어 : grant, revoce, commit, rollback
+    
