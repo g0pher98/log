@@ -355,5 +355,9 @@
                         - ![image](https://user-images.githubusercontent.com/44149738/142766273-b39e24f5-bfd5-4476-9505-9567400558c5.png)
                     - form 사용 시 `form-login-config` 사용.
                         - ![image](https://user-images.githubusercontent.com/44149738/142766361-3028b7d4-be9c-4505-8ca1-5b5de629fd9d.png)
+    - 프로그래밍적 시큐리티
+        - 선언적 시큐리티의 보안으로 충분하지 않을 때, request 내장 객체의 메소드를 사용하여 승인할 수 있다. 
+            - 메소드
+                - ![image](https://user-images.githubusercontent.com/44149738/142766680-67c2d3f8-1e60-4264-b985-28f52616a388.png)
 
 
