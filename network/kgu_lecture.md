@@ -751,6 +751,47 @@
                 - 응답 시퀀스 넘버를 사용
         - rdt2.2 : NAK 없는 프로토콜
             - nak 대신 ack을 여러개 시퀀스를 사용해서 표현
+        - rdt3.0 : error와 loss가 생기는 채널
+            - 패킷이 아예 사라지는 상황도 존재. 
+            - timeout을 걸고, 패킷이 사라지는 현상을 조금만 기다리도록 함.(stop-and-wait)
+            - 그러나 이렇게 기다리는 것(stop-and-wait)이 성능적으로 좋지는 못하다
+                - 성능 계산 방법
+                    - ![image](https://user-images.githubusercontent.com/44149738/143235738-7f43d323-2d1e-44df-bd60-b17718e9c2ff.png)
+                    - utilization이 1이 되어야 busy하게 사용하는건데 한참 남음
+        - pipelining
+            - ack을 기다리지 않고 다 보내는 것(최대치를 정함)
+            - 최대 3개를 보낼 수 있다고 가정하면, utilization이 3배 증가함
+                - ![image](https://user-images.githubusercontent.com/44149738/143236314-08e9f50b-6ab5-4956-9103-7139668bc430.png)
+            - 최대치를 늘릴수록 좋아짐.
+                - 그만큼 더 많은 시퀀스 넘버 필요.
+            - 방식 두가지
+                - 둘 다 N개까지의 패킷을 ack 없이 한꺼번에 보낼 수 있다.
+                1. go-back-N (GBN)
+                    - ![image](https://user-images.githubusercontent.com/44149738/143240328-f283bdf3-e852-43b6-b219-ba2553ded6a4.png)
+                    - cumulative ack을 사용
+                        - ACK N번이라고 한다면 N번 이전으로는 다 받았다는 뜻.
+                        - 1,2,3,5,6,7 받았다고 한다면 4번을 못받았으므로 ack 3번인 것임.
+                    - 가장 오래된 unacked packet에 대해서만 timer를 설정.
+                        - timeout이 발생하면 현재 ack을 받지 않은 것들을 모두 재전송.
+                2. selective repeat
+                    - individual ack을 사용
+                        - ack 7 이면 7번 패킷만 잘 받았다는 뜻.
+                    - 모든 unacked packet에 timer를 설정
+                        - timeout이 발생하면 해당하는 패킷만 재전송.
+    - TCP
+        - point to point 통신
+        - 메세지 단위가 아니라 스트림(바이트) 단위로 전송
+        - pipelined 프로토콜
+        - 양방향 데이터 전송 프로토콜
+        - MSS(Maximum Segment Size) : TCP 패킷 최대 크기
+        - 흐름제어
+            - sender의 전송 속도를 receiver가 받을 수 있는 속도로 제어
+        - 구조
+            - seq number와 ack number가 segment 단위로 붙는게 아니라 byte 단위로 붙는다.
+            - cumulative ack을 사용
+            - 뒤쪽 데이터가 먼저 오면 이를 받아도, 안받아도 상관없다.
+             
+
 
             
 
