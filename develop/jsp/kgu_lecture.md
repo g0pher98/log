@@ -410,4 +410,56 @@
         - 데이터 정의 언어 : create, alter, drop
         - 데이터 조작 언어 : select, insert, delete
         - 데이터 제어 언어 : grant, revoce, commit, rollback
+
+16. JDBC
+    - Java DataBase Connectivity
+    - import 해서 사용
+        - `java.sql.*` 패키지 임포트
+    - JDBC를 사용하면 어떤 DB를 사용하던지 연결할 수 있다.
+    - 쿼리 실행용 객체 생성 -> 쿼리 실행 -> 결과 사용 -> 객체 종료
+    - JDBC 사용하기
+        ```java
+        Connection conn = null;
+        try {
+            Class.forName("com.mysql.jdbc.Driver"); // 프로그램 수행 시 한 번만 수행
+            conn = DriverManager.getConnection( // 쿼리 실행을 위한 객체
+                "jdbc:mysql://localhost:3306/JSPBookDB?user=root&password=1234"
+            );
+        } catch (SQLException ex) {
+            // 예외 발생 처리
+        } finally {
+            if (conn != null) conn.close(); // 사용 후 꼭 닫아주자
+        }
+        ```
+        - getConnection은 다음과 같이 여러 방식으로 사용할 수 있다.
+            - ![image](https://user-images.githubusercontent.com/44149738/143275360-2b4eb175-9873-47a7-b8a1-481ca18ef376.png)
+        - 한글 깨지는 경우
+            - db 로드하기 전 `request.setCharacterEncoding('utf-8');` 코드 작성
+            - db url에 `?characterEncoding=euckr` 추가
+    - statement 객체
+        - 정적인 쿼리에 사용
+        - 하나의 쿼리를 사용하고 나면 더이상 사용할 수 없음.
+        - 쿼리를 끝내면 close를 통해 즉시 해제해야 함.
+        - 복잡하지 않은 간단한 쿼리문을 사용하는 경우에 좋음.
+        - `Statement stmt = conn.createStatement();` 메소드로 핸들링 객체 생성
+        - 사용 후 stmt도 close해야함.
+        - 메소드 종류
+            - ![image](https://user-images.githubusercontent.com/44149738/143276617-c3f058ae-2165-4eaa-b85d-560755eb4549.png)
+    - PreparedStatement 객체
+        - 동적인 쿼리에 사용
+        - 하나의 객체로 여러 번의 쿼리를 실행
+            - 쿼리를 동적으로 설정하는 함수
+                - ![image](https://user-images.githubusercontent.com/44149738/143279483-e960ea48-68fb-421e-83a3-b473a9ddc23e.png)
+                - `sql = "... (?, ?, ?)"` 형태로 만들어서 물음표 자리에 값을 넣음
+                - `.setString(1, "text")` 이런식으로 물음표를 채움. 1부터.
+            - 객체의 메소드(statement와 비슷)
+                - ![image](https://user-images.githubusercontent.com/44149738/143279508-05210d6a-8096-4b5e-9781-99065e611a30.png)
+    - ResultSet 객체
+        - 쿼리 실행 결과를 가져오는 객체
+        - 메소드
+            - ![image](https://user-images.githubusercontent.com/44149738/143283163-7462920a-4694-40f1-959d-71e0db3148c7.png)
+        - ResultSet도 사용이 끝나면 close 해주어야 한다.
+
+
+
     
