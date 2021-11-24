@@ -449,3 +449,26 @@
                     <category android:name="android.intent.category.DEFAULT" />
                 </intent-filter>
                 ```
+11. Activity Lifecycle
+    - ![image](https://user-images.githubusercontent.com/44149738/143290931-779a8117-857d-42a2-93cc-c008014e00c7.png)
+    - 안드로이드는 하나의 activity만 띄울 수 있음.
+        - 화면분할이나 pip 같은것은 특별한 경우
+    - 다른 앱으로 이동
+        - `onPause` -> `onSaveInstanceState` -> `onStop`
+            - 다시 돌아오면 복구해줘야하기 때문에.
+        - 다시시작(메모리 여유 O) -> `onRestart` -> `onStart` -> `onResume`
+        - 다시시작(메모리 여유 X) -> `onCreate` -> `onStart` -> `onRestoreInstanceState` -> `onResume`
+        - 안드로이드 9부터는 앱 이동 시 순서가 바뀜
+            - `onPause` -> `onStop` -> `onSaveInstanceState`
+    - 가로화면으로 바꿀 때
+        - 세로화면이 죽고 가로화면이 다시 랜더링 되는 느낌
+            - 기존 화면을 destory 하고 회전된 화면을 create함.
+        - destroy
+            - `onPause` -> `onSaveInstanceState` -> `onStop` -> `onDestroy`
+        - create
+            - `onCreate` -> `onStart` -> `onRestoreInstanceState` -> `onResume`
+    - save & restore
+        - 숫자 증가하는 앱. 가로화면 바꾸면 0부터 시작해버림.
+        - 상태를 저장하고, 복구해주어야 함.
+        - onSaveInstanceState 메소드를 override를 하고, 인자로 받은 Bundle에 putInt와 같은 메소드로 데이터 저장. 이후 복구할 때 이 번들을 다시 받음.
+        - onRestoreInstanceState 메소드를 override해서 Bundle에서부터 데이터를 받아와 복구.
