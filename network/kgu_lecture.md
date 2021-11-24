@@ -676,3 +676,82 @@
             - number of authority RRs : 하위 ns 정보
             - number of additional RRs : 추가 도움되는 정보를 담는 공간
 
+21. transport 계층
+    - 프로세스와 프로세스 사이에 논리적인 연결을 맺는 것을 담당
+    - 세그먼트 단위로 송수신.
+    - network 레이어 간 차이점
+        - network layer : 호스트간 논리적 연결
+        - transport layer : 프로세스간 논리적 연결
+    - TCP/UDP
+        - TCP : reliable(loss 적음), in-order delivery(순서가 있음) 
+        - UDP : unreliable, unordered delivery
+    - multiplexing/demultiplexing
+        - multiplexing
+            - 일반적으로 송신측에서 발생
+            - 여러개(프로세스에서 온 메세지)를 하나로 묶어서 송수신
+        - demultiplexing,,,?
+            - 일반적으로 수신측에서 발생
+            - 하나(메세지)를 여러개로 나누어서 수신
+            - 프로세스에 포트번호를 할당해서 해당 포트로 통신
+                - port로 process를 찾아간다는 것은 엄연히 틀린말
+                - port로 socket을 찾아가는게 올바른 말
+            - 종류
+                - 비연결형(udp)
+                    - dest ip/port 만 기재
+                - 연결지향형(tcp)
+                    - src/dest ip/port만 기재
+    - UDP
+        - 확장 및 추가기능이 최소인 전송 프로토콜
+        - 순서가 지켜지지 않음
+        - connectionless 성격을 띔. 연결 x
+        - 각각의 udp 패킷은 독립적으로 취급된다.
+        - 구조가 단순함.
+        - 사용
+            - 미디어 스트리밍
+            - 속도에 민감한 서비스
+            - DNS, SNMP
+        - UDP 이면서 loss를 적게 하는 방법
+            - application 계층에서 loss 복구를 수행하면 됨.
+        - 사용 이유
+            - connection 과정 필요 없음
+            - 심플함.
+            - 헤더 사이즈가 작음
+            - 네트워크 혼잡도에 따른 혼잡제어를 하지 않음.
+        - checksum
+            - 현재 보내는 세그먼트에 error가 있는지 탐지
+            - sender
+                - checksum 값을 생성
+                - 헤더를 포함한 모든 내용을 16bit로 나눔
+                - 다음줄을 계속 더해나감(bit)
+                - 마지막 합에 not 연산
+            - receiver
+                - 다시 계산해서 checksum 필드의 값이 같은지 비교
+                - checksum이 일치한다고 해서 오류가 없다고는 할 수 없음.
+    - reliable data transfer(loss 적음)
+        - rdt 1.0 : reliable한 채널 위에서 구현
+            - 채널이 reliable하기 때문에 sender와 receiver는 고려하지 않아도 됨
+        - rdt 2.0 : channel이 bit error를 가지고 있는 환경
+            - 송수신에 checksum을 사용
+            - 에러 발생에 대해 송신자에게 알림
+                - ACK(Acknowledgements) 패킷을 보냄
+                - NAK(Negative acknowledgements) 패킷을 보냄
+                    - nak을 받으면 sender는 재전송해주어야 함
+            - 그러나 checksum마저 오류로 인해 변경될 수 있음
+                - sender는 잘 모르니까 재전송해버린다
+                - receiver 입장에서는 중복된 핸들링을 하게 될 수 있다.
+                    - 오류때문에 받은건지 새로 온건지 모르기 때문
+            - 시퀀스 넘버를 사용
+                - 앞서 설명한 중복 핸들링을 방지하기 위함
+        - rdt 2.1 : discussion
+            - sender
+                - 시퀀스 넘버를 사용.
+                    - receiver가 새 패킷인지 재전송 패킷인지 판단하기에는 0과 1이면 충분함.
+            - receiver
+                - 중복된 패킷인지 체크
+                - 응답 시퀀스 넘버를 사용
+        - rdt2.2 : NAK 없는 프로토콜
+            - nak 대신 ack을 여러개 시퀀스를 사용해서 표현
+
+            
+
+
