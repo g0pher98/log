@@ -391,32 +391,61 @@
     - intent 종류
         - explicit intent : 명시적으로 클래스를 지정
         - implicit intent : 정확하게 지정하지 않고, 해당 액션에 대한 최적의 동작을 수행
-    - 메세지 교환
-        - putExtra()
-        - getExtra() / getStringExtra() / getIntExtra()
-        - 두 메소드를 이용해서 교환.
-    - 다시 최근 activity로 돌아가는 방법
-        - 많이 사용하지만, 권장하지는 않는 방법
-            - activity를 띄울 때, request code를 함께 넘김.
-            - `startActivityForResult(intent, 1);`
-            - 새로 띄운 activity가 종료되면 실행 시 설정해준 request code로 이전 activity는 어떤 activity로부터 넘어온 것인지 알 수 있음.
-            - 종료 시 데이터를 넘길 때는 putExtra 메소드를 사용하면 됨.
-            - extra를 설정해준 뒤 setResult(RESULT_OK, intent)로 결과 지정 후 finish
-            - 받는쪽 intent에서는 onActivityResult(req_code, res_code, data) 메소드로 받음.
-        - 새로운 방법
-            ```java
-            activityResultLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                new ActivityResultCallback<ActivityResult>() {
-                    @Override
-                    public void onActivityResult(ActivityResult result) {
-                        Intent data = result.getData(); // 이렇게 intent를 가져올 수 있음
-                        if (result.getResultCode() == Activity.RESULT_OK) {
-                            // ...
+    - explicit intent
+        - 메세지 교환
+            - putExtra()
+            - getExtra() / getStringExtra() / getIntExtra()
+            - 두 메소드를 이용해서 교환.
+        - 다시 최근 activity로 돌아가는 방법
+            - 많이 사용하지만, 권장하지는 않는 방법
+                - activity를 띄울 때, request code를 함께 넘김.
+                - `startActivityForResult(intent, 1);`
+                - 새로 띄운 activity가 종료되면 실행 시 설정해준 request code로 이전 activity는 어떤 activity로부터 넘어온 것인지 알 수 있음.
+                - 종료 시 데이터를 넘길 때는 putExtra 메소드를 사용하면 됨.
+                - extra를 설정해준 뒤 setResult(RESULT_OK, intent)로 결과 지정 후 finish
+                - 받는쪽 intent에서는 onActivityResult(req_code, res_code, data) 메소드로 받음.
+            - 새로운 방법
+                ```java
+                activityResultLauncher = registerForActivityResult(
+                    new ActivityResultContracts.StartActivityForResult(),
+                    new ActivityResultCallback<ActivityResult>() {
+                        @Override
+                        public void onActivityResult(ActivityResult result) {
+                            Intent data = result.getData(); // 이렇게 intent를 가져올 수 있음
+                            if (result.getResultCode() == Activity.RESULT_OK) {
+                                // ...
+                            }
                         }
                     }
-                }
 
-            )
-            ```
-        
+                )
+                ```
+    - implicit intent
+        - 지정하는 방식이 아니라, 정보를 주면 그거에 맞는 적합한 앱을 찾아서 띄움.
+        - 예를 들면 웹페이지를 띄우라고 하면 그에 맞는 앱(사파리나 크롬 등)을 알아서 찾아서 띄움.
+        - intent filter를 이용해서 앱 탐색.
+        - implicit intent 사용
+            - 119에 전화.
+                ```java
+                Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:/119"));
+                startActivity(intent);
+                ```
+            - 웹페이지 열기
+                ```java
+                Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:/119"));
+                intent.setAction(Intent.ACTION_VIEW);
+                intent.setDataAndType(Uri.parse("https://www.google.com"), "text/html");
+                intent.addCategory(Intent.CATEGORY_DEFAULT);
+                startActivity(intent);
+                ```
+        - intent filter 핸들링 설정
+            - 특정 스킴에 대해 intent filter가 앱을 찾을 때 선택지에 추가될 수 있도록 설정할 수 있다.
+            - AndroidManifest 에서 설정
+            - `<activity>` 안에서 선언
+                ```xml
+                <intent-filter>
+                    <action android:name="android.intent.action.VIEW" />
+                    <data android:mimeType="text/html" android:scheme="https" />
+                    <category android:name="android.intent.category.DEFAULT" />
+                </intent-filter>
+                ```
