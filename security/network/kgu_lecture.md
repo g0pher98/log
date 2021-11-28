@@ -965,6 +965,150 @@
                 - ![image](https://user-images.githubusercontent.com/44149738/143725568-c383a755-1044-4bca-8021-0c1d55107079.png)
                 - ![image](https://user-images.githubusercontent.com/44149738/143725577-0cd5a7c4-6976-4e9a-8730-6a98532546e2.png)
         
+28. DoS/DDoS
+    - DoS (Denial of Service)
+        - 네트워크 용량을 초과시켜 정상동작하지 못하도록 하는 공격
+        - 특징
+            - 파괴,,,는 불가능한건 아니긴 함.
+            - 시스템 자원고갈
+            - 네트워크 자원고갈(대역폭)
+        - Ping of Death 공격
+            - ping을 이용하여 ICMP 패킷의 크기를 정상보다 아주 크게 만듦.
+            - 크게 만들어진 패킷은 네트워크를 통해 라우팅되어 아주 작은 조각으로 쪼개짐
+            - 공격 대상은 조각화된 패킷을 모두 처리해야해서 부하가 많이 걸림.
+            - 실습
+                - hping3 사용
+                    - 패킷생성 툴인데, 공격용으로도 활용가능.
+                    - 3계층 이상의 다양한 테스트가 가능.
+                - `apt install hping3`
+                - `hping3 --icmp --rand-source 192.168.0.134 -d 65000`
+            - 보안대책
+                - 반복적으로 들어오는 일정 수 이상의 ICMP 패킷은 무시하도록 설정
+        - SYN Flooding
+            - 최대 동접자수를 가득 채워서 다른 사용자가 서비스를 제공받지 못하게 하는 공격
+            - 원리
+                - ![image](https://user-images.githubusercontent.com/44149738/143726290-1d5f1487-19be-4747-8499-ab80c234a4ad.png)
+                1. 수많은 SYN 보냄
+                2. 서버는 SYN/ACK로 응답
+                3. 공격자는 ACK 응답을 하지 않아서 timeout 시간동안 트래픽 점유
+            - 실습
+                - 마찬가지로 hping3 사용
+                - `-S` 옵션을 붙여서 SYN만 보냄
+                - `--flood` 옵션을 붙이면 그대로 서버가 뻗음
+            - 대책
+                - 시스템 패치 설치
+                - IDS/IPS 설치
+                - 공격패턴 확립. 짧은 시간에 똑같은 형태의 패킷.
+                - Syn_Cookie 이용해서 보완
+                    - ![image](https://user-images.githubusercontent.com/44149738/143726500-551a47be-c79e-492f-9765-d57554f2f589.png)
+        - Boink, Bonk, Teardrop
+            - 시퀀스 넘버를 조작해서 시스템 패킷 재전송과 재조합에 과부하가 걸리도록 시퀀스 넘버를 속임.
+            - Bonk : 모두 1번 시퀀스로 조작해서 보냄
+            - Boink : 정상적으로 보내다가 중간부터 일정한 시퀀스넘버를 보냄
+            - Teardrop : 중첩과 빈 공간을 만들어 시퀀스 넘버가 좀 더 복잡해지도록 섞음.
+                - Teardrop 실습
+                    - hping3 이용
+                    - `--seqnum` 이용해서 조작가능
+        - Land
+            - 도착하다. 출발지와 목적지를 둘 다 공격지 IP로 설정.
+            - 실습
+                - `-a` 옵션으로 ip 설정
+                - `--icmp`, `--flood` 공격 가능
+        - Smurf 공격
+            - 웜이 네트워크를 공격할 때 많이 사용하는 것으로 ICMP 패킷 이용
+            - 라우터는 기본적으로 브로드캐스트를 지원하지 않아 다른 네트워크에 브로드캐스트를 할 때는 다이렉트 브로드캐스트를 하게 됨.
+            - 라우터 내부 에이전트에게 브로드캐스트를 때리고, 에이전트는 그 ICMP 응답을 공격대상에게 보낸다.
+            - 실습
+                - `agent ip 설정`
+                - `-a 공격대상ip`
+                - `--icmp --flood`
+        - 7계층 DoS 공격
+            - 웹 어플리케이션을 대상으로 공격방향을 전환
+            - 주요 프로토콜
+                - http, smtp, ftp, VoIP 등
+            - http
+                - http get flooding
+                    - get 계속 보내는것
+                - http cc 공격
+                    - 캐시를 사용하지 않기 때문에 서버 부하 증가
+                - 동적 http request flooding
+                    - 요청 페이지를 변경하면서 웹 페이지를 지속적 요청
+                - slow http header DoS(Slowloris) 공격
+                    - header를 비정상적으로 조작.
+                    - header를 완전히 수신할 때까지 연결을 유지.
+                    - 요청이 끝나지 않은 것으로 인식해서 웹로그도 남지 않음.
+                    - 실습
+                        - switchblade 라는 프로그램 사용
+                        - 라인피드 부분에서 총 2bytes중 1bytes만 보내서 대기시킴.
+                        - 공격이 끝나면 최대 연결 가능 수를 확인할 수 있음
+                - slow http post
+                    - ![image](https://user-images.githubusercontent.com/44149738/143729050-87e4e8d4-88f7-4bbf-bb65-3c95fdc7f931.png)
+                    - content-length 헤더를 설정하면 "어느정도" 대응 가능
+                    - 실습
+                        - content-length 값을 엄청 크게 하고, 실제 데이터는 1byte를 전송
+            - mail bomb
+                - 스팸 메일 종류
+                - 메일이 폭주해서 디스크 공간을 가득 채우면 정작 필요한 메일을 받지 못함.
+    - DDoS
+        - 피해 양상이 상당히 심각하지만 확실한 대책이 없음
+        - 발원지 파악이 어려움.
+        - 공격 특성상 대부분 DDoS공격은 자동화된 툴 이용
+        - 공격을 이루는 기본 구성
+            - ![image](https://user-images.githubusercontent.com/44149738/143729580-58e24124-dc45-4f7a-b1d9-03744471c630.png)
+            - Attacker : 해커 PC
+            - Master : 명령 받는 시스템. 여러 agent 관리
+            - Handler : 마스터 시스템 역할을 수행하는 프로그램
+            - Agent : 실제 공격 시스템
+            - Daemon : 에이전트 시스템 역할을 수행하는 프로그램
+        - DDoS 공격 툴 종류
+            - Trinoo(트리누)
+                - UDP가 기본공격.
+                - statd, cmsd, ttdbserverd 데몬이 주된 공격 대상
+                - 마스터의 주요 명령
+                    - ![image](https://user-images.githubusercontent.com/44149738/143729669-94007f73-6dbc-4ee5-9f9b-50ba3e3319c3.png)
+                - 에이전트 명령
+                    - ![image](https://user-images.githubusercontent.com/44149738/143729679-b8f0b21f-3192-465d-80ee-15c69c148e0c.png)
+            - TFN(Tribed Flood Network)
+                - Trinoo가 발전된 형태
+                - ICMP Echo Request 패킷 사용
+                - 연결이 맺어지지 않아서 모니터링이 쉽지 않음.
+            - TFN 2K
+                - TFN의 발전된 형태
+                - 암호화 되어있음
+                - 포트도 임의로 결정할 수 있음
+                - 다양한 공격을 사용
+                - 모든 명령은 CAST-256 알고리즘으로 암호화됨.
+                - TCP 포트에 백도어 기능
+                - 데몬 설치 시 정상 프로세스 이름과 비슷하게 설정해서 프로세스 모니터링을 회피
+            - Stacheldraht(슈타첼드라트)
+                - TFN을 발전시킨 형태
+                - 공격자 - 마스터 - 에이전트 - 데몬 간 통신에 암호화 기능 추가
+                - 마스터에 에이전트가 자동으로 갱신됨
+        - 악성코드를 이용한 DDoS 공격
+            - 공격자가 악성코드를 이용해서 에이전트들을 만듬
+            - c&c로 에이전트를 통제해서 공격대상을 공격
+            - 여기서 핵심은 내/외부에 있음
+                - 외부 공격으로 진행하면 결국에 다른 형태랑 비슷하고, fw에서 막힐 수 있음.
+                - 내부자를 감염시킬 수만 있다면 방화벽을 우회할 수 있음
+            - 사례
+                - 7.7 인터넷 대란
+                - 부트섹터를 날려 마감하도록 설계됨
+            - 대책
+                - 내부 네트워크와 외부 네트워크의 경계선에 우선 설치
+                - 방화벽이 차단할 수 있는 침입은 실제로 30%정도
+                - 최소한의 포트만 열고 나머지는 닫음.
+                - Trust 금지
+                - 인증없이 접속할 수 있는 사용자를 허용하지 않음.
+                - IPS/IDS
+                - UTM (IPS + IDS)
+                - 차세대 장비 : UTM + F/W + Snort rule 
+                    - 오픈소스로도 있음
+                - 서비스 별 대역폭 제한
+                    - 공격자가 공격에 필요한 최소 대역폭을 얻을 수 없어짐.
+            
+            
+
+                
 
 
 
