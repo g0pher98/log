@@ -910,4 +910,77 @@
         - mining power에 따라 target을 조절해서 밸런스를 맞춤.
             - 2016 블록마다 계산
             - new target = old target * (2016 block 처리시간 / 20160 minutes)
-             
+    - chain 선택
+        - main chain
+        - secondary chain
+            - secondary chain을 관리하는 이유 => main chain으로 스위칭 될 수도 있기 때문
+            - 비슷한 시기에 mining에 성공할 경우, 각 노드가 바라보는 main chain이 달라질 수 있음
+        - 정말 희박한 확률로 연속적으로 동일 노드에서 채굴이 거의 동시에 발생하지 않는 한 전체 네트워크는 하나의 main chain으로 수렴
+
+28. Hashing Race
+    - hash 함수를 빠르게 계산할 수 있는가?
+    - hashing power == 성능
+    - cpu mining -> gpu mining -> FPGA mining -> ASIC mining ...
+
+    - extra nonce
+        - 다 해봤는데 solution을 못찾을 경우
+        - 이를 해결하기 위해 datetime을 재설정 해서 다시 시도하는 형태로 진행
+        - 근데 너무빨리 연산해서 datetime이 변경되지 않은 경우도 발생.
+        - extra nonce라는 새로운 nonce 공간을 만들어서 계속 시도해볼 수 있도록 구성
+    
+29. Mining pool
+    - 혼자하는게 아니라 여러명이서 mining.
+    - 리워드는 작지만 자주 받을 수 있음(안정적)
+    - 악의적인 사용자를 방지하기 위해 1000배 정도 쉬운 challenge 제시
+        - 이것을 풀면 일하고 있음이 증명됨.
+        - pool은 해당 solution이 최종 solution이 되지는 않을 수 있겠지만 일하고 있음을 확인할 수 있음
+        - 그러다가 만약 실제 solution과 일치하는 solution 발생 시 해결
+ 
+30. Consensus Attacks
+    - miner가 항상 착한 사람이라고 믿으면 안된다.
+    - 51% attack처럼 악의적인 miner가 만든 block을 신뢰하면 안됨
+    - 그러나 지금 설명할 공격들은 앞으로 만들어지게 될 block 또는 이미 만들어진 10개 내의 block에 대해서만 공격이 가능함
+    - 이미 깊게 자리잡은 block은 사실상 공격이 불가능에 가까움
+    - 51% attack
+        - ![image](https://user-images.githubusercontent.com/44149738/144747803-4326aa0a-34e3-45d4-a751-ad60ee3d3d8f.png)
+        - 공격자가 많은 hash power를 가진 경우.
+        - double-spending을 만들어내는 것.
+        - 물건을 받고 결제를 진행
+        - 결제를 진행한 block이 chain switching에 의해 무효화 됨
+        - 특정 address에 대해서만 가능하다.
+        - 보호법
+            - 적어도 6번 이상의 블록이 쌓인 후에 물건을 건넨다.
+            - multi sig를 이용
+        - 일종의 dos 공격이 가능
+            - 특정 인원의 tx를 선택하지 않고 block을 생성
+        - 혁실적으로는 어려운 공격기법. miner 수가 방대해짐에 따라 그만큼의 hash power를 얻기도 어렵고, 얻는다고 하더라도 공격으로 얻을 수 있는 기대치가 낮음. 심지어 까딱 잘못 공격하면 네트워크 전체가 망가져 있는 돈도 회수못함.
+
+31. consensus rules 변경
+    - consensus rules : 모든 tx와 block들에 대해 검증을 어떻게 할 것인지에 대한 규칙
+    - hard fork
+        - 의견이 수렴되지 않은 상태에서 룰 변경을 강행하게 되는 경우.
+        - 네트워크가 두 개의 chain으로 나뉘어져버림. 업데이트된 chain은 잘못된 block으로 판단.
+        - 호환성은 고려를 안해버리는 상남자식 업데이트.
+        - 하드포크를 할거면 충분한 준비작업이 필요하고, 자주하면 안됨.
+    - soft fork
+        - 기존 룰을 따르는 노드도 정상 인식 가능
+        - 기존 룰을 벗어나지 못하고 룰 내에서만 업데이트 가능
+        - fork가 발생하지 않음
+        - 참여자들의 동의를 구하는 긴 시간이 필요
+        - BIP-34 signaling
+            - version이 2면 업데이트 내용 준비된 노드
+            - version이 1이면 업데이트가 안된 노드
+            - activation
+                - 1000개 블록에 75%가 version 2 이면 어느정도 준비가 되었다고 판단.
+                    - 기존 룰과 새로운 룰이 혼용되는 단계
+                - 1000개 블록에 95%가 version 2 이면 준비가 끝났다고 판단.
+                    - 새로운 룰을 무조건 따르고, 기존 룰 폐기.
+            - 문제점
+                - soft fork가 진행중이면 다른 soft fork 불가능
+                - soft fork가 실패할 경우에 대한 대안이 없음
+                - 버전넘버가 커질 경우 증가의 한계 존재
+        - BIP-9 signaling
+            - 현재 사용되고 있는 방식
+            - version 필드를 bit 단위로 쪼개서 관리.
+                - 동시에 29개의 soft fork를 진행할 수 있음
+            - signal 카운팅 방식도 변경. 2016 블록단위로 변경.
