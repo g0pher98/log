@@ -984,3 +984,73 @@
             - version 필드를 bit 단위로 쪼개서 관리.
                 - 동시에 29개의 soft fork를 진행할 수 있음
             - signal 카운팅 방식도 변경. 2016 블록단위로 변경.
+
+32. bitcoin security
+    - 비트코인 시스템이 정말 안전한가? 에 대한 연구는 많이 이루어지고 있음
+    - key 관리에 주의해야함.
+    - key 관리에 대한 책임은 본인에게 있음.
+    - 거래소, 온라인 지갑과 같이 되도록 타인에게 key 소유권을 넘겨주는것을 지양하자.
+    - off blockchain system : 블록체인에 기록되는 것이 아닌 내부자 끼리의 거래.
+    - root of trust
+        - 전체 시스템 중에서 core한 부분을 누구나 믿을 수 있도록 안전하게 만듬
+        - 이 시스템을 root로 두고, 이를 기반으로 서비스를 확장
+        - 이러한 체계를 통해 전체 서비스의 신뢰성 확보 
+        - ex) TPM, Root CA
+        - IN BITCOIN
+            - blockchain ledger가 바로 root of trust.
+                - 작게보면 genesis block이 root of trust로 볼 수 있고, 이를 기반으로 쌓아왔다고 볼 수 있음.
+            - 즉, 믿을 수 있는 것은 검증된 블록체인 장부임.
+    - 공격자에게 key가 노출되면, 복구할 수 있는 방법이 거의 없다고 볼 수 있음.
+        - 이 부분이 기존 중앙 시스템과 차이점.
+        - 기존 은행은 복구 및 보상이 가능하지만 비트코인은 그렇지 않음.
+    - key 관리 방법
+        - cold storage 사용
+            - 인터넷에 노출되지 않음을 보장받을 수 있는 저장공간.
+            - USB, 자필 종이 등
+        - HW 지갑
+            - USB와 같은 하드웨어 지갑 등
+        - balancing risk
+            - 너무 복잡하게 키를 관리하면 오히려 잊어버릴 수 있음. 적절하게 관리
+        - 위험 분산
+            - 하나에 다 보관하지 말고 나눠서 보관
+        - 멀티 시그니처 활용
+        - 생존성
+            - 소유자의 사망을 대비.
+        
+33. Application
+    - ![image](https://user-images.githubusercontent.com/44149738/144753378-6116c96b-b1cb-4a85-bce3-7e6156fb742a.png)
+        - 비트코인이 플랫폼이 됨
+        - 플랫폼을 기반으로 하는 overlay network를 올릴 수 있고,
+        - 이걸 활용하면 분산된 프로토콜을 만들 수 있고,
+        - 이렇게 생성된 API를 통해 APP을 만들어낼 수 있다.
+    - blockchain ledger라고 하는 신뢰도 높은 요소를 기반으로 신뢰성 확보
+    - app이 활용할 수 있는 btc 특성(긴 시간에 걸쳐 보장되는 내용)
+        - double spend 문제 해결
+        - non-expiration : tx는 한번 기록되고 일정 시간이 지나면 영속적으로 남을 수 있음.
+        - neutrality : 중립성을 가짐.
+        - secure timestamping : 안전한 timestamp 기능
+        - authorization : 인가 기능 제공.
+        - auditability : 감사 기능. 문제가 생겼을 때, 이력확인 쉬움.
+        - accounting : 가짜 화폐가 만들어질 일 없음.
+        - integrity : 무결성 제공
+        - tx atomicity : 처음에는 불안정하지만 기록되면 안전함. 그 과정에 중간이 없음.
+        - 일부만 사용하는 형태가 아니라 쓸거면 다쓰고 아니면 안쓰는 형태다.
+        - 멀티시그니처 제공
+        - time lock 기능 제공
+        - replication : 기록이 되면 모든 노드가 소유할 수 있음.
+        - forgery protection : 변조 방지
+        - consistency : 모든 노드가 똑같은 값을 가짐
+        - recording external state : OP_RETURN을 사용하면 임의 정보를 기록 가능
+        - Predictable issuance : 앞으로 얼마만큼 생성될 것인지 예측할 수 있다.
+    - 결국 신뢰성을 확보한 상태로 app을 개발할 수 있다.
+    - Blockchain Application
+        - Brave : 브라우저
+        - MarkerDAO : P2P 대출
+        - burst iQ : 의료정보
+        - PROPY : 부동산 판매
+        - civic : ID 관리
+        - Voatz : 투표
+        - steem : 블로그
+        - EOS Dynasty : 게임
+        - TRACEDonate : 기부
+        - Bitcoin : 화폐
