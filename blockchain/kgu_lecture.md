@@ -853,6 +853,61 @@
             - testnet도 결국엔 다같이 쓰는거라 테스트가 어려울 수 있음.
             - 아예 로컬상에서 내 머신 안에서 또는 몇대만 가지고 진행.
 
-
-
-
+27. Mining
+    - 목적 : clearing(청산)을 처리하는 것. 장부의 내용을 검증.
+    - 중앙에서 처리하는 네트워크가 아니기 때문에 여러 노드가 consensus(합의)를 이끌어내는 과정이 필요
+    - 개략적 과정
+        - miner들은 tx를 계속 받으면서 검증해둠
+        - 새로운 block을 만들 시간이 되면 
+        - tx들 중 일부를 뽑아서 하나의 블록을 구성
+        - tx가 block에 잘 추가가 되어야만 해당 utxo를 사용할 수 있음
+    - miner 보상
+        - block 생성 시 coin generation
+            - 이러한 보상은 4년마다 반감기가 옴.
+            - 2140년에는 보상이 0
+                - 더이상 새로운 코인 발행 x
+                - 채굴자는 수수료를 통해 수익을 얻음
+        - tx fee를 가짐
+    - 합의 과정
+        - 새로운 tx가 생성되면 각 노드들이 tx를 확인
+        - tx가 miner들에 의해 하나의 block으로 만들어짐.
+        - 새로운 block이 전파되고, 각 노드는 이 새 block에 대해 검증.
+        - block이 올바르면 내 blockchain에 등록.
+    - tx pool
+        - 각 노드가 tx에 대해 검증한 뒤 tx를 저장하는 곳.
+        - 검증이 되었지만 chain에 기록되지 않은 tx들이 저장됨.
+        - miner가 block을 새로 만들 때, tx pool에서 임의 tx를 모아서 생성하게 됨.
+        - block 사이즈 제한때문에 모두 가져올 수는 없고, 이득이 최대화되는 것으로 선정
+            - fee가 높은것
+    - conbase field
+        - genesis block을 봐도 알겠지만 coinbase 필드는 아무 데이터나 들어가도 된다.
+        - 그러나 최근에는 특정한 규칙을 만족하고자 함
+            - OP_PUSH / Block height / Extra nonce(합의용도) / "/P2SH/"
+    - block header
+        - ![image](https://user-images.githubusercontent.com/44149738/144741496-21bef1b9-49a3-453b-b627-a9ed7ef34d04.png)
+        - 버전, 이전블록해시, tx들의 merkle root, miner가 block을 만든 시간
+        - target : 합의를 검증할 때 사용. 채굴의 난이도를 표현하는 데이터
+        - Nonce : miner가 제대로된 block을 생성했는지에 대한 검증용도
+    - 합의
+        - miner가 block을 만들었다고 해서 채굴에 성공한 것은 아님.
+        - 다른 노드들에게 인정받기 위해서는 pow 알고리즘을 통해서 만들어진 challenge에 대한 solution을 찾아내면 인정받는다.
+            - hash sha256 알고리즘 사용
+            - one way function 성질을 이용
+        - block header에 Nonce 값이 솔루션을 뜻함.
+    - Proof of Work (PoW)
+        - 앞 N자리가 0이 되는 hash를 만족하는 nonce를 구해라!
+        - nonce를 구하면 채굴 성공! block을 전파.
+        - nonce를 기반으로 각 노드는 검증.
+    - 합의 알고리즘
+        - Proof of Stake
+            - 지분을 기반으로.
+        - Proof of Ellapsed Time
+            - 경과시간을 기다리게 한 다음에 블록을 생성할 수 있도록.
+        - PBFT 등 다양하고 복잡한 알고리즘들이 많이 나옴.
+    - Proof of Work target
+        - 블록 안 특정 필드에 target이 명시되어있음
+        - ![image](https://user-images.githubusercontent.com/44149738/144744500-696dc40a-42a6-49aa-b1dd-b01b9495549f.png)
+        - mining power에 따라 target을 조절해서 밸런스를 맞춤.
+            - 2016 블록마다 계산
+            - new target = old target * (2016 block 처리시간 / 20160 minutes)
+             
