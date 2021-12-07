@@ -472,3 +472,38 @@
         - 상태를 저장하고, 복구해주어야 함.
         - onSaveInstanceState 메소드를 override를 하고, 인자로 받은 Bundle에 putInt와 같은 메소드로 데이터 저장. 이후 복구할 때 이 번들을 다시 받음.
         - onRestoreInstanceState 메소드를 override해서 Bundle에서부터 데이터를 받아와 복구.
+
+12. Service
+    - 안드로이드 4가지 컴포넌트 중 하나
+    - 다른 앱을 실행중일 때, 백그라운드에서 돌아가야하는 순간이 있음.
+        - 이걸 서비스를 이용해서 백그라운드 사용 가능
+    - 오래 걸리는 작업은 activity에서 하면 ui에 방해가 됨.
+        - 백으로 보내서 비동기 느낌으로 실행하는게 좋음
+    - service의 종류
+        - started service
+            - startService()로 실행
+            - intent에 데이터를 전달해서 실행.
+            - intent가 끝나면 같이 끝남  
+        - bound
+            - bindService() 로 실행
+            - client와 service와 연결통로를 만들어서 데이터 송수신
+    - service lifecycle
+        - ![image](https://user-images.githubusercontent.com/44149738/144939921-1b1fdfae-c446-4be2-b2e8-45dae5594418.png)
+        - onCreate()
+            - 서비스 생성될때
+        - onDestroy()
+            - 서비스 종료될때
+            - 주로 리소스 해제로 이용
+    - 서비스 만들기
+        - Service 를 상속하는 새로운 서비스 만들기
+        - onStartCommand() override 해서 할 일을 기록
+        - 시간이 오래걸리는 작업이 있으면 새로운 스레드로 따로 빼주어야 함.
+            - ui와 같은 스레드로 돈다.
+    - 서비스 사용하기
+        - startService() : 시작
+        - stopService(intent) : 멈춤
+    - 실습
+        - 노가다 ㄴㄴ 그냥 app 우클릭해서 service 를 추가하면 아름답게 추가됨.
+            - onBind가 자동으로 들어가져있는데 무시. 안쓸거임
+        - onCreate, onStartCommand, onDestroy 3개 override
+        
