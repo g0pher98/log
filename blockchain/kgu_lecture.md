@@ -1129,5 +1129,3 @@
             - granularity : 작은 단위의 pay도 처리 가능
             - capacity : 기존 비트코인의 성능이나 저장공간문제를 해결
             - trustless operation : 중간 노드를 신뢰하지 않아도 운영가능
-
-
