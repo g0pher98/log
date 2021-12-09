@@ -1054,3 +1054,80 @@
         - EOS Dynasty : 게임
         - TRACEDonate : 기부
         - Bitcoin : 화폐
+
+34. payment 채널
+    - 기존 app과 다르지만 btc 시스템을 기반으로 돌아가는 app이긴 함
+    - 거래에 대한 지불을 btc를 이용해서 지불하는 형태
+        - 기존이랑 좀 다름
+        - 사용자 간에만  tx가 이동되어서, 비트코인에 기록되지는 않음. (=off chain 방식)
+        - 기록되기까지의 긴 시간을 기다리지 않아도 됨.
+        - 가상의 채널을 형성해서 거래를 진행함
+    - 상대방이 악의적인 사용자일 때 어떻게 검증하는가?
+        - 결국에 1:1은 에바고, 기존 비트코인 시스템과 연결되는 부분이 생김
+    - payment 채널을 확장해나가다보면 거래뿐만 아니라 특정 정보를 처리하는 state 채널로도 사용 가능
+    - state channel
+        - state channel을 만들기 위해 funding tx(금융) 또는 anchor tx(일반)를 생성
+            - 블록체인에 기록이 됨.
+            - 본 거래가 이 시점부터 시작되었다는게 확인될 수 있음.
+            - 하나의 채널이 생긴것임.
+        - 이후 추가 거래가 발생할 때마다 commitment tx들이 생겨난다.
+            - 이 tx가 생기면 앞선 tx는 invalid함.
+            - 항상 마지막 tx만 valid 하다.
+            - 이를 통해 상대방의 cheating을 막을 수 있음
+        - settlement tx를 생성해서 채널을 종료
+    - 초기에 넣은 보증금이 거래의 한계 금액을 뜻함.
+    - simple payment channel
+        - 가정 : 단방향 채널, 악의적 사용자는 없음, 비디오 시청 매 초 지불
+        1. 2 of 2 multisig address 를 만듬. 키는 나누어가짐
+        2. 비용을 해당 address에 보내는 tx(funding tx =)를 작성
+        3. 1초 시청마다 commitment tx를 만들어서 금액을 지불.
+            - 비트코인에 기록되지는 않음.
+            - 2 sign을 만족하지 않은 상태기 때문에 아직 valid 한 상태는 아님
+        4. 돈을 받는 사람이 commitment tx를 확인하고 맞으면 sign 진행.
+        5. 지불이 valid 해졌으니 video 서비스 제공.
+        6. next round
+            - 두 번째 commitment tx를 생성
+                - 채널의 마지막 tx. (항상 최신)
+                - 2초간에 비디오 서비스 이용에 대한 정산.
+        7. 비디오 서비스 끝남
+        8. 거래 종료
+            - 2 tx만이 블록체인에 적용된다.
+                - funding tx
+                - settlement tx
+    - trustless channel
+        - 악의적인 사용자가 이를 악용하는 경우
+        - 2 sig가 필요하기 때문에 상대방인 sig를 제공하지 않으면 보증금 못돌려받음.
+        - 이미 보증된 초기 commitment tx를 bitcoin network에 올리면 서비스를 더 이용했음에도 1개값만 지불.
+        - Solution
+            - timelock 사용
+                - 특정 시간이 지나고 나서야 valid 해짐.
+                - nLocktime
+                    - block height가 높아지면 valid 해지는 방식
+                    - 4320block(30일) 뒤에는 환불받을 수 있는 refund tx를 생성하는 방식으로 해결
+                    - 그러나 fefund 기간 내에는 채널이 꼭 종료되어야 한다.
+                    - 이것도 단점은 있음
+                        - 환불까지 시간이 걸린다든지,,
+            - 이전 commitment로 돌아가는 것을 방지하기 위해 script 상에서 적발시 보증금 회수조항을 기록
+
+    - Hash Time Lock Contracts (HTLC)
+        - hash를 이용해서 조건을 만족해야 돈을 받을 수 있도록 하는 방식
+    - lightning network
+        - 매번 채널을 만드는게 비용적인 측면에서 리소스가 크다
+        - bitcoin blockchain을 기반으로 그 위에 layer를 하나 더 만드는 방식
+        - 동작방식
+            - 네트워크 라우팅처럼 목적지까지 다른 노드들을 거침.
+            - 중간자가 악의적일 수 있기 대문에 HTLC를 이용.
+            - 중간에 있는 사람은 전달 수수료를 받음.
+            - ![image](https://user-images.githubusercontent.com/44149738/145339821-db6c3a79-9eb0-43e6-b355-f0718519eaf0.png)
+        - onion-routed protocol
+            - 라우팅을 한번 할 때마다 캡슐화를 거쳐서 내용을 알 수 없도록 함.
+            - ![image](https://user-images.githubusercontent.com/44149738/145340454-f502ae4d-02fc-4d24-afc4-4c83f6026e41.png)
+        - 이점
+            - privacy : 블록체인에 기록이 안되어 더욱 private하다.
+            - fungibility : 특정 비트코인을 감시하거나 그런 행위를 어렵게 만듬
+            - speed : 빠르게 처리가 가능
+            - granularity : 작은 단위의 pay도 처리 가능
+            - capacity : 기존 비트코인의 성능이나 저장공간문제를 해결
+            - trustless operation : 중간 노드를 신뢰하지 않아도 운영가능
+
+
