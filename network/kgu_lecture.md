@@ -843,11 +843,91 @@
                     - Triple duplicate ACK 발생 시, Fast recovery 수행(window를 반으로 줄임.)
                     - Timeout 발생 시, window를 1로 설정해서 slow start 수행
                     - Duplicate ACK : 아무것도 안함. 
-                
-                
 
+22. Network layer
+    - transport layer로부터 segment를 받아서 목적지에 전달할 수 있도록 헤더 데이터를 붙임.
+    - 수신측은 헤더를 판별하고 데이터를 transport로 전달
+    - 라우터에도 존재하는 layer
+    - 주요기능 2가지
+        - forwarding
+            - 패킷을 라우터의 input에서 output까지 도달
+            - 하나의 라우터 내에서 동작
+            - 어떤 링크를 통해 패킷이 나갈 것인가
+        - routing
+            - source에서 destination까지 경로
+            - 전역적인 경로
+    - Data plane
+        - 데이터를 전송하기 위한 측면
+        - forwarding function을 수행하는 것이 data plane의 역할
+        - 즉, 라우터 내부에서 작동
+        - 목적지 ip를 보고 내부에 기록된 rule을 기반으로 interface 로 link.
+            - longest prefix matching
+                - 목적지가 10110101 이라는 패킷이 있다고 가정
+                - rule1 : 1011**** -> link 0 interface
+                - rule2 : 101101** -> link 1 interface
+                - 이렇게 두 개의 rule이 있을 때, 어떤 interface에 link 되어야 하는가?
+                - 가장 매칭이 길게 되는 2번 rule에 명시된 1번 interface에 연결
+    - Control plane
+        - 라우팅 정보를 설정하기 위한 측면
+        - routing
+    - forwarding table을 설정하는 프로토콜 : routing protocols
+        - ex) RIP, OSPF, BGP, etc
+    - IP protocol
+        - datagram format
+            - ip header는 20바이트
+        - ip fragmentation, reassembly
+            - MTU(max.transfer size)
+                - link마다 다름
+                - link 간 차이로 인해 쪼개야 하는 상황 발생.
+            - 쪼개는건 어디서든 쪼개질 수 있지만 한번 쪼개지면 합치는 것은 목적지에서만 합침.
+            - fragflag 필드
+                - 1이면 이후 조각 존재
+                - 0이면 이후 조각 없음.
+            - offset 필드
+                - 현재 패킷의 시작지점 offset 값.
+                - 값이 큰데 필드가 작다보니 8로 나눔.
+    - CIDR
+        - Classless InterDomain Routing
+        - 어디까지 subnet이고, host인지 구분하는 것.
+        - a.b.c.d/x 와 같은 형태로 표현하는 것.
+    - DHCP
+        - IP 동적 할당 프로토콜
+        - 메세지 종류
+            - disover
+                - host가 broadcasts 하는 메세지. 옵션임.
+            - offer
+                - DHCP server가 discover 메세지에 대해 응답. 옵션임.
+            - request
+                - host가 ip 주소를 요청하는 메세지
+            - ack
+                - server가 host가 보내온 request 메세지에 대한 응답으로 ip 주소를 보내는 메세지
+    - ICANN
+        - 최상위 ISP
+    - NAT
+        - Network Address Translation
+        - 장점(IP 하나로 내부 서브넷을 구성할 때)
+            - ISP로부터 여러개의 IP를 할당받을 필요가 없음
+            - 내부 address는 자유롭게 변경할 수 있음.
+            - 외부 address가 바뀌어도 내부적으로는 바꿀게 없음
+            - 보안적인 측면에서도 좋다. 내부 구조 은닉
+        - network address translation
+            - 내부와 외부가 통신할 때, IP를 바꾸어주어야 함.
+            - (internal IP, port), (external IP, external Port)
+            - (NAT IP, new port), (external IP, external Port)
+            - 서버(external) 수신
+            - (external IP, external Port), (NAT IP, new port)
+            - (NAT IP, new port), (internal IP, port)
+        - 다 좋은가? (역설)
+            - layer4까지 간섭
+            - IP 부족은 version6 쓰면 해결될 일
+            - NAT를 사용하면 내부 device가 안보임. P2P 시스템 구현이 어려워짐.
+            - NAT 안쪽에 서버가 있다면 외부에서 내부로 연결하기가 어려워짐.
+    - IPv6
+        - IP 고갈 때문에 만들어짐.
+        - 32bytes -> 40byte
+        - v6를 지원하지 않는 라우터에서는 tunneling 기법을 통해 v4 헤더로 한번 감싸는 형태로 사용
+    - ICMP protocol
 
-            
 
 
             
