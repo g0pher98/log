@@ -790,7 +790,64 @@
             - seq number와 ack number가 segment 단위로 붙는게 아니라 byte 단위로 붙는다.
             - cumulative ack을 사용
             - 뒤쪽 데이터가 먼저 오면 이를 받아도, 안받아도 상관없다.
-             
+        - Timout
+            - 답변을 얼마나 기다릴 것인가?
+            - RTT(round trip time)
+                - 상대의 시간과 장소에 따라 동적으로 변한다.
+                - 이렇게 동적이라서 timeout이 비교적 작거나 크면 문제가 발생.
+                - 그럼 rtt를 어떻게 추정할 것인가?
+            - RTT 추정
+                - 응답시간을 기록해서 이를 기반으로 추정
+                - 이동평균을 통해 산출
+                - E_RTT = (1-alpha) * E_RTT + alpha * SampleRTT
+                    - 이렇게 계산하면 이전 통신에 대한 데이터의 가중치는 작아지고, 최근 통신 가중치가 높음
+            - timeout 설정
+                - E_RTT보다는 조금 크게 설정해야함.
+                - E_RTT 변동 폭이 크면 차이를 크게 설정하고, 변동폭이 작으면 차이를 작게 설정
+                - DevRTT = SampleRTT와 E_RTT의 차이(실제론 조금 복잡)
+                - Timeout = E_RTT + 4 * DevRTT
+        - fast retransmit (빠른 재전송)
+            - timeout을 걸 경우 속도가 느리다는 단점이 있음.
+            - 그리고 중복 패킷이 발생한다는 특징이 있음.
+            - 이렇듯 3개 이상의 중복된 패킷을 받을 경우 해당 패킷을 재전송해버림.
+            - timeout 전에 오래 기다리지 않아도 패킷을 잘 받을 수 있음.
+        - flow control
+            - 수신자가 받을 수 있는 속도로 패킷을 보냄.
+            - 수신자가 현재 버퍼에 얼만큼 수용 가능한지 알려주어야 함.
+            - rwnd 필드의 값이라는 것을 통해 비어있는 공간이 얼만큼 남았는지 알림.
+                - 최대크기는 일반적으로 4KB임.
+                - 많은 os가 이 크기를 자동으로 조절하게 되어있음.
+                - 일반적으로 rwnd보다 작게 보냄.
+        - congestion control (혼잡제어)
+            - 네트워크에 패킷이 많아서 라우터에서 더이상 받아들이지 못함.
+            - 네트워크에서 굉장히 어려운 문제 top 10에 들어갈 정도
+            - TCP 혼잡제어
+                - cwnd 필드 이용 (congestion window)
+                - 보내는 속도(sending rate)를 증가시킬때는 점진적으로 증가시킴
+                - 반대로 감소시킬때는 급격하게 줄여버림
+                - loss가 발생하기 전까지는 점점 증가시키다가 loss가 발생하면 확 줄여버리는 원리
+                - cwnd 보다는 작게 보냄.
+                - slow start 문제
+                    - 처음부터 단순히 점진적으로만 증가시키면 느림.
+                    - 초기에는 제곱수처럼 확 늘려서 loss 근처에 빠르게 도달하도록 설계해야함.
+                        - ssthresh : Slow Start Threshold (slow start 임계값)
+                            - 임계값 까지는 가파르게 증가하고, 임계값부터 선형적으로 증가
+                            - loss가 발생하면 cwnd의 반을 임계값으로 설정.
+                - loss 탐지 및 cwnd 감소
+                    - timeout이 발생한 loss : cwnd를 1로 그냥 바로 줄여버림
+                    - 3 duplicate ACK : 반으로 줄임. (TCP RENO 버전 이상. 이전 버전은 1로 만듬)
+                        - 이를 fast recovery라고 부름.
+                - 제어 종류
+                    - Slow Start(SS) : RTT마다 window 값을 두배로 늘림. 임계값을 넘으면 CA로 전환
+                    - Congestion Avoidance(CA) : RTT 마다 1을 늘림
+                    - Triple duplicate ACK 발생 시, Fast recovery 수행(window를 반으로 줄임.)
+                    - Timeout 발생 시, window를 1로 설정해서 slow start 수행
+                    - Duplicate ACK : 아무것도 안함. 
+                
+                
+
+
+            
 
 
             
