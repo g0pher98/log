@@ -507,3 +507,57 @@
             - onBind가 자동으로 들어가져있는데 무시. 안쓸거임
         - onCreate, onStartCommand, onDestroy 3개 override
         
+13. Thread programming
+    - java에서 스레드 만드는건 정말 쉬움
+    - 방법1 - Thread 클래스 이용
+        ```java
+        public class MyThread extends Thread {
+            ...
+            @Override
+            public void run() {
+                ...
+            }
+        }
+        MyThread thread = new MyThread();
+        thread.start(); // run() 이 아님!
+        ```
+    - 방법2 - Runnable 클래스 이용
+        ```java
+        public class MyThread extends Runnable {
+            ...
+            @Override
+            public void run() {
+                ...
+            }
+            ...
+        }
+        MyThread myThread = new MyThread();
+        Thread thread = new Thread(myThread);
+        thread.start();
+        ```
+    - Runnable 이 코드가 더 긴데 사용하는 이유
+        - java에서는 단일 상속만 가능
+        - thread 이지만 다른 class를 상속해야하는 상황이 있을 수 있음.
+        - 그런 경우에 Runnable을 사용
+    - thread에서 UI에 직접 접근하지 말것!
+        - 대신 handler를 사용해서 접근!
+            ```java
+            Handler handler = new Handler();
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    ...
+                }
+            });
+            ```
+        - 아예 함수도 나옴
+            - runOnUiThread()
+                - 알아서 main thread에서 돌거나 필요시 ui thread에서 돌도록 전환
+                ```java
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ...
+                    }
+                });
+                ```
