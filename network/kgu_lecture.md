@@ -928,6 +928,99 @@
         - v6를 지원하지 않는 라우터에서는 tunneling 기법을 통해 v4 헤더로 한번 감싸는 형태로 사용
     - ICMP protocol
 
+23. routing protocols
+    - 라우팅 경로를 알아내는 프로토콜
+    - 좋은 경로 : cost가 적거나, 빠르거나, 혼잡도가 적음.
+    - 네트워크 분야 top 10 난제
+    - cost : 두 node 사이의 link의 cost
+    - bandwidth와 cost 반비례
+    - congestion은 cost와 비례 
+    - 지식의 범위에 따른 라우팅 알고리즘
+        - global 알고리즘
+            - 이미 알고있다고 봄.
+            - ex) link state 알고리즘
+        - decentralized 알고리즘
+            - 주변 라우터와의 정보만 알고있음
+            - 교환을 통해서 점진적으로 파악
+            - ex) distance vector 알고리즘
+    - 정보의 변동성에 따른 라우팅 알고리즘
+        - static
+            - 고정
+            - 라우팅 정보가 잘 바뀌지 않음
+        - dynamic
+            - 동적
+            - 경로가 빠르게 변함
+            - 주기적으로 업데이트
+            - link cost를 받아서 그때그때 변환
+    - link-state routing algorithm
+        - 다익스트라 알고리즘
+            - 모든 노드와 cost를 모두 알고있는 상태에서 수행
+            - c(x,y) : x -> y 로 가는 cost
+            - D(v) : 현재 위치에서부터 목적지 v까지 가는 cost
+            - p(v) : source - destination 경로 상에서 현재노드의 선조노드 리스트
+            - N' : 최단거리 경로의 노드 집합
+            - ![image](https://user-images.githubusercontent.com/44149738/145901223-0ee63a9c-6404-4be5-92de-7e6a0cf793b5.png)
+    - distance vector algorithm
+        - 주변 노드의 정보를 활용
+        - distance vector가 변경되면 이를 주변 노드에게 알려서 업데이트 시킴.
+        - ![image](https://user-images.githubusercontent.com/44149738/145903836-8f4410f9-a509-4971-9ebc-eae9f11405a1.png)
+        - link의 cost가 변동될 경우 바로 업데이트할 수 있음.
+            - cost가 낮아지면 빠르게 전파됨
+            - 반대로 높아지면 전파가 잘 안됨.
+                - 이를 해결하기 위해 poisoned reverse 방식을 사용할 수 있음
+        - LS 와 DV 비교
+            - 복잡도
+                - LS는 n개 node, E개 link면 O(nE)번 메세지가 교환됨
+                - DV는 주변 노드 끼리만 주고받으면 되니 더 적을 순 있는데, DV를 구하는 과정이 가변적임.
+            - 속도
+                - LS : n개 노드일 때 O(n^2)이 O(nE)개 메세지 보냄
+                - DV : 가변, routing loop문제 발생 가능성
+            - 견고함
+                - LS : 훨씬 견고함. 어떤 노드가 잘못된 정보를 제공하면 그 노드만 영향받음
+                - DV : 어떤 노드가 잘못된 정보를 제공하면 전체 네트워크가 영향받음
+    - 실제 라우팅 프로토콜
+        - LS와 DV는 이상적인 상황. 실제로는 그런 상황이 갖추어지기 어려움.
+        - anministrative autonomy 형태로 운영.
+            - 하나의 네트워크를 담당하는 운영자가 있음
+            - 운영자는 자신의 네트워크에서 라우팅이 잘 되도록 만들기만 하면 됨.
+            - 실제 인터넷에서는 특정 지역의 라우터들을 autonomous system(AS) 으로 나누게 됨.
+        - intra-AS routing
+            - 같은 AS 내부에서의 라우팅 프로토콜
+            - AS 내에서는 같으 프로토콜을 사용.
+            - AS마다 사용하는 프로토콜이 다를 수 있음.
+            - gateway router
+                - 다른 as로 넘어갈 수 있는 링크를 가지고 있음.
+            - IGP(Interior Gateway Protocols) 라고도 불림
+            - RIP, OSPF, IGRP 와 같으 프로토콜이 대표적. OSPF가 제일 많이 사용됨.
+        - inter-AS routing
+            - AS 외부에서 서로 다른 AS 간 라우팅을 위해 사용하는 프로토콜
+            - intra domain routing도 겸할 수 있음.
+            - BGP 가 가장 많이 사용됨.
+        - OSPF(Open Shortest Path First)
+            - intra-AS routing
+            - link-state algorithm 이 기반
+            - link state 정보를 전달할 수 있는 패킷이 전체에 전달됨.
+            - 이후 다익스트라 알고리즘
+            - tcp / udp 도움 없이 ip에 바로 붙어서 동작
+            - 개선된 기능
+                - 보안성 : 인증과정을 거침
+                - 같은 경로지만 여러개 path를 가질 수 있도록 설계됨
+                - 서로다른 ToS(Type of Service)에 대해 다중의 cost를 설정할 수 있음
+                - uni, multi cast를 혼합하여 사용 가능
+        - BGP(Border Gateway Protocol)
+            - inter-AS routing
+            - 사실상 표준
+            - eBGP
+                - 이웃한 AS간 어떠한 host를 연결할 수 있는지 알아옴.
+            - iBGP
+                - eBGP로 알아온 정보를 현재 AS 내 라우터에게 전달
+            - ![image](https://user-images.githubusercontent.com/44149738/145908202-bf8fe0fb-40f7-4129-9ddf-acfa049de293.png)
+            - route 선택 우선순위
+                1. 정책적으로 가지 않아야 하는 길은 제외
+                2. AS-PATH가 가장 짧은 길 선택
+                3. NEXT-HOP router까지 가는 길이 짧은 길 선택
+                    - Hot Potato Routing 이라고 함.
+                4. etc ...
 
 
             
