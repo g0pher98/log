@@ -84,3 +84,20 @@ adb shell "/data/local/tmp/frida-server-15.1.8-android-x86 &"
     script.load()
     sys.stdin.read()
     ```
+
+### 자료형
+`.overload()`로 함수 후킹 시 자료형을 맞추어주어야 한다. 아래 참고
+```
+.overload() 
+.overload('int’) 
+.overload('boolean') 
+.overload('float') 
+.overload('[B') // byte array
+.overload('java.io.File') 
+.overload('java.lang.String') 
+.overload('android.view.View') 
+.overload('android.app.Activity') 
+.overload('android.content.Context')
+.overload('android.graphics.Bitmap') 
+.overload('java.util.List’)
+```
