@@ -242,5 +242,9 @@ flag = crack(bytes_to_long(b'HC'))
 print("FLAG : " + flag.decode())
 ```
 
+#### FLAG
+
+`HCAMP{277a5a11b18251b2e34b484ca77d71fe84112d280b7a2d2da6319c7087d6a717}`
+
 
 
