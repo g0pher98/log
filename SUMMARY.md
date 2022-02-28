@@ -8,7 +8,9 @@
 
 ## 🚩 CTF
 
-* [codegate](ctf/codegate.md)
+* [Player](ctf/player.md)
+* [Organizer](ctf/organizer/README.md)
+  * [24th Hackingcamp CTF](ctf/organizer/24th-hackingcamp-ctf.md)
 
 ## 🦾 Technique
 

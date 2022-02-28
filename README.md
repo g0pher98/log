@@ -1,5 +1,5 @@
 ---
-description: 재승's cheat sheet
+description: Jaeseung Lee (a.k.a. g0pher)
 ---
 
 # README
@@ -8,10 +8,6 @@ description: 재승's cheat sheet
 
 ![](.gitbook/assets/KakaoTalk\_20210623\_132023709.png)
 
-#### site
+#### PROFILE
 
 https://jseung.me
-
-#### mail
-
-mail@jseung.me
