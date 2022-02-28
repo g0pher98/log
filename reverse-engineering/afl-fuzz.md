@@ -1,0 +1,2 @@
+# AFL fuzz
+
