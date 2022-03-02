@@ -8,7 +8,8 @@
 
 ## 🚩 CTF
 
-* [Player](ctf/player.md)
+* [Player](ctf/player/README.md)
+  * [2022 Codegate](ctf/player/2022-codegate.md)
 * [Organizer](ctf/organizer/README.md)
   * [24th Hackingcamp CTF](ctf/organizer/24th-hackingcamp-ctf.md)
 

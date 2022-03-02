@@ -1,6 +1,8 @@
 # 24th Hackingcamp CTF
 
-## \[WEB] Basic Auth
+## WEB
+
+### Basic Auth
 
 > 어디로든 문\~\~\~ 은 잠겨있습니다. 열쇠가 필요하신가요?
 
@@ -77,7 +79,9 @@ ThisIsNotFlagJustAdminID:ThisIsNotFlagJustAdminPassword
 
 `HCAMP{c4f5d41c69c57250471bc5bb9ddb3f77ed4237a2a8b235cff0aba458ccd2e5c3}`
 
-## \[WEB] 합격자 발표
+
+
+### 합격자 발표
 
 > 아기다리고기다리던 데몬대학교 합격자가 발표되었습니다\~
 
@@ -127,7 +131,9 @@ if __name__ == '__main__':
 
 `HCAMP{5D46BCE881C8E9EAAA547453D4E15A21}`
 
-## \[CRYPTO] Really Safe A,,,
+## CRYPTO
+
+### Really Safe A,,,
 
 > 이거이거 정말 안전한데 표현할 방법이 없네,,,
 
