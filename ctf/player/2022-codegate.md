@@ -48,9 +48,11 @@ driver.quit()
 
 id와 pw가 그대로 노출되어있었다. 위 정보로 로그인을 시도하면 정상적으로 로그인이 되고, 첫 번째 게시물에서 다음과 같이 플래그를 획득할 수 있었다.
 
+![flag를 획득한 모습](<../../.gitbook/assets/image (10).png>)
+
 #### FLAG
 
-![flag를 획득한 모습](<../../.gitbook/assets/image (10).png>)
+`codegate2022{4074a143396395e7196bbfd60da0d3a7739139b66543871611c4d5eb397884a9}`
 
 ### superbee
 
@@ -190,7 +192,7 @@ func main() {
 
 Go 언어로 이루어진 웹서비스다. `BaseController`를 기반으로 하는 컨트롤러가 크게 3개가 존재한다. 접근만 하면 flag를 출력하는 `MainController`, Admin으로만 로그인할 수 있는 `LoginController`, localhost로 접근하면 암호화된 auth\_key를 출력하는 `AdminController`가 그것이다.
 
-여기서 주목할 부분은 `conf/app.conf` 내에 정의되어있지 않은 `auth_crypt_key` 설정값을 `main()` funciton 내에서 가져온다는 것이다.
+여기서 주목할 부분은 `conf/app.conf` 내에 정의되어있지 않은 `auth_crypt_key` 설정값을 `main()` function 내에서 가져온다는 것이다.
 
 ```go
 app_name = superbee
@@ -248,8 +250,6 @@ Content-Type: text/plain; charset=utf-8
 
 admin 문자열과 연결하여 md5 해싱을 거치면 session값이 만들어진다. 앞서 설명했던대로 Header를 조작한 뒤 메인페이지에 접근하면 flag를 획득할 수 있다.
 
-#### FLAG
-
 ```http
 GET http://3.39.49.174:30001/main/index HTTP/1.1
 Host: 3.39.49.174:30001
@@ -280,7 +280,9 @@ Date: Wed, 02 Mar 2022 10:53:40 GMT
 
 ```
 
+#### FLAG
 
+`codegate2022{d9adbe86f4ecc93944e77183e1dc6342}`
 
 
 
