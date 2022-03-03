@@ -48,7 +48,7 @@ driver.quit()
 
 id와 pw가 그대로 노출되어있었다. 위 정보로 로그인을 시도하면 정상적으로 로그인이 되고, 첫 번째 게시물에서 다음과 같이 플래그를 획득할 수 있었다.
 
-![flag를 획득한 모습](<../../.gitbook/assets/image (10).png>)
+![flag를 획득한 모습](<../../.gitbook/assets/image (10) (1).png>)
 
 #### FLAG
 
