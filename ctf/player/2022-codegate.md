@@ -246,7 +246,7 @@ Content-Type: text/plain; charset=utf-8
 
 이후 AES 복호화는 CyberChef를 이용해서 Padding 결과인 `0x10101010101010101010101010101010`를 Key로 복호화 할 수 있었다.
 
-![AES Decrypt](<../../.gitbook/assets/image (9).png>)
+![AES Decrypt](<../../.gitbook/assets/image (9) (1).png>)
 
 admin 문자열과 연결하여 md5 해싱을 거치면 session값이 만들어진다. 앞서 설명했던대로 Header를 조작한 뒤 메인페이지에 접근하면 flag를 획득할 수 있다.
 
