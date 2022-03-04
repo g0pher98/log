@@ -24,3 +24,5 @@
   * [Frida](technique/mobile/frida.md)
 * [Forensic](technique/forensic.md)
 * [Hardware](technique/hardware.md)
+* [Network](technique/network/README.md)
+  * [BGP Hijacking](technique/network/bgp-hijacking.md)

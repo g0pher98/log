@@ -10,4 +10,4 @@ description: Jaeseung Lee (a.k.a. g0pher)
 
 #### PROFILE
 
-https://jseung.me
+{% embed url="https://jseung.me" %}
