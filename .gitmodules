@@ -1,0 +1,10 @@
+[submodule "themes/hugo-theme-learn"]
+	path = themes/hugo-theme-learn
+	url = https://github.com/matcornic/hugo-theme-learn.git
+[submodule "public"]
+	path = public
+	url = https://github.com/g0pher98/g0pher98.github.io.git
+	branch = master
+[submodule "themes/custom"]
+	path = themes/custom
+	url = https://github.com/g0pher98/g0pher98.github.io.git

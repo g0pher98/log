@@ -1,0 +1,1028 @@
+1. introduction
+    - what is internet?
+        - nut and bolts 관점(구성품의 관점, 전지적 관점)
+            - computing devices
+                - 각 장치.
+                - a.k.a. `host`
+                - a.k.a. `end systems`
+
+            - communication links
+                - 각 장치를 연결.
+                - transmission rate: bandwidth(대역폭)
+
+            - packet switches
+                - 패킷을 전송
+                - router and switches
+                    - 최근에는 기술에 발전에 의해 차이가 모호해져서 둘이 거의 같은 개념으로 사용.
+
+            - 그냥 network가 아니라 inter(연결) network로, 여러 네트워크를 연결한다는 뜻에서 `network of networks` 라고 함.
+            - 네트워크를 연결해주는 사업들이 있음. 이들이 인터넷 서비스를 제공해준다고 볼 수 있는데, 이들을 ISP(Internet Service Provider) 라고 부름
+            - protocols
+                - 메세지의 송수신을 control 하는 방식을 말함.
+                - tcp, ssh, http 등이 있음.
+            - internet standards
+                - 통신에 표준이 필요함.
+                - IETF : 인터넷 프로토콜을 표준화한 단체.
+                - RFC : IETF에서 제정한 표준 문서.
+        - service 관점(host 관점)
+            - 어플리케이션을 서비스하기 위한, 데이터를 주고 받기위한 infra structure. 즉, 인터넷을 사용하기 위한 하부 구조로써 매우 기초적이고 눈에 보이지 않는 구조다.
+    - What is protocol?
+        - network entity 사이에 주고 받는 message의 format, order, action을 정의하는 것.
+            - format: 형식
+            - order: 순서
+            - action: 행동
+    - network edge (네트워크 가장자리)
+        - nework 그룹은 크게 세 그룹으로 나누어 볼 수 있음
+            - network edge
+                - 작은 network에서 router를 제외한 hosts가 이에 해당됨.
+                - end systems(hosts), access networks, links 가 존재할 수 있음.
+                - server, client가 있고, server는 대부분 data center에 들어있음.
+            - access network
+                - network edge에 해당하는 여러 host들이 외부 network 연결을 위해 가장 먼저 접근하는 network의 router들이 이에 해당됨.
+                - 일반적으로 우리가 생각하는 작은 단위의 네트워크와 같다고 생각하면 될듯.
+                - edge router
+                    - network edge에서 end system이 통신을 위해 만나는 첫번째 라우터를 말함.
+                - keep in mind
+                    - bandwidth(속도): (bps: bits per second)
+                    - shard network or dedicated network?
+            - network core
+                - 네트워크에 걸쳐있는 router를 포함한 모든 네트워크 간 연결부를 말함.
+    - access network 역사
+        - dial-up modem(전화망)
+            ![image](https://user-images.githubusercontent.com/44149738/132981901-80b1cc86-d610-4898-8f7d-0fe62de8083b.png)
+            - 집에서 central office까지 연결하는데에 이 전화망을 사용함.
+                - 집에서 dial-up modem을 사용하여 central office에 도달하고, 이후 인터넷에 접속하는 방식.
+            - 56Kbps
+            - can't surf and phone at same time. (여러 통신이 동시에 불가.)
+            - not always on
+        - Digital subscriber line(DSL)
+            ![image](https://user-images.githubusercontent.com/44149738/132982032-1f2b4786-c51a-4c83-b2bb-7c7702d087d9.png)
+            - 기존 전화망을 사용하되, central office 까지 도달하는 부분이 변경.
+            - DSL modem이라는 장치를 통해 속도가 빨라짐.
+            - upstream 2.5Mbps
+            - downstream 24Mbps
+            - 인터넷과 전화서비스를 동시에 지원할 수 있었음.
+        - cable network(= cable modem)
+            ![image](https://user-images.githubusercontent.com/44149738/132982047-f5bc71b5-da38-4b60-af35-0ec6ecde0ea9.png)
+            - 동축선(두꺼움)을 이용.
+            - 선으로 통신되는 부분을 채널별로 쪼개서 여러 종류의 데이터를 보낼 수 있도록 구성.
+                - 채널을 쪼개는 방식은 다음과 같음
+                    - FDM (Frequency Division Multiplexing)
+                    - TDM (Time Division Multiplexing)
+            - 각 가정이 shared cable(공유되는 케이블)을 이용
+                - 집 안에서는 동축선(coax)
+                - 각 가정이 공유하는 선은 광섬유(fiber)
+                - 이렇게 두 종류의 선을 혼합하는 것을 HFC(Hybrid Fiber Coax)라고 함.
+            - asymmetric
+                - 데이터 송수신 방식이 비대칭적인 것을 말함.
+                - 데이터를 올리는 것보다 다운 받는 경우가 많기 때문.
+            - upstream 2Mbps
+            - downstream 30Mbps
+            - 여러명이 동시에 케이블을 사용할 수 있는 share access network임.
+        - FTTH(Fiber To The Home)
+            ![image](https://user-images.githubusercontent.com/44149738/132982254-cabfba1c-58f9-4da6-a79b-3bb581110899.png)
+            - 제일 중요.
+            - 광섬유가 central office에서 집까지 연결되는 방식.
+                - 정확히는 OLT 에서 ONU까지
+            - 가정에서 가장 많이 사용하는 방식.
+            - 속도가 가장 좋다. 1Gbps.
+
+2. access network
+    - home network
+        - 일반 가정집에서 사용하는 구조
+        - NAT역할을 하는 공유기. 보통 유무선 공용임.
+    - enterprise access networks(ethernet)
+        - 회사나 대학과 같은 곳에서 주로 사용
+        - ISP로부터 서비스받고, 이를 라우터로 시작해서 뿌리내리는 형태
+        - 공유기와는 급이 다른 성능의 라우터를 사용. 10Gbps까지도 낼 수 있음
+    - wireless access networks
+        - 무선 통신. 활발히 사용되고 있음
+        - 독점이 아닌 공유(shared) 형태의 통신임.
+            - 전송속도가 사용자가 많아지면 느려짐.
+        - wifi, 4G, 5G와 같은 통신을 통해 access point나 base station(기지국)과 같은 end system에 접근함.
+        - 크게 두 가지로 나누어볼 수 있음
+            - wireless lan
+                - 무선랜, bluetooth
+                - 30미터 미만의 빌딩 안과 같은 공간에서 사용
+                - WiFi는 802.11b/g/n/a/ac 이라는 표준이 있음 : 11, 54, 450
+                    - IEEE 라고 하는 표준화 "단체"
+                        - 802 로 시작하는 표준화 "그룹"
+                            - 인터넷 네트워크 프로토콜을 표준화 함.
+                - 블루투스는 IEEE 802.15.1 WG(working group)에서 표준화 함.
+            - wide-area wireless access
+                - 3G, 4G:LTE, 5G
+
+3. physical media (물리 매체)
+    - physical link
+        - 물리적인 통신 경로
+        - 두 개로 나누어 볼 수 있음
+            - guided media
+                - 실제 물리적 통로
+                - ex) 구리선 광섬유 동축선
+            - unguided media
+                - 물리적 통로 없이 전파
+                - ex) 라디오
+
+    - guided media 종류
+        - twisted pair (TP)
+            - guided media 케이블 중 하나
+            - 랜선이 이 방식임.
+            - 절연구리선을 꼬아놓음
+                - 전자기장 간섭을 최소화하기 위함.
+
+        - coaxial cable (동축선)
+            - 두 개의 선이 있고, 양방향으로 주고받을 수 있음
+            - 여러개의 채널을 하나의 케이블에 담아서 보낼 수 있을 때 사용
+            - HFC(Hybrid Fiber and Coax) 방법으로 사용할 수도 있음
+            
+        - fiber optic cable (광섬유)
+            - 유리섬유에 빛으로 비트를 표현
+            - 오류가 거의 없음. -> 전자기장에 대한 간섭이 거의 없어서.
+                - 즉, 높은 속도로 만들어도 괜찮음! -> 속도가 빠름!
+            - 광섬유 특성상 급격히 꺾거나 나누기 어려움. point to point 특성을 가지고 있음.
+                - 다른 곳으로 쪼개기 위해서는 splitter와 같은 장비를 이용해서 나눠야함.
+
+    - unguided media 종류
+        - radio
+            - 전기신호를 흘림에 따라 자기장이 생성됨.
+            - 이후 전기장과 자기장의 상호작용을 통해 마치 파동(wave)처럼 퍼져나가게 됨.
+            - 선 연결이 필요 없다는 장점
+            - 양방향 통신이 가능
+            - 벽이나 장애물이 있으면 있으면 회절 및 굴절이 됨.
+                - 벽 뒤의 수신자도 통신이 가능
+                - 주파수가 올라갈수록 회절이 잘 안됨.
+                    - 5G가 직선구간에서만 잘되는 이유도 이것에 해당
+            - 종류
+                - LAN(WiFi)
+                    - AP
+                    - 54, 300, 450Mbps
+                - wide-area
+                    - base station
+                    - 4G : ~ 10Mbps
+                - terrestrial microwave
+                    - base station
+                    - DMB 생각하면 됨. 그냥 이런게 있음.
+                - satellite
+                    - 지구 -> 위성 -> 다른지역 전송
+                    - 거리가 멀어서 속도는 떨어짐
+                        - end-end 딜레이가 많이 발생
+                    - 돈이 많이 들게 됨.
+                        - 여러명이 나눠서 써야함.
+                            - bandwidth를 줄이고 그만큼 여러개를 만들어야함
+                                - 100Mbps 10개 x
+                                - 10Mbps 100개 o
+                    - 위성의 종류
+                        - geosynchronous
+                            - 고정위성.
+                            - 지구 자전과 같이 돌아서 정지해 있는 것처럼 보임
+                            - 매우 높이 있어서 딜레이 큼
+                        - low altitude
+                            - 유동위성
+                            - 비교적 높이가 낮아서 딜레이가 상대적으로 작음
+                            - 지구 자전때문에 움직이는것 처럼 보임.
+                                - 실제로 사람 입장에서는 움직이는게 맞음
+
+4. network core
+    - ![image](https://user-images.githubusercontent.com/44149738/135022931-2d028e40-f777-4723-afc1-657ff82f6b03.png)
+    - network core에는 기본적으로 라우터가 그물망처럼 서로 연결되어있음
+    - circuit switching 또는 packet-switching 방식을 이용할 수 있음
+        - circuit switching
+            - 전화선 같은 존재. 하나의 연결마다 독립적인 하나의 회선 제공
+        - packet-switching
+            - 패킷단위로 쪼갠 다음, end system에 전송
+            - link의 전체 용량(capacity)을 모두 사용할 수 있다는 장점이 있음.
+                - 자세한건 뒤에서 다룸
+    - alternative core: circuit switching
+        - 스위치간 통신에서 어떤 회선을 사용할 것인지 선택해서 독점.
+        - circuit-like 성능
+            - circuit과 거의 같은 성능. 즉, link를 독점하기 때문에 전체를 나혼자 사용하는것과 같은 효과
+        - 회선 사용을 예약 했는데 사용하지 않으면 다른 사람이 사용하지 못해서 낭비가 됨.
+        - 회선을 쪼개서 사용할 수도 있음
+        - 쪼개는 방식은 크게 두 가지가 있음.
+            - ![image](https://user-images.githubusercontent.com/44149738/135025490-b669b503-d547-4e56-b4e9-94c61bd16713.png)
+            - FDM (Frequency, 주파수)
+                - 주파수를 기준으로 분할
+            - TDM (Time, 시간)
+                - 시간을 기준으로 분할
+
+    - packet switching: queueing delay, loss
+        - 먼저 요청된 패킷을 먼저 처리.
+        - 예약 시스템의 낭비 문제를 해결할 수 있음
+        - 버퍼를 관리하는 과정(queueing)에서 대기로 인한 딜레이가 발생할 수 있음
+        - 버퍼가 가득 차면 패킷이 버려짐.(loss)
+    
+    - circuit switching VS packet switching
+        - 동시 사용 : packet switching은 많아도 가능
+            - 1Mbps 회선이 있다고 가정하자
+            - 100Kbps 데이터를 보낸다고 하면
+            - circuit switching
+                - 10%를 독점하기 때문에 10명만 사용 가능
+            - packet switching
+                - 10명 동시사용까지는 원할하게 사용 가능하나, 그 이상부터는 대기시간이 길거나 유실되는 상황 발생 가능
+                - 35명이 사용한다고 가정하면, 10명이 동시에 사용할 확률은 `.0004`임. 즉, 35명은 충분히 사용 가능하다고 볼 수 있음.
+        - 그렇다면 packet switching이 절대적으로 좋은가?
+            - packet switching은 폭발적인 통신이 발생하는 특성을 가진 네트워크에서 효율이 좋다.
+            - 여기서 폭발적이란, 지속적인 통신이 아닌, 필요할 때 발생하고 그 외에 사용하지 않을때는 고요한 그런 특성을 말함.
+            - 효율적으로 관리한다는 장점이 있지만, 혼잡한 순간이 발생할 수 있다는 단점도 존재한다.
+                - 프로토콜을 이용해서 신뢰성을 높이고 혼잡제어 기능이 필요하다.
+            - 실시간 서비스는 지속적인 데이터기 때문에 circuit like한 네트워크가 적합해보이지만 사실 아직 이런 기술이 개발되지 않음.
+
+5. 인터넷 구조
+    - network of networks. end system이 access ISP 들을 통해서 연결되어있음.
+    - 점진적으로 덧붙혀지면서 인터넷이 확대되어오다보니 복잡한 구조를 띔.
+        - 복잡한 구조가 된 이유는 경제적, 국가 정책적 이유
+    - access net을 서로 연결하면 회선이 너무 많아져서 확장이 어려움.
+    - 이를 해결하고자 global ISP가 서로 연결되고, customer가 제공받는 형태로 구성
+    - global ISP가 여러개인 경우 서로 연결됨
+        - peering 또는 IXP를 통해 연결
+    - ![image](https://user-images.githubusercontent.com/44149738/136493591-40946eda-789e-4c8a-8415-a3001007a33e.png)
+
+6. 딜레이
+    - ![image](https://user-images.githubusercontent.com/44149738/136501210-ea9f25d3-cce1-4de2-ae89-8a2c75384e75.png)
+    - process delay
+        - 패킷에 오류검출, 결정 관련 처리 등 패킷을 처리할 때 드는 비용
+    - queueing delay
+        - 버퍼에서 앞의 패킷이 모두 빠질 때 까지 대기하는 시간
+        - 가변적임
+    - transmission delay
+        - 패킷 전송을 위해 대역폭에 맞게 쪼개서 올리는 시간
+        - delay = (Packet Length)/(Link bandwidth) = L/R
+    - propagation delay
+        - 실제 회선을 타고 출발지부터 목적지까지 이동하는 시간
+        - delay = (물리적 회선의 길이) / (전송속도) = d/s
+        - transmission delay와는 전혀 관계가 없다.
+    - 실제 delay는 얼마나 발생하는가?
+        - traceroute 프로그램을 사용하면 됨.
+
+7. 패킷 loss
+    - 버퍼가 가득 차면 패킷을 버린다(drop). 이를 loss라고 함.
+
+8. thuroughput (수율)
+    - 얼마나 빠르게 보낼 수 있는가를 나타냄
+    - instantaneous : 특정 시간에 특정 지점에서
+    - average : 긴 시간동안의 평균
+    - 가장 대역폭이 작은 link를 `bottleneck link`라고 함.
+        - 이 link가 곧 전체의 전송속도를 결정지음.
+
+9. protocol "layers(계층)"
+    - protocol stack
+        - application
+        - transport
+        - network
+        - link
+        - physical
+    - OSI 7 Layer
+        - ISO에서 제작
+        - presentation과 session 계층이 추가됨.
+    - encapsulation
+        - 계층별 패킷 명칭  
+            - application : messasge
+            - transport : segment
+            - network : datagram
+            - link : frame 
+
+10. network security
+    - malware
+        - virus : 능동적 감염(이메일 첨부파일과 같이 침투함.)
+        - worm : 수동적 감염
+    - spyware : 은밀하게 활동하는 malware. virus나 worm과 같은 형태로 침투해서 keystrokes, web 기록 등 다양한 정보를 수집해서 특정 사이트(해커의)에 업로드.
+    - DDoS(Distributed Denial of Service)
+        - 감염이 되면 botnet에 등록되고, 원격지에서 공격자가 조종하게 됨.
+    - DoS(Denial of Service)
+        - 가짜 트래픽으로 리소스를 점령해버려서 가용성을 떨어트림
+        - 여러 기기를 감염시켜서 봇넷에 등록
+        - 타겟 서버로 패킷을 특정 시간에 날리도록 명령
+    - sniffing
+        - broadcast로 보내게 되면 해커도 들을 수 있다.
+        - promiscuous network interface로 브로드캐스트된 패킷을 수신할 수 있다.
+    - ip spoofing
+        - ip를 변조해서 대상을 속이는 공격
+
+11. 인터넷 역사
+    - 인터넷은 1960년대에 탄생함 (1961 - 1972)
+        - packet-switching 이 더 효율적이라고 판단해서 이것저것 생기던 시기
+    - internetworking 시대. (1972 - 1980)
+        - net과 net이 만나 internet이 됨.
+        - best effort model : 서로 연결된 네트워크가 패킷을 전달하도록 노력은 하지만 목적지까지 간다는 보장은 하지 못함. 
+        - 라우터에 패킷의 상태정보가 저장되지 않음.
+            - 저장하게 되는 순간부터는 라우터가 하는 일이 너무 많아짐.
+        - A, B 네트워크를 연결했다고 해도 서로의 네트워크를 고려할 필요 없음
+            - 본인 네트워크만 잘 관리하면 됨.
+        - Ethernet이 처음 발생
+        - ATM이라는 네트워크의 초기.
+        - ARPAnet에 연결된 네트워크가 200개나 됨
+    - network가 세련되어짐 (1980 - 1990)
+        - tcp/ip가 소개됨
+        - smtp, dns, ftp가 제안됨
+        - TCP congestion control 알고리즘이 개선됨
+        - 국가단위의 national network가 형성됨
+        - 10만개 이상의 네트워크 호스트가 연결되게 됨
+    - 상업적인 웹 및 앱(1990 - 2000)
+        - ARPAnet(기관용) 더 이상 사용하지 않음.
+        - NSF 네트워크(연구용) 사용하지 않음
+        - 웹의 등장
+            - hypertext를 기반으로 버너스리가 만든 문서. HTML, HTTP.
+            - 최초의 웹브라우저
+                - Mosaic -> 나중에 넷스케이프로 바뀜 -> explorer -> chrome 등
+        - killer app : 서비스의 핵심이 되는 앱
+            - 메신저, p2p 파일공유
+        - network security가 주목받기 시작함.
+        - 5천만개의 host, 1억명 이상의 사용자가 인터넷을 사용함.
+        - Gbps가 운영되기 시작
+    - 2005 - 현재
+        - 50억개 device가 인터넷에 연결.(핸드폰, tv 등)
+        - broadband access (광대역 접근)가 가능한 서비스 등장
+            - 언제 어디서든지 접속하고싶다!
+        - high speed wireless access
+            - 4G, 5G, WiFi 등
+        - SNS 서비스 등장
+        - 거대한 IT 회사들이 자신이 소유한 네트워크(CDN)을 만들기 시작함.
+
+12. network app
+    - 애플리케이션 계층에서의 서비스는 쉽게 구성할 수 있다.
+    - 라우터와 같은 network-core device를 고려할 필요 없다.
+    - 즉, end system만 신경써서 개발할 수 있기 때문에 빠른 개발이 가능하다. sw 전파도 end system에만 설치하면 되어 빠르게 가능.
+
+13. application architectures
+    - client-server 아키텍처
+        - server는 항상 켜져있음. 고정된 ip가 있음.
+        - client가 server에 접속을 함.
+        - client는 보통 dhcp를 사용 == ip가 동적으로 할당됨.
+        - client 끼리 통신을 위해 server를 꼭 거쳐야 함. (상하구조)
+    - p2p 아키텍처
+        - 상대방과 직접 통신 가능 (수평구조)
+        - peer to peer
+        - 서로 요청 및 제공이 가능.
+        - peer가 무수히 많아도 서비스 가능
+            - self scalability 하다 => 새로운 peer가 들어오면 서비스를 요청하기도 하지만 제공도 하기 때문에 결국엔 확장되어 리소스 문제가 없다(?)
+
+    - process communicating
+        - process : 실행되고있는 프로그램
+        - inter-process communication : 같은 호스트 내 서로다른 프로세스가 통신 가능
+        - 그렇다면 다른 호스트의 프로세스가 커뮤니케이션하려면?
+            - 하나는 client process(요청자), 나머지 하나는 server process(수신자)가 됨.
+            - os에게 다른 호스트에게 요청하라고 명령해야함.
+                - socket 사용
+        - sockets
+            - process는 socket을 통해서 os 밖 다른 host와 통신할 수 있다.
+            - 호스트와 프로세스를 구별할 수 있는 identifier가 필요함.
+                - 일반적으로 ip와 port 정보 필요.
+                - http(80), mail(25) 와 같이 일반적으로 사용되는 포트가 있음.
+
+    - app-layer protocol defines
+        - type(ex. req|resp)이 정의되어야 함.
+        - message syntax가 정의되어야 함. (프로토콜 별 정해진 필드 같은 느낌.)
+        - message semantics 정의.
+            - 메세지 안의 필드가 "의미"하는게 무엇인지.
+        - 메세지를 언제, 어떻게 주고받을지 rule을 정해야함.
+        - 이렇게 만들어진 프로토콜의 종류
+            - open protocols
+                - RFC로 구조가 공표된 프로토콜
+                - 상호 운영이 가능하도록 하기 위함
+            - proprietary protocols
+                - 개인적인 프로토콜
+                - ex) skype, 각종 게임 등
+    
+    - application layer의 프로토콜이 메세지를 전송할 때, 전송계층에 기대할 수 있는 기능
+        - data loss
+            - 파일전송과 같은 서비스는 무조건 loss가 있으면 안됨.
+            - 그러나 오디오와 같은 서비스는 어느정도의 loss를 허용하기도 함.
+            - application마다 transport 계층에 요구하는 사항이 다를 수 있다.
+        - timing
+            - 게임이나 전화처럼 매우 낮은 딜레이를 원하는 서비스가 있을 수 있음
+            - 반대로 파일전송과 같이 크게 민감하지 않은 경우도 있음. 
+        - throughput
+            - minimum throughput이 중요한 서비스가 있을 수 있음.
+                - 비디오 서비스와 같은 경우는 중간에 끊기면 안되기 때문에 중요
+            - 반대로 작아도 상관없는 경우도 있음
+                - 이런 서비스를 elastic apps 라고 함.
+                - throughput이 크면 좋지만 작아도 상관없음.
+        - security
+            - 데이터의 변조 없이 정확하게 전달.
+            - encryption과 같은 것.
+    
+        - 종류별 서비스들의 요구사항
+            - ![image](https://user-images.githubusercontent.com/44149738/137630129-c68bba44-1139-4349-a567-d4ed7114b17d.png)
+
+14. 실제 transport 프로토콜
+    - tcp
+        - 신뢰할 수 있는 프로토콜
+            - 송신자가 보낸 데이터는 수신자가 무조건 똑같이 받는다
+        - flow control
+            - sender가 너무 빠르지 않게 receiver가 받을 수 있는 속도로 조절해서 보냄.
+        - congestion control
+            - network 혼잡상태에 따라 전송 속도 조절.
+        - 제공하지 않는 것
+            - timing
+            - minium throughput
+            - guarantee, security
+        - security는 왜 제공하지 않는가?
+            - 초창기에는 보안이 중요하지 않았기 때문에 구성되지 않음
+            - SSL(Secure Socket Layer)
+                - 보안성이 제공되는 소켓 레이어를 말함
+                - end point를 인증하는 기능으로 사용할 수 있음
+                - application 단에서 구현됨.
+                - 암호화 한 후 tcp에게 전달.
+    - udp
+        - 신뢰할 수 없는 프로토콜
+            - 손실이 발생할 수 있다
+            - 굳이 손실을 방지하지 않음
+        - simple함.
+        - 스트리밍 서비스에 주로 사용
+
+15. web and http
+    - web page란 여러 objects(이미지, 제목, 표, 등)들로 구성된 페이지
+    - 기본이 되는 html 파일이 있고, referenced object를 포함하는 형태로 되어있다.
+    - 웹페이지를 지칭하는 identifier가 있음 == URL(hostname + pathname)
+    - HTTP
+        - web page를 전달할 때 사용하는 프로토콜
+        - server/client model
+            - client : http 프로토콜을 통해 web object를 요청 및 수신하여 브라우저에 띄움.
+            - server : http 프로토콜을 통해 요청에 대한 결과를 전송한다.
+        - 기본적으로 stateless 형태로 구성되어있다.
+            - 상태정보. 즉, 과거에 대한 저장이 없다.
+            - 프로토콜이 상태정보를 저장하게 되면 프로토콜이 매우 복잡해지기 때문
+    - non-persistent HTTP   
+        - 매 요청마다 TCP connection을 맺음.
+        - response time
+            - RTT (Round Trip Time)
+                - 왕복 시간을 말함
+            - connection을 위한 RTT + HTTP 처리를 위한 RTT + 처리시간
+        - issue
+            - object마다 2RTT 시간이 필요함.
+            - TCP를 열었다 닫았다를 반복하면서 os overhead 발생
+            - 2RTT라는 시간을 줄이기 위해 종종 여러개의 tcp를 병렬로 한번에 열어서 데이터를 한번에 받아오는 방법도 있는데, 그래도 각각의 TCP CONNECTION이 Object마다 열려야 한다는 부분은 해결이 안됨.
+    - persistent HTTP
+        - tcp 연결을 열면 끝나고 나서 close 한다.
+        - 추가적인 http 메세지가 열려있는 tcp connection을 이용
+        - 약 1RTT(약간 큼)의 시간에 받아올 수 있음.
+        - 열려있는 TCP로 여러개 OBJECT를 받을 수 있기 때문에 object에 따른 os overhead도 비교적 적다.
+    - HTTP syntax
+        - 사람이 읽을 수 있는 ascii로 되어있음
+        - `/r/n` : carriage return + line feed : 개행에 사용
+        - `request line`과 `header lines`로 나뉨
+        - request line 형태: `GET /index.html HTTP/1.1/r/n` 
+        - header lines 형태: `Header field Name : Values`
+    - method
+        - get : 데이터를 url로 전송
+        - post : 데이터를 form으로 body 부분에 담아 전송
+        - head : 서버는 object를 줄 필요는 없어요~
+        - 버전별
+            - HTTP/1.0
+                - GET, POST, HEAD
+            - HTTP/1.1
+                - GET, POST, HEAD
+                - PUT
+                    - 파일을 업로드
+                - DELETE
+                    - 파일을 삭제
+    - HTTP response
+        - status line, header lines, blank line, entity body 로 이루어져 있음
+        - status code
+            - 200 : OK
+            - 301 : Moved Permanently. 현재 요청한 리소스가 다른 위치로 이동했음을 뜻함. (Location: 이동한 위치)
+            - 400 : Bad request. web 서버가 요청을 이해하지 못함. http 버전에 맞게 요청이 구성되지 않을 경우 많이 뜸.
+            - 404 : Not found. 자원이 없음.
+            - 505 : HTTP Version Not Supported. HTTP 버전이 안맞는 경우.
+    
+16. cookie
+    - cookie를 사용하는 방법
+        - HTTP response에 cookie 헤더가 포함되어있어야 함
+        - HTTP request에 cookie를 담아 서버에 알려줄 수 있다.
+        - cookie file은 웹 브라우저에 의해 관리됨.
+        - 쿠키에 대한 백엔드 데이터베이스가 있어야 한다(??????? 개발자 마음 아닌가 ?)
+    - cookie 사용처
+        - authorization : 인증
+        - shopping carts : 장바구니
+        - recommendations : 추천기능
+        - user session state : 세션
+    - state를 유지하는 방법
+        - 프로토콜의 endpoints에 저장.
+    - privacy
+        - 웹사이트가 나에 대해 너무 많은 걸 알게됨.
+        - 요즘에는 쿠키도 개인정보로 다루어짐 
+
+17. web caches (= proxy server?)
+    - client가 object 원본까지 가지 않아도 되도록 함을 목적으로 함.
+    - 리소스(트래픽), 응답속도 측면에서 좋음
+    - client(origin server 입장에서)이면서 동시에 server(real client 입장에서)임.
+    - ISP에 의해서 대학이나 회사 등에 설치됨.
+    - conditional get
+        - 캐시 방식의 고질적인 문제가 있음.
+            - origin server 변경으로 인한 차이가 발생할 수 있음.
+        - 이를 해결하기 위해 나온게 conditional get
+        - 일정 시간이 지나면 origin server에 최신버전인지 질의
+        - If-modified-since 헤더를 이용해서 확인
+            - 수정사항 없으면 304
+            - 수정사항 있으면 200과 함께 데이터 응답
+
+18. Electronic mail
+    - 주요 요소
+        - user agent(e-mail app)
+        - mail server
+        - smtp protocol
+    - user agent
+        - mail reader app
+        - e.g. outlook, thunderbird, iphone mail, web browser, ...
+    - mail server
+        - mailbox와 message queue로 이루어져 있음
+        - mailbox
+            - 도착한 메세지를 저장하는 공간
+        - message queue
+            - 사용자가 메일을 전송하려고 할 때, 저장하는 큐
+        - smtp protocol 사용
+    - SMTP
+        - TCP 사용. 25번포트.
+        - 메일서버끼리 직접적으로 주고받음
+        - 3 단계에 거쳐 메일을 전송
+            - handshaking 
+            - transfer of messages
+            - closure
+        - command/response (like http, ftp)
+            - commands : ascii text
+            - response: status code and phrase(ascii)
+        - message는 반드시 7bit ascii로만 전송하도록 되어있음.
+        - HTTP와의 비슷한점/다른점
+            - http는 pull이지만 smtp는 push다.
+            - 둘 다 ascii 코드로 이루어져 있고, `<status_code> <status_phrase>` 구조로 이루어진 req/resp 관계가 있다.
+            - 차이점
+                - http : 하나의 response에는 하나의 object만 들어갈 수 있음
+                - smtp : 하나의 object가 여러개의 msg에 들어갈 수 있고, 여러개의 object가 하나의 msg에 들어갈 수도 있음.
+        - 구조는 RFC 822에 표준화 되어있음.
+
+19. mail access protocols
+    - SMTP : 수신자의 ms까지 전송하고, 저장하는 프로토콜
+    - mail access protocol: 수신자의 ms에서 메일을 읽을 때 사용하는 프로토콜
+        - POP(Post Ofiice Protocol - RFC 1939)
+            - 사용자 인증, 메일 다운로드
+        - IMAP(Internet Mail Access Protocol - RFC 1730)
+            - 더 다양한 기능, email을 정리 및 재정렬하는 기능
+        - HTTP
+            - Gmail, Hotmail, etc.
+            - 가장 많이 사용하는 형태
+    - POP3
+        - 110번 포트
+        - 버전3 가 가장 유명
+        - ASCII를 이용해서 req, res
+        - ![image](https://user-images.githubusercontent.com/44149738/139498073-49625643-84e2-417e-9ba2-361c713e71f5.png)
+        - 인증 과정(authorization phase)
+            - client commands
+                - user : 유저명
+                - pass : 비번
+            - server res
+                - `+OK`
+                - `-ERR`
+        - 메일 다운로드 과정 (transaction phase)
+            - list : 메일 번호, 메일 크기 리스팅
+            - retr : 번호에 해당하는 메일 받기
+            - dele : 번호에 해당하는 메일 삭제
+            - quit : 종료
+        - pop3 tmi
+            - 기본적으로 download and delete 형태임. 받고 삭제.
+            - delete를 안하도록 설정할 수 있음.
+                - 그러나 메일박스가 계속 차게 됨
+            - stateless한 세션임. 즉, 이전 세션을 기억하지 않음.
+    - IMAP
+        - 서버에 모두 저장하는 형태
+        - 이전 세션을 기억함.
+            - 변경사항이 그대로 유지됨.
+
+20. DNS
+    - Domain Name System
+    - IP주소와 Hostname을 번역하는 서비스
+    - 계층적으로 분산된 데이터베이스 형태로 구현되어있음
+    - 응용계층 layer로 구현되어있음.
+        - 그 이유는 인터넷 초기에는 DNS 필요성을 못느껴서 존재하지 않았기 때문.
+        - 이미 인터넷 환경이 발전한 후에 고안되었기 때문에 응용계층으로 구현
+    - 서비스
+        - hostname -> ip
+        - host aliasing(별칭)
+        - mail server aliasing(메일서버 정보)
+        - load distribution
+            - 웹 서버를 중복해서 설치해놓고 많은 ip를 하나의 hostname에 매핑
+            - 이렇게 해서 부하가 분산되도록 할 수 있음.(로드밸런싱?)
+    - DNS가 단일(중앙집중형)이 아닌 이유
+        - SPoF(Single Point of Failure) 문제 발생
+        - 트래픽 양도 어마무시함.
+        - 거리가 멀면 멀수록 속도가 느려짐
+        - 업데이트 요청이 많아지면 거기에 시간을 너무 쏟게됨.
+    - 계층
+        - 크게 3개로 나누어짐
+        1. Root DNS
+            - 전 세계에 13개 정도만 있어도 운영이 됨.
+        2. Top Level DNS (TLD)
+            - `.com`
+            - `.org`
+            - ...
+        3. Authoritative DNS
+            - 기관이 운영하는 고유한 서버
+            - `kknock.org`
+            - `naver.com`
+            - ...
+        - 질의 과정 (www.amazon.com 질의 가정)
+            0. local dns server에 질의 후 캐싱된 내용이 없다면 다음으로 넘어감
+            1. root dns에 `.com` dns server 주소를 질의
+            2. `.com` dns server에 `amazon.com` dns server 주소를 질의
+            3. `amazon.com` dns server에 `www.amazon.com` 주소 질의
+    - Local DNS name server
+        - 위 DNS 3계층에 포함되지는 않음.
+        - Local DNS에 가장 먼저 질의. 모르면 기본 DNS 동작 수행
+        - dns 정보를 캐싱하거나, 데이터베이스를 구성해둔 proxy 역할을 하는 것으로 볼 수 있음.
+    - 질의 방식
+        1. iterated query(반복적 쿼리)
+            - ![image](https://user-images.githubusercontent.com/44149738/139502576-2a3a6fc9-721f-4f90-b340-7c9c17837b56.png)
+            - "나는 모르지만, 여기 dns 서버로 가봐!" 개념
+        2. recursive query(재귀적 쿼리)
+            - 질의 과정을 다음 dns로 넘겨버리는 방식
+            - root에 가까운 dns 서버에 부하가 심해짐.
+    - 캐싱, 레코드 업데이트
+        - dns는 질의 결과를 추후 cache로 활용.
+        - 그러나 캐시를 활용하면 업데이트 문제가 발생.
+            - timeout을 두어서 갱신해야함(TTL).
+            - 그럼에도 업데이트 갭이 발생할 수 있음.
+                - TTL 값을 얼만큼으로 둘 것인가가 중요. 아직도 논의되고 있음.
+        - 반면 TLD 서버의 경우 잘 변경되지 않기 때문에 고정한다.
+    - DNS 레코드
+        - RR(Resource Records)
+            - ![image](https://user-images.githubusercontent.com/44149738/139503248-6173cedb-c841-472d-ac67-9f1b3588fe67.png)
+            - type
+                - A
+                    - name = hostname
+                    - value = IP주소
+                - NS
+                    - name = domain
+                    - value = 해당 도메인을 담당하는 authoritative ns의 hostname
+                - CNAME (Canonical name)
+                    - name = 별명 name
+                    - value = 별명에 해당하는 실제 name
+                - MX
+                    - name = domain
+                    - value = 메일서버의 hostname
+    - dns protocol messages
+        - query와 reply 메세지로 구성되어있음
+            - 그런데 포맷이 같음!
+        - ![image](https://user-images.githubusercontent.com/44149738/139504128-95d0ee3d-49ab-4f85-897e-2d02de9c0075.png)
+        - msg header
+            - identification
+                - dns query의 특정 번호.
+            - flags
+                - query(0) or reply(1)
+                - recursion 방식 요청
+                - recursion available!
+                - reply is authoritative
+                    - authoritative로부터 도착한 최종 답변
+            - number of questions : 질의 내용
+            - number of answer RRs : 답변 내용
+            - number of authority RRs : 하위 ns 정보
+            - number of additional RRs : 추가 도움되는 정보를 담는 공간
+
+21. transport 계층
+    - 프로세스와 프로세스 사이에 논리적인 연결을 맺는 것을 담당
+    - 세그먼트 단위로 송수신.
+    - network 레이어 간 차이점
+        - network layer : 호스트간 논리적 연결
+        - transport layer : 프로세스간 논리적 연결
+    - TCP/UDP
+        - TCP : reliable(loss 적음), in-order delivery(순서가 있음) 
+        - UDP : unreliable, unordered delivery
+    - multiplexing/demultiplexing
+        - multiplexing
+            - 일반적으로 송신측에서 발생
+            - 여러개(프로세스에서 온 메세지)를 하나로 묶어서 송수신
+        - demultiplexing,,,?
+            - 일반적으로 수신측에서 발생
+            - 하나(메세지)를 여러개로 나누어서 수신
+            - 프로세스에 포트번호를 할당해서 해당 포트로 통신
+                - port로 process를 찾아간다는 것은 엄연히 틀린말
+                - port로 socket을 찾아가는게 올바른 말
+            - 종류
+                - 비연결형(udp)
+                    - dest ip/port 만 기재
+                - 연결지향형(tcp)
+                    - src/dest ip/port만 기재
+    - UDP
+        - 확장 및 추가기능이 최소인 전송 프로토콜
+        - 순서가 지켜지지 않음
+        - connectionless 성격을 띔. 연결 x
+        - 각각의 udp 패킷은 독립적으로 취급된다.
+        - 구조가 단순함.
+        - 사용
+            - 미디어 스트리밍
+            - 속도에 민감한 서비스
+            - DNS, SNMP
+        - UDP 이면서 loss를 적게 하는 방법
+            - application 계층에서 loss 복구를 수행하면 됨.
+        - 사용 이유
+            - connection 과정 필요 없음
+            - 심플함.
+            - 헤더 사이즈가 작음
+            - 네트워크 혼잡도에 따른 혼잡제어를 하지 않음.
+        - checksum
+            - 현재 보내는 세그먼트에 error가 있는지 탐지
+            - sender
+                - checksum 값을 생성
+                - 헤더를 포함한 모든 내용을 16bit로 나눔
+                - 다음줄을 계속 더해나감(bit)
+                - 마지막 합에 not 연산
+            - receiver
+                - 다시 계산해서 checksum 필드의 값이 같은지 비교
+                - checksum이 일치한다고 해서 오류가 없다고는 할 수 없음.
+    - reliable data transfer(loss 적음)
+        - rdt 1.0 : reliable한 채널 위에서 구현
+            - 채널이 reliable하기 때문에 sender와 receiver는 고려하지 않아도 됨
+        - rdt 2.0 : channel이 bit error를 가지고 있는 환경
+            - 송수신에 checksum을 사용
+            - 에러 발생에 대해 송신자에게 알림
+                - ACK(Acknowledgements) 패킷을 보냄
+                - NAK(Negative acknowledgements) 패킷을 보냄
+                    - nak을 받으면 sender는 재전송해주어야 함
+            - 그러나 checksum마저 오류로 인해 변경될 수 있음
+                - sender는 잘 모르니까 재전송해버린다
+                - receiver 입장에서는 중복된 핸들링을 하게 될 수 있다.
+                    - 오류때문에 받은건지 새로 온건지 모르기 때문
+            - 시퀀스 넘버를 사용
+                - 앞서 설명한 중복 핸들링을 방지하기 위함
+        - rdt 2.1 : discussion
+            - sender
+                - 시퀀스 넘버를 사용.
+                    - receiver가 새 패킷인지 재전송 패킷인지 판단하기에는 0과 1이면 충분함.
+            - receiver
+                - 중복된 패킷인지 체크
+                - 응답 시퀀스 넘버를 사용
+        - rdt2.2 : NAK 없는 프로토콜
+            - nak 대신 ack을 여러개 시퀀스를 사용해서 표현
+        - rdt3.0 : error와 loss가 생기는 채널
+            - 패킷이 아예 사라지는 상황도 존재. 
+            - timeout을 걸고, 패킷이 사라지는 현상을 조금만 기다리도록 함.(stop-and-wait)
+            - 그러나 이렇게 기다리는 것(stop-and-wait)이 성능적으로 좋지는 못하다
+                - 성능 계산 방법
+                    - ![image](https://user-images.githubusercontent.com/44149738/143235738-7f43d323-2d1e-44df-bd60-b17718e9c2ff.png)
+                    - utilization이 1이 되어야 busy하게 사용하는건데 한참 남음
+        - pipelining
+            - ack을 기다리지 않고 다 보내는 것(최대치를 정함)
+            - 최대 3개를 보낼 수 있다고 가정하면, utilization이 3배 증가함
+                - ![image](https://user-images.githubusercontent.com/44149738/143236314-08e9f50b-6ab5-4956-9103-7139668bc430.png)
+            - 최대치를 늘릴수록 좋아짐.
+                - 그만큼 더 많은 시퀀스 넘버 필요.
+            - 방식 두가지
+                - 둘 다 N개까지의 패킷을 ack 없이 한꺼번에 보낼 수 있다.
+                1. go-back-N (GBN)
+                    - ![image](https://user-images.githubusercontent.com/44149738/143240328-f283bdf3-e852-43b6-b219-ba2553ded6a4.png)
+                    - cumulative ack을 사용
+                        - ACK N번이라고 한다면 N번 이전으로는 다 받았다는 뜻.
+                        - 1,2,3,5,6,7 받았다고 한다면 4번을 못받았으므로 ack 3번인 것임.
+                    - 가장 오래된 unacked packet에 대해서만 timer를 설정.
+                        - timeout이 발생하면 현재 ack을 받지 않은 것들을 모두 재전송.
+                2. selective repeat
+                    - individual ack을 사용
+                        - ack 7 이면 7번 패킷만 잘 받았다는 뜻.
+                    - 모든 unacked packet에 timer를 설정
+                        - timeout이 발생하면 해당하는 패킷만 재전송.
+    - TCP
+        - point to point 통신
+        - 메세지 단위가 아니라 스트림(바이트) 단위로 전송
+        - pipelined 프로토콜
+        - 양방향 데이터 전송 프로토콜
+        - MSS(Maximum Segment Size) : TCP 패킷 최대 크기
+        - 흐름제어
+            - sender의 전송 속도를 receiver가 받을 수 있는 속도로 제어
+        - 구조
+            - seq number와 ack number가 segment 단위로 붙는게 아니라 byte 단위로 붙는다.
+            - cumulative ack을 사용
+            - 뒤쪽 데이터가 먼저 오면 이를 받아도, 안받아도 상관없다.
+        - Timout
+            - 답변을 얼마나 기다릴 것인가?
+            - RTT(round trip time)
+                - 상대의 시간과 장소에 따라 동적으로 변한다.
+                - 이렇게 동적이라서 timeout이 비교적 작거나 크면 문제가 발생.
+                - 그럼 rtt를 어떻게 추정할 것인가?
+            - RTT 추정
+                - 응답시간을 기록해서 이를 기반으로 추정
+                - 이동평균을 통해 산출
+                - E_RTT = (1-alpha) * E_RTT + alpha * SampleRTT
+                    - 이렇게 계산하면 이전 통신에 대한 데이터의 가중치는 작아지고, 최근 통신 가중치가 높음
+            - timeout 설정
+                - E_RTT보다는 조금 크게 설정해야함.
+                - E_RTT 변동 폭이 크면 차이를 크게 설정하고, 변동폭이 작으면 차이를 작게 설정
+                - DevRTT = SampleRTT와 E_RTT의 차이(실제론 조금 복잡)
+                - Timeout = E_RTT + 4 * DevRTT
+        - fast retransmit (빠른 재전송)
+            - timeout을 걸 경우 속도가 느리다는 단점이 있음.
+            - 그리고 중복 패킷이 발생한다는 특징이 있음.
+            - 이렇듯 3개 이상의 중복된 패킷을 받을 경우 해당 패킷을 재전송해버림.
+            - timeout 전에 오래 기다리지 않아도 패킷을 잘 받을 수 있음.
+        - flow control
+            - 수신자가 받을 수 있는 속도로 패킷을 보냄.
+            - 수신자가 현재 버퍼에 얼만큼 수용 가능한지 알려주어야 함.
+            - rwnd 필드의 값이라는 것을 통해 비어있는 공간이 얼만큼 남았는지 알림.
+                - 최대크기는 일반적으로 4KB임.
+                - 많은 os가 이 크기를 자동으로 조절하게 되어있음.
+                - 일반적으로 rwnd보다 작게 보냄.
+        - congestion control (혼잡제어)
+            - 네트워크에 패킷이 많아서 라우터에서 더이상 받아들이지 못함.
+            - 네트워크에서 굉장히 어려운 문제 top 10에 들어갈 정도
+            - TCP 혼잡제어
+                - cwnd 필드 이용 (congestion window)
+                - 보내는 속도(sending rate)를 증가시킬때는 점진적으로 증가시킴
+                - 반대로 감소시킬때는 급격하게 줄여버림
+                - loss가 발생하기 전까지는 점점 증가시키다가 loss가 발생하면 확 줄여버리는 원리
+                - cwnd 보다는 작게 보냄.
+                - slow start 문제
+                    - 처음부터 단순히 점진적으로만 증가시키면 느림.
+                    - 초기에는 제곱수처럼 확 늘려서 loss 근처에 빠르게 도달하도록 설계해야함.
+                        - ssthresh : Slow Start Threshold (slow start 임계값)
+                            - 임계값 까지는 가파르게 증가하고, 임계값부터 선형적으로 증가
+                            - loss가 발생하면 cwnd의 반을 임계값으로 설정.
+                - loss 탐지 및 cwnd 감소
+                    - timeout이 발생한 loss : cwnd를 1로 그냥 바로 줄여버림
+                    - 3 duplicate ACK : 반으로 줄임. (TCP RENO 버전 이상. 이전 버전은 1로 만듬)
+                        - 이를 fast recovery라고 부름.
+                - 제어 종류
+                    - Slow Start(SS) : RTT마다 window 값을 두배로 늘림. 임계값을 넘으면 CA로 전환
+                    - Congestion Avoidance(CA) : RTT 마다 1을 늘림
+                    - Triple duplicate ACK 발생 시, Fast recovery 수행(window를 반으로 줄임.)
+                    - Timeout 발생 시, window를 1로 설정해서 slow start 수행
+                    - Duplicate ACK : 아무것도 안함. 
+
+22. Network layer
+    - transport layer로부터 segment를 받아서 목적지에 전달할 수 있도록 헤더 데이터를 붙임.
+    - 수신측은 헤더를 판별하고 데이터를 transport로 전달
+    - 라우터에도 존재하는 layer
+    - 주요기능 2가지
+        - forwarding
+            - 패킷을 라우터의 input에서 output까지 도달
+            - 하나의 라우터 내에서 동작
+            - 어떤 링크를 통해 패킷이 나갈 것인가
+        - routing
+            - source에서 destination까지 경로
+            - 전역적인 경로
+    - Data plane
+        - 데이터를 전송하기 위한 측면
+        - forwarding function을 수행하는 것이 data plane의 역할
+        - 즉, 라우터 내부에서 작동
+        - 목적지 ip를 보고 내부에 기록된 rule을 기반으로 interface 로 link.
+            - longest prefix matching
+                - 목적지가 10110101 이라는 패킷이 있다고 가정
+                - rule1 : 1011**** -> link 0 interface
+                - rule2 : 101101** -> link 1 interface
+                - 이렇게 두 개의 rule이 있을 때, 어떤 interface에 link 되어야 하는가?
+                - 가장 매칭이 길게 되는 2번 rule에 명시된 1번 interface에 연결
+    - Control plane
+        - 라우팅 정보를 설정하기 위한 측면
+        - routing
+    - forwarding table을 설정하는 프로토콜 : routing protocols
+        - ex) RIP, OSPF, BGP, etc
+    - IP protocol
+        - datagram format
+            - ip header는 20바이트
+        - ip fragmentation, reassembly
+            - MTU(max.transfer size)
+                - link마다 다름
+                - link 간 차이로 인해 쪼개야 하는 상황 발생.
+            - 쪼개는건 어디서든 쪼개질 수 있지만 한번 쪼개지면 합치는 것은 목적지에서만 합침.
+            - fragflag 필드
+                - 1이면 이후 조각 존재
+                - 0이면 이후 조각 없음.
+            - offset 필드
+                - 현재 패킷의 시작지점 offset 값.
+                - 값이 큰데 필드가 작다보니 8로 나눔.
+    - CIDR
+        - Classless InterDomain Routing
+        - 어디까지 subnet이고, host인지 구분하는 것.
+        - a.b.c.d/x 와 같은 형태로 표현하는 것.
+    - DHCP
+        - IP 동적 할당 프로토콜
+        - 메세지 종류
+            - disover
+                - host가 broadcasts 하는 메세지. 옵션임.
+            - offer
+                - DHCP server가 discover 메세지에 대해 응답. 옵션임.
+            - request
+                - host가 ip 주소를 요청하는 메세지
+            - ack
+                - server가 host가 보내온 request 메세지에 대한 응답으로 ip 주소를 보내는 메세지
+    - ICANN
+        - 최상위 ISP
+    - NAT
+        - Network Address Translation
+        - 장점(IP 하나로 내부 서브넷을 구성할 때)
+            - ISP로부터 여러개의 IP를 할당받을 필요가 없음
+            - 내부 address는 자유롭게 변경할 수 있음.
+            - 외부 address가 바뀌어도 내부적으로는 바꿀게 없음
+            - 보안적인 측면에서도 좋다. 내부 구조 은닉
+        - network address translation
+            - 내부와 외부가 통신할 때, IP를 바꾸어주어야 함.
+            - (internal IP, port), (external IP, external Port)
+            - (NAT IP, new port), (external IP, external Port)
+            - 서버(external) 수신
+            - (external IP, external Port), (NAT IP, new port)
+            - (NAT IP, new port), (internal IP, port)
+        - 다 좋은가? (역설)
+            - layer4까지 간섭
+            - IP 부족은 version6 쓰면 해결될 일
+            - NAT를 사용하면 내부 device가 안보임. P2P 시스템 구현이 어려워짐.
+            - NAT 안쪽에 서버가 있다면 외부에서 내부로 연결하기가 어려워짐.
+    - IPv6
+        - IP 고갈 때문에 만들어짐.
+        - 32bytes -> 40byte
+        - v6를 지원하지 않는 라우터에서는 tunneling 기법을 통해 v4 헤더로 한번 감싸는 형태로 사용
+    - ICMP protocol
+
+23. routing protocols
+    - 라우팅 경로를 알아내는 프로토콜
+    - 좋은 경로 : cost가 적거나, 빠르거나, 혼잡도가 적음.
+    - 네트워크 분야 top 10 난제
+    - cost : 두 node 사이의 link의 cost
+    - bandwidth와 cost 반비례
+    - congestion은 cost와 비례 
+    - 지식의 범위에 따른 라우팅 알고리즘
+        - global 알고리즘
+            - 이미 알고있다고 봄.
+            - ex) link state 알고리즘
+        - decentralized 알고리즘
+            - 주변 라우터와의 정보만 알고있음
+            - 교환을 통해서 점진적으로 파악
+            - ex) distance vector 알고리즘
+    - 정보의 변동성에 따른 라우팅 알고리즘
+        - static
+            - 고정
+            - 라우팅 정보가 잘 바뀌지 않음
+        - dynamic
+            - 동적
+            - 경로가 빠르게 변함
+            - 주기적으로 업데이트
+            - link cost를 받아서 그때그때 변환
+    - link-state routing algorithm
+        - 다익스트라 알고리즘
+            - 모든 노드와 cost를 모두 알고있는 상태에서 수행
+            - c(x,y) : x -> y 로 가는 cost
+            - D(v) : 현재 위치에서부터 목적지 v까지 가는 cost
+            - p(v) : source - destination 경로 상에서 현재노드의 선조노드 리스트
+            - N' : 최단거리 경로의 노드 집합
+            - ![image](https://user-images.githubusercontent.com/44149738/145901223-0ee63a9c-6404-4be5-92de-7e6a0cf793b5.png)
+    - distance vector algorithm
+        - 주변 노드의 정보를 활용
+        - distance vector가 변경되면 이를 주변 노드에게 알려서 업데이트 시킴.
+        - ![image](https://user-images.githubusercontent.com/44149738/145903836-8f4410f9-a509-4971-9ebc-eae9f11405a1.png)
+        - link의 cost가 변동될 경우 바로 업데이트할 수 있음.
+            - cost가 낮아지면 빠르게 전파됨
+            - 반대로 높아지면 전파가 잘 안됨.
+                - 이를 해결하기 위해 poisoned reverse 방식을 사용할 수 있음
+        - LS 와 DV 비교
+            - 복잡도
+                - LS는 n개 node, E개 link면 O(nE)번 메세지가 교환됨
+                - DV는 주변 노드 끼리만 주고받으면 되니 더 적을 순 있는데, DV를 구하는 과정이 가변적임.
+            - 속도
+                - LS : n개 노드일 때 O(n^2)이 O(nE)개 메세지 보냄
+                - DV : 가변, routing loop문제 발생 가능성
+            - 견고함
+                - LS : 훨씬 견고함. 어떤 노드가 잘못된 정보를 제공하면 그 노드만 영향받음
+                - DV : 어떤 노드가 잘못된 정보를 제공하면 전체 네트워크가 영향받음
+    - 실제 라우팅 프로토콜
+        - LS와 DV는 이상적인 상황. 실제로는 그런 상황이 갖추어지기 어려움.
+        - anministrative autonomy 형태로 운영.
+            - 하나의 네트워크를 담당하는 운영자가 있음
+            - 운영자는 자신의 네트워크에서 라우팅이 잘 되도록 만들기만 하면 됨.
+            - 실제 인터넷에서는 특정 지역의 라우터들을 autonomous system(AS) 으로 나누게 됨.
+        - intra-AS routing
+            - 같은 AS 내부에서의 라우팅 프로토콜
+            - AS 내에서는 같으 프로토콜을 사용.
+            - AS마다 사용하는 프로토콜이 다를 수 있음.
+            - gateway router
+                - 다른 as로 넘어갈 수 있는 링크를 가지고 있음.
+            - IGP(Interior Gateway Protocols) 라고도 불림
+            - RIP, OSPF, IGRP 와 같으 프로토콜이 대표적. OSPF가 제일 많이 사용됨.
+        - inter-AS routing
+            - AS 외부에서 서로 다른 AS 간 라우팅을 위해 사용하는 프로토콜
+            - intra domain routing도 겸할 수 있음.
+            - BGP 가 가장 많이 사용됨.
+        - OSPF(Open Shortest Path First)
+            - intra-AS routing
+            - link-state algorithm 이 기반
+            - link state 정보를 전달할 수 있는 패킷이 전체에 전달됨.
+            - 이후 다익스트라 알고리즘
+            - tcp / udp 도움 없이 ip에 바로 붙어서 동작
+            - 개선된 기능
+                - 보안성 : 인증과정을 거침
+                - 같은 경로지만 여러개 path를 가질 수 있도록 설계됨
+                - 서로다른 ToS(Type of Service)에 대해 다중의 cost를 설정할 수 있음
+                - uni, multi cast를 혼합하여 사용 가능
+        - BGP(Border Gateway Protocol)
+            - inter-AS routing
+            - 사실상 표준
+            - eBGP
+                - 이웃한 AS간 어떠한 host를 연결할 수 있는지 알아옴.
+            - iBGP
+                - eBGP로 알아온 정보를 현재 AS 내 라우터에게 전달
+            - ![image](https://user-images.githubusercontent.com/44149738/145908202-bf8fe0fb-40f7-4129-9ddf-acfa049de293.png)
+            - route 선택 우선순위
+                1. 정책적으로 가지 않아야 하는 길은 제외
+                2. AS-PATH가 가장 짧은 길 선택
+                3. NEXT-HOP router까지 가는 길이 짧은 길 선택
+                    - Hot Potato Routing 이라고 함.
+                4. etc ...
+
+
+            
+
+
