@@ -1,8 +1,8 @@
 baseURL = 'http://example.org/'
-languageCode = 'en-us'
+languageCode = 'ko-kr'
 
 # Change the default theme to be use when building the site with Hugo
-theme = "custom/hugo-theme-learn"
+theme = "hugo-theme-learn"
 
 # For search functionality
 [outputs]
