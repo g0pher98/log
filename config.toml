@@ -1,4 +1,4 @@
-baseURL = 'http://example.org/'
+baseURL = 'https://blog.jseung.me/'
 languageCode = 'ko-kr'
 
 # Change the default theme to be use when building the site with Hugo
@@ -7,3 +7,21 @@ theme = "hugo-theme-learn"
 # For search functionality
 [outputs]
 home = [ "HTML", "RSS", "JSON"]
+
+# robots.txt
+enableRobotsTXT = true
+
+
+# sidebar(left) More
+[[menu.shortcuts]]
+name = " Jaeseung Lee 👻"
+url = "https://jseung.me"
+
+[[menu.shortcuts]]
+name = "<i class='fab fa-github'></i>  Github"
+url = "https://github.com/g0pher98"
+
+
+
+[params]
+  themeVariant = "custom"
