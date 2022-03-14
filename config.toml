@@ -1,4 +1,4 @@
-baseURL = 'https://blog.jseung.me/'
+baseURL = 'https://o_o.jseung.me/'
 languageCode = 'ko-kr'
 
 # Change the default theme to be use when building the site with Hugo
