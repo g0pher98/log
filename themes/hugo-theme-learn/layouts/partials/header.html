@@ -67,8 +67,8 @@
                           <i class="fas fa-bars"></i>
                         </a>
                     </span>
-                  {{ if $toc }}
-                  <span id="toc-menu"><i class="fas fa-list-alt"></i></span>
+                    {{ if $toc }}
+                  <span id="toc-menu"><i class="fas fa-list-alt"></i> INDEX</span>
                   {{ end }}
                   <span class="links">
                  {{$showBreadcrumb := (and (not .Params.disableBreadcrumb) (not .Site.Params.disableBreadcrumb))}}
@@ -78,6 +78,7 @@
                    {{ .Title }}
                  {{ end }}
                   </span>
+                  
                 </div>
                 {{ if $toc }}
                     {{ partial "toc.html" . }}

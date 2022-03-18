@@ -39,8 +39,8 @@
     src: url("../fonts/Work_Sans_500.eot?#iefix") format("embedded-opentype"), url("../fonts/Work_Sans_500.woff") format("woff"), url("../fonts/Work_Sans_500.woff2") format("woff2"), url("../fonts/Work_Sans_500.svg#WorkSans") format("svg"), url("../fonts/Work_Sans_500.ttf") format("truetype");
 }
 body {
-    background: #fff;
-    color: #777;
+    background: #1e1e1e;
+    color: #ccc;
 }
 body #chapter h1 {
     font-size: 3.5rem;
@@ -56,10 +56,10 @@ body #chapter h1 {
     }
 }
 a {
-    color: #00bdf3;
+    color: #282c34;
 }
 a:hover {
-    color: #0082a7;
+    color: #7a7a7a;
 }
 pre {
     position: relative;
@@ -173,7 +173,7 @@ textarea:focus, input[type="email"]:focus, input[type="number"]:focus, input[typ
     }
 }
 #sidebar {
-    background-color: #322A38;
+    background-color: #2a2c38;
     position: fixed;
     top: 0;
     width: 300px;
@@ -276,7 +276,7 @@ textarea:focus, input[type="email"]:focus, input[type="number"]:focus, input[typ
     margin-top: 9px;
 }
 #sidebar ul.topics > li.parent, #sidebar ul.topics > li.active {
-    background: #251f29;
+    background: #1f2229;
     margin-left: -1rem;
     margin-right: -1rem;
     padding-left: 1rem;
@@ -404,7 +404,7 @@ textarea:focus, input[type="email"]:focus, input[type="number"]:focus, input[typ
     }
 }
 #body .nav:hover {
-    background: #F6F6F6;
+    background: unset;
 }
 #body .nav.nav-pref {
     left: 0;
@@ -456,7 +456,7 @@ body {
 h2, h3, h4, h5, h6 {
     font-family: "Work Sans", "Helvetica", "Tahoma", "Geneva", "Arial", sans-serif;
     text-rendering: optimizeLegibility;
-    color: #5e5e5e;
+    color: #ccc;
     font-weight: 400;
     letter-spacing: -1px;
 }
@@ -464,11 +464,12 @@ h1 {
     font-family: "Novacento Sans Wide", "Helvetica", "Tahoma", "Geneva", "Arial", sans-serif;
     text-align: center;
     text-transform: uppercase;
-    color: #222;
+    color: #fff;
     font-weight: 200;
+    margin: 10rem 0 10rem 0;
 }
 blockquote {
-    border-left: 10px solid #F0F2F4;
+    border-left: 5px solid #F0F2F4;
 }
 blockquote p {
     font-size: 1.1rem;
@@ -628,12 +629,12 @@ code, kbd, pre, samp {
     font-size: 92%;
 }
 code {
-    border-radius: 2px;
+    border-radius: 5px;
     white-space: nowrap;
-    color: #5e5e5e;
-    background: #FFF7DD;
-    border: 1px solid #fbf0cb;
-    padding: 0px 2px;
+    color: #eee;
+    background: #3e0f0f;
+    border: 1px solid #835555;
+    padding: 1px 10px;
 }
 code + .copy-to-clipboard {
     margin-left: -1px;
@@ -650,6 +651,7 @@ pre {
     border: 0;
     border-radius: 2px;
     line-height: 1.15;
+    filter: drop-shadow(10px 10px 10px #000);
 }
 pre code {
     color: whitesmoke;
@@ -906,6 +908,9 @@ td {
     overflow: auto;
     position: relative;
 }
+.highlight > pre{
+    background-color: #282c34 !important;
+}
 .hljs::selection, .hljs span::selection {
     background: #b7b7b7;
 }
@@ -988,11 +993,13 @@ td {
     background: #34495E;
 }
 #top-bar {
-    background: #F6F6F6;
-    border-radius: 2px;
+    background: #000000;
+    border-radius: 10px;
     padding: 0 1rem;
     height: 0;
     min-height: 3rem;
+    border: 1px solid #959595;
+    filter: drop-shadow(10px 10px 10px #000);
 }
 #top-github-link {
     position: relative;
@@ -1140,4 +1147,7 @@ pre .copy-to-clipboard:hover {
 
 option {
     color: initial;
+}
+.links a {
+    color: #fff;
 }

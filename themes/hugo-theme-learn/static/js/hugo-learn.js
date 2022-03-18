@@ -62,7 +62,7 @@ images.each(function(index){
 
 // Stick the top to the top of the screen when  scrolling
 $(document).ready(function(){
-  $("#top-bar").sticky({topSpacing:0, zIndex: 1000});
+  $("#top-bar").sticky({topSpacing:10, zIndex: 1000});
 });
 
 
@@ -74,7 +74,7 @@ jQuery(document).ready(function() {
     var url = encodeURI(document.location.origin + document.location.pathname);
     var link = url + "#"+element[0].id;
     return " <span class='anchor' data-clipboard-text='"+link+"'>" +
-      "<i class='fas fa-link fa-lg'></i>" +
+      "<i class='fas fa-link fa-thin'></i>" +
       "</span>"
     ;
   });
