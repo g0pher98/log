@@ -1,7 +1,6 @@
 ---
 title: "24th Hackingcamp Ctf"
 date: 2022-03-18T12:34:11+09:00
-draft: true
 ---
 ## WEB
 
