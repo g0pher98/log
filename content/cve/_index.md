@@ -6,8 +6,8 @@ chapter = true
 pre = "<b>🤠 </b>"
 +++
 
-### Chapter X
+### 🤠 CVE
 
-# Some Chapter title
+# CVE Write-ups
 
-Lorem Ipsum.
+CVE 발굴 머신이 되는 그날까지,,,
